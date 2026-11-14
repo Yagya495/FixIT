@@ -21,7 +21,8 @@ export default function City() {
           <div className="h-[460px]">
             {!pts ? <Spinner label="Loading map…" /> : (
               <MapContainer center={[43.074, -89.395]} zoom={13} className="h-full w-full">
-                <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" attribution="&copy; OpenStreetMap &copy; CARTO" />
+                {/* CARTO basemaps now need an API key (tiles render "API KEY REQUIRED"); use OSM like the building page. */}
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
                 {shown.map((p) => (
                   <CircleMarker key={p.property_id} center={[p.lat, p.lon]} radius={3 + Math.min(10, p.open_issues * 1.5)}
                     pathOptions={{ color: color(p.open_issues), fillColor: color(p.open_issues), fillOpacity: 0.55, weight: 1 }}>
@@ -47,6 +48,13 @@ export default function City() {
   );
 }
 
+// Say truthfully what produced each answer: never imply live Genie when it was a saved or prepared answer.
+const SOURCE_NOTE: Record<string, string> = {
+  genie: "Answered live by Databricks Genie.",
+  cache: "Saved Databricks Genie answer (Genie didn't respond just now).",
+  local: "Answered by FixIt's prepared SQL for this sample question (Genie not connected).",
+};
+
 function AskData() {
   const [qs, setQs] = useState<string[]>([]);
   const [q, setQ] = useState("");
@@ -61,13 +69,13 @@ function AskData() {
   }
   return (
     <section className="card p-5 space-y-4">
-      <h2 className="h2 flex items-center gap-2"><Sparkles className="w-6 h-6 text-badger" /> Ask the data <span className="text-sm font-normal text-neutral-500">· Databricks Genie</span></h2>
+      <h2 className="h2 flex items-center gap-2"><Sparkles className="w-6 h-6 text-badger" /> Ask the data <span className="text-sm font-normal text-neutral-500">· plain-English questions over the gold tables</span></h2>
       <div className="flex gap-2">
         <input className="input text-lg" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === "Enter" && ask(q)} placeholder="Which owners have the most open heat issues this month?" />
         <button className="btn-primary" onClick={() => ask(q)} disabled={!q || busy}><MessageSquareText className="w-5 h-5" /> Ask</button>
       </div>
       <div className="flex flex-wrap gap-2">{qs.map((s) => <button key={s} className="chip bg-neutral-100 hover:bg-badger-light normal-case text-sm font-medium tracking-normal py-1" onClick={() => ask(s)}>{s}</button>)}</div>
-      {busy && <Spinner label="Genie is writing SQL over the gold tables…" />}
+      {busy && <Spinner label="Writing SQL over the gold tables…" />}
       <ErrorBox error={error} />
       {ans && (
         <div className="space-y-2">
@@ -78,7 +86,8 @@ function AskData() {
                 <tbody>{ans.rows.map((r: any, i: number) => <tr key={i} className="border-t">{ans.columns.map((c: string) => <td key={c} className="p-2">{String(r[c] ?? "")}</td>)}</tr>)}</tbody></table>
             </div>
           )}
-          {ans.sql && <button className="text-sm text-badger" onClick={() => setShowSql(!showSql)}>{showSql ? "Hide" : "Show"} generated SQL</button>}
+          {SOURCE_NOTE[ans.source] && <p className="text-xs text-neutral-500">{SOURCE_NOTE[ans.source]}</p>}
+          {ans.sql && <button className="text-sm text-badger" onClick={() => setShowSql(!showSql)}>{showSql ? "Hide" : "Show"} SQL</button>}
           {showSql && <pre className="text-xs bg-neutral-900 text-green-300 rounded-xl p-3 overflow-x-auto">{ans.sql}</pre>}
         </div>
       )}

@@ -22,7 +22,7 @@ def storage_path(sha: str, media_type: str) -> str:
     ext = EXT.get(media_type, "bin")
     if config.DATA_BACKEND == "databricks":
         return f"{config.EVIDENCE_VOLUME}/{sha[:2]}/{sha}.{ext}"
-    return str(config.LOCAL_EVIDENCE_DIR / sha[:2] / f"{sha}.{ext}")
+    return (config.LOCAL_EVIDENCE_DIR / sha[:2] / f"{sha}.{ext}").as_posix()  # "/" on every OS
 
 
 def _write(path: str, data: bytes) -> None:
@@ -50,6 +50,9 @@ def read(path: str) -> bytes:
 
 def store(scan_id: str, data: bytes, media_type: str, captured_at: str | None = None) -> dict:
     sha = sha256_bytes(data)
+    existing = get(evidence_id_for(sha, scan_id))
+    if existing:  # identical file uploaded twice in one scan: same evidence, keep the first timestamps
+        return existing
     path = storage_path(sha, media_type)
     _write(path, data)
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")

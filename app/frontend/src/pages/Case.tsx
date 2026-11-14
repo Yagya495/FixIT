@@ -62,7 +62,14 @@ function Collective({ c }: { c: any }) {
   const col = c.collective;
   const [joint, setJoint] = useState<any>(null);
   const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
   if (!col?.matched) return null;
+  async function fileTogether() {
+    setBusy(true); setErr(null);
+    try { setJoint(await post(`/api/cases/${c.request_id}/joint`)); }
+    catch (e: any) { setErr(e.message); }
+    finally { setBusy(false); }
+  }
   return (
     <section className="rounded-2xl bg-ink text-white p-5 space-y-3">
       <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-red-300"><Users className="w-4 h-4" /> You're not alone <DemoBadge /></div>
@@ -79,10 +86,12 @@ function Collective({ c }: { c: any }) {
         </div>
       )}
       {!joint ? (
-        <button className="btn-primary text-lg" disabled={busy}
-          onClick={async () => { setBusy(true); setJoint(await post(`/api/cases/${c.request_id}/joint`)); setBusy(false); }}>
-          <Users className="w-5 h-5" /> File together
-        </button>
+        <>
+          <button className="btn-primary text-lg" disabled={busy} onClick={fileTogether}>
+            <Users className="w-5 h-5" /> File together
+          </button>
+          <ErrorBox error={err} />
+        </>
       ) : (
         <div className="bg-white text-ink rounded-xl p-4 space-y-2">
           <div className="font-bold">{joint.form}</div>
@@ -154,33 +163,40 @@ function Call({ c, onDone }: { c: any; onDone: () => void }) {
   const [listening, setListening] = useState(false);
   const [script, setScript] = useState<string[]>([]);
   const [scriptIdx, setScriptIdx] = useState(0);
+  const [err, setErr] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
-  useEffect(() => { get("/api/calls/demo-script").then((r) => setScript(r.lines)); }, []);
+  useEffect(() => { get("/api/calls/demo-script").then((r) => setScript(r.lines)).catch(() => setScript([])); }, []);
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, [transcript]);
 
   async function start() {
-    setResult(null); setScriptIdx(0);
-    const r = await post(`/api/cases/${c.request_id}/call/start`);
-    setCallId(r.call_id); setTranscript(r.transcript);
-    speak(r.transcript[0].text, voice);
+    setResult(null); setScriptIdx(0); setErr(null);
+    try {
+      const r = await post(`/api/cases/${c.request_id}/call/start`);
+      setCallId(r.call_id); setTranscript(r.transcript);
+      speak(r.transcript[0].text, voice);
+    } catch (e: any) { setErr(`Couldn't start the call: ${e.message}`); }
   }
   async function say(text: string) {
     if (!callId || !text.trim()) return;
-    setInput("");
+    setInput(""); setErr(null);
     setTranscript((t) => [...t, { speaker: "landlord", text }]);
-    const r = await post(`/api/calls/${callId}/say`, { text });
-    setTranscript(r.transcript);
-    if (r.reply) speak(r.reply, voice);
-    if (r.done) { setResult(r.result); setCallId(null); onDone(); }
+    try {
+      const r = await post(`/api/calls/${callId}/say`, { text });
+      setTranscript(r.transcript);
+      if (r.reply) speak(r.reply, voice);
+      if (r.done) { setResult(r.result); setCallId(null); onDone(); }
+    } catch (e: any) { setErr(`The AI didn't get that: ${e.message}`); }
   }
   async function hangUp() {
     if (!callId) return;
-    const r = await post(`/api/calls/${callId}/end`);
-    setTranscript(r.transcript); setResult(r.result); setCallId(null); onDone();
+    try {
+      const r = await post(`/api/calls/${callId}/end`);
+      setTranscript(r.transcript); setResult(r.result); setCallId(null); onDone();
+    } catch (e: any) { setErr(e.message); setCallId(null); }
   }
   function listen() {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR) { alert("Speech recognition not supported in this browser. Type instead."); return; }
+    if (!SR) { setErr("Speech recognition isn't supported in this browser. Type the landlord's words instead."); return; }
     const rec = new SR();
     rec.lang = "en-US"; rec.interimResults = false;
     rec.onresult = (e: any) => say(e.results[0][0].transcript);
@@ -226,6 +242,7 @@ function Call({ c, onDone }: { c: any; onDone: () => void }) {
           </div>
         </div>
       )}
+      <ErrorBox error={err} />
       {result && !callId && (
         <div className={`rounded-xl p-3 ${result.commitment_date ? "bg-emerald-50 text-emerald-900" : "bg-amber-50 text-amber-900"}`}>
           {result.commitment_date ? (
@@ -240,6 +257,11 @@ function Call({ c, onDone }: { c: any; onDone: () => void }) {
 
 // ---------------------------------------------------------------- deadline + escalation
 function Deadline({ c, onChange }: { c: any; onChange: (c: any) => void }) {
+  const [err, setErr] = useState<string | null>(null);
+  const act = (path: string, body?: unknown) => async () => {
+    setErr(null);
+    try { onChange(await post(`/api/cases/${c.request_id}/${path}`, body)); } catch (e: any) { setErr(e.message); }
+  };
   const d = c.deadline;
   if (!d) return (
     <section className="card p-5"><h2 className="h2 flex items-center gap-2"><Clock className="w-6 h-6" /> Deadline</h2>
@@ -260,11 +282,12 @@ function Deadline({ c, onChange }: { c: any; onChange: (c: any) => void }) {
       </div>
       {d.status !== "met" && d.status !== "escalated" && (
         <div className="flex flex-wrap gap-2">
-          <button className="btn-ghost" onClick={async () => onChange(await post(`/api/cases/${c.request_id}/simulate`, { days: 8 }))}><FastForward className="w-4 h-4" /> Simulate +8 days</button>
-          <button className="btn-ghost" onClick={async () => onChange(await post(`/api/cases/${c.request_id}/fixed`))}>Landlord fixed it</button>
-          {overdue && <button className="btn-primary" onClick={async () => onChange(await post(`/api/cases/${c.request_id}/escalate`))}>Escalate → city complaint</button>}
+          <button className="btn-ghost" onClick={act("simulate", { days: 8 })}><FastForward className="w-4 h-4" /> Simulate +8 days</button>
+          <button className="btn-ghost" onClick={act("fixed")}>Landlord fixed it</button>
+          {overdue && <button className="btn-primary" onClick={act("escalate")}>Escalate → city complaint</button>}
         </div>
       )}
+      <ErrorBox error={err} />
       <p className="text-xs text-neutral-500">Default windows (7 days routine, 48h urgent, 24h emergency) are FixIt defaults, not legal deadlines.</p>
       {c.complaint && <Complaint p={c.complaint} />}
     </section>

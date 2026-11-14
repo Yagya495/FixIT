@@ -52,7 +52,12 @@ export default function Landlords() {
                   {r.repeat_offender && <span className="chip bg-red-100 text-red-800 ml-2">repeat offender</span>}</td>
                 <td className="p-3">{r.buildings}</td><td className="p-3 font-bold">{r.open_issues}</td><td className="p-3">{r.issues_last_12mo}</td>
                 <td className="p-3">{r.median_days_to_fix ?? "—"}</td><td className="p-3">{r.pct_fixed_within_30d != null ? `${Math.round(r.pct_fixed_within_30d * 100)}%` : "—"}</td>
-              </tr>))}</tbody>
+              </tr>))}
+              {rows.length === 0 && (
+                <tr><td colSpan={7} className="p-4 text-neutral-500">
+                  {addr.length ? "No owner or company names match. Open the building above to see its owner's report card." : "No owners match that search."}
+                </td></tr>)}
+            </tbody>
           </table>
         </div>
       )}

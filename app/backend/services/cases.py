@@ -152,7 +152,9 @@ def joint_complaint(request_id: str) -> dict:
     now = case_now(request_id)
     # Neighbor households only; the tenant's own issues are prepended as Unit A.
     groups = _groups_excluding(c["property_id"], now, unit_hash(c["property_id"], c["unit"] or "?"))
-    groups.insert(0, {"types": ", ".join(v["name"] for v in c["violations"]), "first": now.isoformat(), "last": now.isoformat()})
+    # Unit A = the tenant: dated by when they actually reported (case creation), not the simulated clock.
+    reported = c["created_at"] or now.isoformat()
+    groups.insert(0, {"types": ", ".join(v["name"] for v in c["violations"]), "first": reported, "last": reported})
     payload = letters.joint_complaint(c["address"], c["landlord"], groups, c["collective"]["other_buildings"])
     db.insert("silver.complaints", {"complaint_id": f"CP-{uuid.uuid4().hex[:10]}", "request_id": request_id,
                                     "payload_json": json.dumps(payload), "generated_at": now.isoformat(timespec="seconds"),

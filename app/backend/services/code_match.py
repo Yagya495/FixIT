@@ -100,6 +100,13 @@ def _sections() -> list[dict]:
     return _cache
 
 
+def verified_count() -> int:
+    try:
+        return sum(1 for s in _sections() if s.get("verified"))
+    except Exception:
+        return 0
+
+
 def reset_cache() -> None:
     global _cache, _type_map
     _cache = None
@@ -124,7 +131,8 @@ def _vector_search(issue: str, k: int) -> list[dict]:
         sec = next((s for s in _sections() if s["section_id"] == section_id), {})
         out.append({"section_id": section_id, "title": sec.get("title", section_id), "snippet": text[:400],
                     "url": sec.get("url") or config.OFFICIAL_LINKS["chapter_27"], "score": round(float(score), 3),
-                    "verified": True})
+                    # Parsed text is real ordinance text, but the section id only counts once a human verifies it.
+                    "verified": bool(sec.get("verified"))})
         if len(out) == k:
             break
     return out

@@ -95,7 +95,13 @@ export function ViolationCard({ v, open: initOpen = false }: { v: Violation; ope
                 {s.verified ? `MGO § ${s.section_id}` : "MGO Chapter 27 · section number pending verification"}
               </div>
               <div className="font-semibold">{s.title}</div>
-              <div className="text-sm text-neutral-700">“{s.snippet}”</div>
+              {s.verified ? (
+                <div className="text-sm text-neutral-700">“{s.snippet}”</div>
+              ) : (
+                <div className="text-sm text-neutral-700">
+                  <span className="text-xs font-semibold text-neutral-500">Plain-language summary, not official text: </span>{s.snippet}
+                </div>
+              )}
               <a href={s.url} target="_blank" className="text-xs text-badger inline-flex items-center gap-1 mt-1">
                 Official text <ExternalLink className="w-3 h-3" />
               </a>

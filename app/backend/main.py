@@ -32,8 +32,14 @@ app = FastAPI(title="FixIt Madison", version="0.1.0", lifespan=lifespan)
 # ---------------------------------------------------------------- meta
 @app.get("/api/health")
 def health():
+    from . import llm
+    from .services import code_match as cm
+
     return {"ok": True, "demo_mode": config.DEMO_MODE, "backend": config.DATA_BACKEND,
-            "show_bboxes": config.SHOW_BBOXES, "threshold": config.CONFIDENCE_THRESHOLD}
+            "show_bboxes": config.SHOW_BBOXES, "threshold": config.CONFIDENCE_THRESHOLD,
+            # What is actually wired up, so the UI never claims more than is running (no secrets here).
+            "models_configured": llm.available(), "genie_configured": bool(config.GENIE_SPACE_ID),
+            "code_sections_verified": cm.verified_count()}
 
 
 @app.get("/api/meta")

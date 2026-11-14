@@ -48,10 +48,7 @@ def parse_commitment(text: str, now: datetime) -> datetime | None:
         n = int(m.group(1)) if m.group(1).isdigit() else words[m.group(1)]
         days = n * (7 if m.group(2).startswith("week") else 1)
         return end_of_day(now + timedelta(days=days))
-    if re.search(r"\b(end of (the )?week|this week)\b", t):
-        return end_of_day(now + timedelta(days=(4 - now.weekday()) % 7))  # this Friday (today if Friday)
-    if "next week" in t:
-        return end_of_day(now + timedelta(days=7 - now.weekday()))  # next Monday
+    # Explicit weekdays/dates win over vague week phrases: "we're busy this week ... Thursday" means Thursday.
     for i, wd in enumerate(WEEKDAYS):
         if re.search(rf"\b{wd}\b", t):
             ahead = (i - now.weekday()) % 7 or 7
@@ -79,6 +76,10 @@ def parse_commitment(text: str, now: datetime) -> datetime | None:
             return cand
         except ValueError:
             return None
+    if re.search(r"\b(end of (the )?week|this week)\b", t):
+        return end_of_day(now + timedelta(days=(4 - now.weekday()) % 7))  # this Friday (today if Friday)
+    if "next week" in t:
+        return end_of_day(now + timedelta(days=7 - now.weekday()))  # next Monday
     return None
 
 

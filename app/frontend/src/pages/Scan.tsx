@@ -42,9 +42,14 @@ export default function Scan() {
   async function onFiles(list: FileList | null) {
     const files = Array.from(list ?? []);
     const blobs: Blob[] = [];
+    setError(null);
     for (const f of files) {
-      if (f.type.startsWith("video/")) blobs.push(...(await sampleVideo(f, 1, 30)));
-      else blobs.push(await toJpeg(f));
+      try {
+        if (f.type.startsWith("video/")) blobs.push(...(await sampleVideo(f, 1, 30)));
+        else blobs.push(await toJpeg(f));
+      } catch {
+        setError(`Couldn't read ${f.name}. Try a JPG/PNG photo or an MP4 video.`);
+      }
     }
     upload(blobs.slice(0, 30));
   }
@@ -71,9 +76,12 @@ export default function Scan() {
   }
 
   async function reportNoHeat() {
-    const id = await ensureScan();
-    const r = await post(`/api/scans/${id}/manual`, { type_id: "NO_HEAT", note: "Tenant reports no heat" });
-    setViolations(r.violations);
+    setError(null);
+    try {
+      const id = await ensureScan();
+      const r = await post(`/api/scans/${id}/manual`, { type_id: "NO_HEAT", note: "Tenant reports no heat" });
+      setViolations(r.violations);
+    } catch (e: any) { setError(e.message); }
   }
 
   async function createCase() {

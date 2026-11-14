@@ -1,25 +1,44 @@
+import { useEffect, useState } from "react";
+import { get } from "../api";
 import { Disclaimer } from "../components/ui";
 
-const FLOW = [
-  ["Ingest", "MGO Ch. 27 PDF → ai_parse_document → silver.code_sections → chunks (CDF)"],
-  ["Retrieve", "Vector Search Delta Sync index → match_code() top-3 sections"],
-  ["See", "Photos/frames → vision model (serving endpoint) → silver.detections → gold.violations"],
-  ["Store", "UC Volumes (SHA-256-named evidence) · Delta bronze → silver → gold"],
-  ["Act", "Letters · simulated AI call → silver.calls → silver.deadlines → complaint drafts"],
-  ["Connect", "gold.reports × gold.properties → neighbor + same-owner matches, landlord_scores"],
-  ["Ask", "Genie space over gold tables · AI/BI dashboard · MLflow traces + risk model"],
-  ["Serve", "FastAPI + React as a Databricks App, SQL warehouse via service principal"],
-];
+type Health = { backend: string; models_configured: boolean; genie_configured: boolean; code_sections_verified: number };
+type Status = { label: string; cls: string };
+const ON: Status = { label: "running", cls: "bg-emerald-100 text-emerald-800" };
+const FALLBACK = (label: string): Status => ({ label, cls: "bg-amber-100 text-amber-800" });
+const PLANNED: Status = { label: "planned (P1)", cls: "bg-neutral-100 text-neutral-600" };
+
+// Each step's status is computed from /api/health so this page never claims more than is actually running.
+function flow(h: Health | null): [string, string, Status][] {
+  const dbx = h?.backend === "databricks";
+  return [
+    ["Ingest", "MGO Ch. 27 PDF → ai_parse_document → silver.code_sections → chunks (CDF)",
+      h?.code_sections_verified ? ON : FALLBACK("pending: placeholder sections, labeled unverified")],
+    ["Retrieve", "Vector Search Delta Sync index → match_code() top-3 sections",
+      h?.code_sections_verified && dbx ? ON : FALLBACK("now: local keyword (BM25) matching")],
+    ["See", "Photos/frames → vision model (serving endpoint) → silver.detections → gold.violations",
+      h?.models_configured ? { ...ON, label: "live model, Demo Mode backup" } : FALLBACK("now: Demo Mode cached/scripted results")],
+    ["Store", "UC Volumes (SHA-256-named evidence) · Delta bronze → silver → gold", dbx ? ON : FALLBACK("now: local SQLite + files")],
+    ["Act", "Letters · simulated AI call → silver.calls → silver.deadlines → complaint drafts", ON],
+    ["Connect", "gold.reports × gold.properties → neighbor + same-owner matches, landlord_scores", ON],
+    ["Ask", "Genie space over gold tables", h?.genie_configured ? ON : FALLBACK("now: prepared SQL for the sample questions")],
+    ["Extend", "AI/BI dashboard · MLflow traces + building risk model", PLANNED],
+    ["Serve", "FastAPI + React as a Databricks App, SQL warehouse via service principal", dbx ? ON : FALLBACK("now: running locally")],
+  ];
+}
 
 export default function About() {
+  const [h, setH] = useState<Health | null>(null);
+  useEffect(() => { get("/api/health").then(setH).catch(() => setH(null)); }, []);
   return (
     <div className="space-y-6 max-w-4xl">
       <h1 className="h1">How FixIt works</h1>
       <div className="card p-5">
         <h2 className="h2 mb-3">Under the hood: Databricks lakehouse</h2>
-        <ol className="space-y-2">{FLOW.map(([k, v], i) => (
+        <ol className="space-y-2">{flow(h).map(([k, v, s], i) => (
           <li key={k} className="flex gap-3"><span className="w-7 h-7 rounded-full bg-badger text-white grid place-items-center font-bold shrink-0">{i + 1}</span>
-            <div><b>{k}.</b> <span className="text-neutral-700">{v}</span></div></li>))}</ol>
+            <div><b>{k}.</b> <span className="text-neutral-700">{v}</span>{" "}
+              {h && <span className={`chip normal-case tracking-normal font-semibold ${s.cls}`}>{s.label}</span>}</div></li>))}</ol>
       </div>
       <div className="card p-5 space-y-2">
         <h2 className="h2">Accuracy</h2>

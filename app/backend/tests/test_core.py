@@ -59,6 +59,37 @@ def test_parse_commitment_relative(text, days):
     assert got.hour == 17
 
 
+SAT = datetime(2026, 11, 14, 16, 0)  # a Saturday (hackathon day)
+
+
+@pytest.mark.parametrize("now", [MON, SAT, datetime(2026, 11, 18, 9, 0)])
+def test_explicit_weekday_beats_vague_week_phrase(now):
+    # The real demo-script line mentions "this week" AND "Thursday"; Thursday must win.
+    got = deadlines.parse_commitment("Look, we're busy this week. I can probably get someone out there Thursday.", now)
+    assert got.weekday() == 3 and 0 < (got.date() - now.date()).days <= 7
+    assert deadlines.parse_commitment("this week", MON).date().isoformat() == "2026-11-20"  # vague phrase still works
+    assert deadlines.parse_commitment("sometime next week", MON).date().isoformat() == "2026-11-23"
+
+
+def test_scripted_call_is_coherent_and_confirms_thursday():
+    from app.backend.services import calls
+    from app.backend.services.demo_cache import SCRIPTED_CALL
+
+    vs = [{"name": "Missing/disabled smoke detector", "code_sections": [{"title": "Smoke alarms", "section_id": "CH27-SMOKE"}]},
+          {"name": "Water stains / visible mold", "code_sections": []}]
+    call = calls.SimulatedCall("RR-test", "1234 Demo St", "9", vs)
+    assert call.transcript[0]["text"].startswith("Hi, this is an automated AI assistant")
+    replies = []
+    for _, line in SCRIPTED_CALL:
+        replies.append(call.landlord_says(line, SAT))
+        if call.done:
+            break
+    assert not replies[0].startswith("Yes")                       # "who's calling?" isn't a yes/no question
+    assert "smoke detector" in replies[1] and "busy" not in replies[1]  # "what's the problem?" gets the issues
+    assert call.commitment.date().isoformat() == "2026-11-19"     # Thursday after Sat Nov 14
+    assert "Thursday, November 19" in replies[-1]
+
+
 def test_parse_commitment_dates_and_vague():
     assert deadlines.parse_commitment("by 11/20", MON).date().isoformat() == "2026-11-20"
     assert deadlines.parse_commitment("December 3rd", MON).date().isoformat() == "2026-12-03"

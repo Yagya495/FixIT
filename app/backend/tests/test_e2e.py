@@ -93,6 +93,8 @@ def test_full_demo_flow(client):
     # Joint complaint
     j = client.post(f"/api/cases/{rid}/joint").json()
     assert j["units"][0] == "Unit A" and len(j["units"]) == 7
+    # Unit A is dated by the real report date, not the "+8 days" simulated clock.
+    assert f"first reported {case['created_at'][:10]}" in j["text"].split("Unit A:", 1)[1].split("\n", 1)[0]
 
     # Landlord card, building page, map, genie
     oc = client.get("/api/owners/O-DEMO").json()
@@ -104,3 +106,16 @@ def test_full_demo_flow(client):
         assert a["rows"], q
     top = client.post("/api/genie/ask", json={"question": "Which owners have the most open heat issues this month?"}).json()
     assert top["rows"][0]["owner"] == "Isthmus Edge Properties (demo)"
+
+
+def test_same_photo_reused_across_and_within_scans(client):
+    """Rehearsals reuse the same demo photos: that must never 500 (it used to collide on detection_id)."""
+    img = png(10, 200, 30)
+    for _ in range(2):  # two separate scans, same bytes
+        s = client.post("/api/scans", data={"mode": "walkthrough", "address": "1234 Demo St", "unit": "9"}).json()
+        r = client.post(f"/api/scans/{s['scan_id']}/frames",
+                        files=[("files", ("a.png", img, "image/png")), ("files", ("dup.png", img, "image/png"))])
+        assert r.status_code == 200, r.text
+        assert r.json()["violations"]
+    x = client.post("/api/listing/xray", data={"address": "1234 Demo St"}, files=[("files", ("a.png", img, "image/png"))])
+    assert x.status_code == 200, x.text

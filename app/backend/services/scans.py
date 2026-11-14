@@ -42,7 +42,9 @@ def process_frames(scan_id: str, frames: list[tuple[bytes, str, str | None]]) ->
             dd = vision.apply_threshold(d.model_dump())
             dd.update({"evidence_id": ev["evidence_id"], "scene": res.scene})
             db.insert("silver.detections", {
-                "detection_id": f"D-{ev['evidence_id'][2:14]}-{j}", "scan_id": scan_id,
+                # Full evidence id (hash prefix + scan suffix) + frame index: the same photo may appear in several
+                # scans, or twice in one upload, without colliding.
+                "detection_id": f"D-{ev['evidence_id'][2:]}-{i}-{j}", "scan_id": scan_id,
                 "evidence_id": ev["evidence_id"], "violation_type": d.violation_type, "confidence": d.confidence,
                 "bbox": d.bbox if config.SHOW_BBOXES else None, "note": d.evidence_note,
                 "model_endpoint": config.VISION_ENDPOINT if source == "live" else source, "created_at": _now(),

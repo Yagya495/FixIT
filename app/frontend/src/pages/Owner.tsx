@@ -30,8 +30,10 @@ export default function Owner() {
         <div className="card p-4">
           <h2 className="h2 mb-2">Issues by type</h2>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={o.issues_by_type} layout="vertical" margin={{ left: 40 }}>
-              <XAxis type="number" /><YAxis type="category" dataKey="violation_type" width={170} tick={{ fontSize: 11 }} />
+            <BarChart data={o.issues_by_type} layout="vertical" margin={{ left: 0, right: 12 }}>
+              <XAxis type="number" allowDecimals={false} />
+              <YAxis type="category" dataKey="violation_type" width={170} tick={{ fontSize: 11 }}
+                tickFormatter={(t: string) => t.toLowerCase().replace(/_/g, " ").replace(/^\w/, (ch) => ch.toUpperCase())} />
               <Tooltip /><Bar dataKey="n" name="All reports" fill="#d4d4d4" /><Bar dataKey="open_n" name="Open" fill="#C5050C" />
             </BarChart>
           </ResponsiveContainer>

@@ -14,4 +14,8 @@
   .h1 { @apply text-3xl md:text-4xl font-extrabold tracking-tight; }
   .h2 { @apply text-xl md:text-2xl font-bold tracking-tight; }
 }
-.leaflet-container { border-radius: 1rem; }
+/* Used by the header nav (horizontally scrollable on phones); was referenced but never defined. */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+/* z-index:0 makes the map its own stacking context so Leaflet's panes/controls (z 400–1000) stay under the sticky nav. */
+.leaflet-container { border-radius: 1rem; z-index: 0; }

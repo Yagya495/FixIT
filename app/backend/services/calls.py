@@ -18,6 +18,13 @@ HOSTILE = re.compile(r"\b(shut up|f\*+|fuck|stop calling|go away|scam|sue|lawyer
 REFUSE = re.compile(r"\b(not (going|gonna) to|won't|will not|refuse|not my problem|can't help|no way)\b", re.I)
 TENANT = re.compile(r"\b(talk|speak) (to|with) (the )?(tenant|them|him|her|resident)\b", re.I)
 WHO = re.compile(r"\b(who is this|who's calling|is this a robot|are you (a )?(robot|ai|real))\b", re.I)
+WHAT = re.compile(r"\b(what('s| is| exactly)?\b.*\b(problem|issue|wrong|going on)|which (issues?|problems?|repairs?))\b", re.I)
+BUSY = re.compile(r"\b(busy|swamped|slammed|backed up)\b", re.I)
+
+
+def _issue_names(violations: list[dict]) -> str:
+    names = [v["name"].lower() for v in violations] or ["maintenance issues"]
+    return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
 
 
 def opening_line(address: str, unit: str | None) -> str:
@@ -73,7 +80,8 @@ class SimulatedCall:
                              "contact City of Madison Building Inspection if the issues aren't addressed. Thank you for your time.")
         if self.state == "opened":
             self.state = "asked"
-            prefix = "Yes, I'm an AI assistant, not a person, and I'm not a lawyer or the city. " if WHO.search(text) else ""
+            prefix = ("I'm an AI assistant acting for the tenant. I'm not a person, a lawyer, or the city. "
+                      if WHO.search(text) else "")
             return self._say(prefix + _violations_sentence(self.violations))
 
         if TENANT.search(text):
@@ -85,12 +93,17 @@ class SimulatedCall:
             self.state = "closed"
             return self._say(f"Thank you. To confirm: the repairs will be completed by {when.strftime('%A, %B %d')}. "
                              f"I'll let the tenant know, and they'll follow up in writing. Have a good day.")
+        if WHAT.search(text) and not REFUSE.search(text):
+            # Clarifying question, not a dodge: restate the issues and ask again (doesn't count as a re-ask).
+            return self._say(f"Of course. The tenant documented {_issue_names(self.violations)}, with dated photos. "
+                             "When can someone come out to repair these?")
         if REFUSE.search(text) or self.asked_date >= 1:
             self.state = "closed"
             return self._say("Understood. Since we don't have a repair date, the tenant will follow up in writing and "
                              "may contact City of Madison Building Inspection. Thank you for your time.")
         self.asked_date += 1
-        return self._say("I understand you're busy. Could you give me a specific day the repairs can be completed, "
+        prefix = "I understand you're busy. " if BUSY.search(text) else "Thanks. "
+        return self._say(prefix + "Could you give me a specific day the repairs can be completed, "
                          "for example a day this week?")
 
     def transcript_text(self) -> str:
@@ -133,17 +146,25 @@ def save_call(call: SimulatedCall, mode: str = "simulated", now: datetime | None
     now = now or datetime.now()
     text = call.transcript_text()
     data, source = extract(text, now)
-    # The state machine already parsed the date deterministically; prefer it if the LLM disagrees wildly.
-    if call.commitment and not data.get("commitment_date"):
+    # The AI already read this date back to the landlord on the call, so it is what the deadline must use.
+    # The extractor (LLM or heuristic) still supplies tone; `commitment_source` records where the date came from.
+    data["commitment_source"] = source
+    if call.commitment:
+        if data.get("commitment_date") and data["commitment_date"][:10] != call.commitment.date().isoformat():
+            data["extractor_commitment_date"] = data["commitment_date"]  # keep the disagreement visible for debugging
         data["commitment_date"] = call.commitment.isoformat(timespec="minutes")
         data["commitment_text"] = call.commitment_text
         data["follow_up_needed"] = False
+        data["commitment_source"] = "confirmed_on_call"
     row = {"call_id": call.call_id, "request_id": call.request_id, "mode": mode,
            "transcript": json.dumps(call.transcript), "commitment_date": data.get("commitment_date"),
            "commitment_text": data.get("commitment_text"), "landlord_tone": data.get("landlord_tone"),
            "created_at": now.isoformat(timespec="seconds")}
     db.insert("silver.calls", row)
-    return {**row, "transcript": call.transcript, "follow_up_needed": data.get("follow_up_needed"), "source": source}
+    return {**row, "transcript": call.transcript, "follow_up_needed": data.get("follow_up_needed"), "source": source,
+            "commitment_source": data["commitment_source"],
+            **({"extractor_commitment_date": data["extractor_commitment_date"]}
+               if "extractor_commitment_date" in data else {})}
 
 
 ACTIVE: dict[str, SimulatedCall] = {}
