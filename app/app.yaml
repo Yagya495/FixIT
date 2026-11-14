@@ -1,0 +1,19 @@
+# Databricks App config. Deploy from the repo root's `app/` folder (see README).
+command: ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+env:
+  - name: DEMO_MODE
+    value: "true"
+  - name: DATA_BACKEND
+    value: "databricks"
+  - name: FIXIT_CATALOG
+    value: "fixit"
+  - name: DATABRICKS_WAREHOUSE_ID
+    valueFrom: sql-warehouse        # app resource key; bind the warehouse in the App UI
+  - name: CHAT_ENDPOINT
+    value: "databricks-claude-sonnet-4-5"   # VERIFY via notebooks/00_smoke_tests.py
+  - name: VISION_ENDPOINT
+    value: "databricks-claude-sonnet-4-5"
+  - name: EMBEDDING_ENDPOINT
+    value: "databricks-gte-large-en"
+  - name: GENIE_SPACE_ID
+    value: ""

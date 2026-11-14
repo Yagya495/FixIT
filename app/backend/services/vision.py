@@ -1,0 +1,143 @@
+"""Vision pipeline (P0-3, P0-4): frame -> VLM -> validated detections -> dedup -> violations."""
+from __future__ import annotations
+
+import logging
+from typing import Literal, Optional
+
+from pydantic import BaseModel, Field, ValidationError, field_validator
+
+from .. import config, llm
+from . import demo_cache
+from .taxonomy import BY_ID, VIOLATION_TYPES
+
+log = logging.getLogger("fixit.vision")
+
+
+class Detection(BaseModel):
+    violation_type: str
+    confidence: float = Field(ge=0.0, le=1.0)
+    bbox: Optional[list[float]] = None
+    evidence_note: str = ""
+    severity_hint: Literal["routine", "urgent", "emergency"] = "routine"
+
+    @field_validator("violation_type")
+    @classmethod
+    def known_type(cls, v: str) -> str:
+        if v not in BY_ID:
+            raise ValueError(f"unknown violation_type {v}")
+        return v
+
+    @field_validator("bbox")
+    @classmethod
+    def bbox_shape(cls, v):
+        if v is not None and len(v) != 4:
+            return None
+        return v
+
+
+class FrameResult(BaseModel):
+    detections: list[Detection] = []
+    scene: str = "other"
+
+
+def _taxonomy_prompt() -> str:
+    lines = [f'- {v["type_id"]}: {v["name"]}. Visual cues: {v["visual_cues"]}' for v in VIOLATION_TYPES if v["type_id"] != "NO_HEAT"]
+    return "\n".join(lines)
+
+
+SYSTEM_WALKTHROUGH = """You are a careful housing-code inspection assistant for Madison, WI rentals.
+Look at the photo and report ONLY visible signs of these violation types:
+{taxonomy}
+
+Rules: only report what is visible; do not guess. Confidence reflects how sure you are it's that violation.
+bbox is [x, y, w, h] as fractions of image size (0-1) if you can localize it, else null.
+Reply with STRICT JSON only, no prose:
+{{"detections":[{{"violation_type":"<TYPE_ID>","confidence":0.0,"bbox":null,"evidence_note":"short description","severity_hint":"routine|urgent|emergency"}}],
+ "scene":"bedroom|kitchen|bathroom|hallway|exterior|other"}}
+If nothing is visible, return {{"detections":[],"scene":"..."}}."""
+
+SYSTEM_LISTING = SYSTEM_WALKTHROUGH.replace(
+    "Look at the photo",
+    "This is a MARKETING photo from a rental listing. Look closely for signs of problems landlords may not notice or "
+    "mention (stains, missing smoke detectors on visible ceilings, damaged surfaces, exposed wiring, mold, pest evidence, "
+    "broken windows or locks). Look at the photo",
+)
+
+
+def _parse(text: str) -> FrameResult:
+    return FrameResult.model_validate(llm.extract_json(text))
+
+
+def analyze_frame_live(image: bytes, mode: str, media_type: str = "image/jpeg") -> FrameResult:
+    system = (SYSTEM_LISTING if mode == "listing" else SYSTEM_WALKTHROUGH).format(taxonomy=_taxonomy_prompt())
+    messages = [
+        {"role": "system", "content": system},
+        {"role": "user", "content": [{"type": "text", "text": "Analyze this photo."}, llm.image_part(image, media_type)]},
+    ]
+    reply = llm.chat(messages, endpoint=config.VISION_ENDPOINT, max_tokens=800, temperature=0.0)
+    try:
+        return _parse(reply)
+    except (ValueError, ValidationError) as e:
+        messages += [{"role": "assistant", "content": reply},
+                     {"role": "user", "content": f"That was not valid JSON for the schema ({e}). Reply with fixed JSON only."}]
+        reply = llm.chat(messages, endpoint=config.VISION_ENDPOINT, max_tokens=800, temperature=0.0)
+        try:
+            return _parse(reply)
+        except (ValueError, ValidationError):
+            return FrameResult()
+
+
+def analyze_frame(image: bytes, sha256: str, mode: str, frame_index: int, n_frames: int,
+                  media_type: str = "image/jpeg") -> tuple[FrameResult, str]:
+    """Returns (result, source) where source ∈ live|cache|fallback|none."""
+    cached = demo_cache.get("vision", f"{mode}-{sha256}")
+    if config.DEMO_MODE and cached is not None:
+        # Cached demo inputs are served directly on stage: deterministic and instant.
+        return FrameResult.model_validate(cached), "cache"
+    try:
+        res = analyze_frame_live(image, mode, media_type)
+        return res, "live"
+    except Exception as e:
+        log.warning("vision live call failed: %s", e)
+        if cached is not None:
+            return FrameResult.model_validate(cached), "cache"
+        if config.DEMO_MODE:
+            dets = demo_cache.scripted_detections(mode, frame_index, n_frames)
+            return FrameResult(detections=[Detection(**d) for d in dets]), "fallback"
+        return FrameResult(), "none"
+
+
+# ---------------------------------------------------------------- pure helpers
+def apply_threshold(det: dict, threshold: float = config.CONFIDENCE_THRESHOLD) -> dict:
+    d = dict(det)
+    d["certain"] = d["confidence"] >= threshold
+    d["label"] = BY_ID[d["violation_type"]]["name"] if d["certain"] else "Possible issue — verify in person"
+    return d
+
+
+def dedup(detections: list[dict]) -> list[dict]:
+    """Merge detections of the same type within a scan into one violation.
+
+    Input rows: {violation_type, confidence, evidence_id, evidence_note, severity_hint, scene?}
+    Output: one row per type with max confidence, all evidence_ids (ordered, unique), notes, worst severity.
+    """
+    order = {"routine": 0, "urgent": 1, "emergency": 2}
+    merged: dict[str, dict] = {}
+    for d in detections:
+        t = d["violation_type"]
+        m = merged.get(t)
+        if m is None:
+            merged[t] = {"violation_type": t, "confidence": d["confidence"], "evidence_ids": [d["evidence_id"]],
+                         "notes": [d.get("evidence_note", "")], "severity_hint": d.get("severity_hint", "routine"),
+                         "scenes": [d.get("scene")] if d.get("scene") else []}
+            continue
+        m["confidence"] = max(m["confidence"], d["confidence"])
+        if d["evidence_id"] not in m["evidence_ids"]:
+            m["evidence_ids"].append(d["evidence_id"])
+        if d.get("evidence_note") and d["evidence_note"] not in m["notes"]:
+            m["notes"].append(d["evidence_note"])
+        if order.get(d.get("severity_hint", "routine"), 0) > order.get(m["severity_hint"], 0):
+            m["severity_hint"] = d["severity_hint"]
+        if d.get("scene") and d["scene"] not in m["scenes"]:
+            m["scenes"].append(d["scene"])
+    return sorted(merged.values(), key=lambda m: -m["confidence"])

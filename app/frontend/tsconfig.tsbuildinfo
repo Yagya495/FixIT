@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/api.ts","./src/main.tsx","./src/components/ui.tsx","./src/pages/about.tsx","./src/pages/building.tsx","./src/pages/case.tsx","./src/pages/cases.tsx","./src/pages/city.tsx","./src/pages/home.tsx","./src/pages/landlords.tsx","./src/pages/listing.tsx","./src/pages/owner.tsx","./src/pages/scan.tsx"],"version":"5.6.3"}
