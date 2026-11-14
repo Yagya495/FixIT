@@ -15,6 +15,16 @@ make api          # http://localhost:8000 (FastAPI serves the built UI + /api)
 make test         # unit + end-to-end tests
 ```
 
+**Windows (no `make`)**, from the repo root in PowerShell:
+```powershell
+python -m venv .venv; .venv\Scripts\python -m pip install -r app\requirements.txt pytest
+cd app\frontend; npm install; npm run build; cd ..\..
+.venv\Scripts\python -m uvicorn app.backend.main:app --port 8000     # http://127.0.0.1:8000
+.venv\Scripts\python -m pytest -q app/backend/tests                   # 44 tests
+```
+
+Demo day: follow [`docs/DEMO_CHECKLIST.md`](docs/DEMO_CHECKLIST.md). Databricks: [`docs/DATABRICKS_SETUP.md`](docs/DATABRICKS_SETUP.md).
+
 With no Databricks config, the app runs on SQLite (`data/fixit.db`, seeded automatically with the synthetic Madison
 dataset). In `DEMO_MODE=true`, AI steps fall back to cached or scripted outputs.
 

@@ -75,10 +75,13 @@ Finish every P0 before starting any P1.
 - Show as **content with citations and links**, never as definitive law.
 - Disclaimer on every legal output: *"FixIt is not a lawyer and this is not legal advice. For help, contact the Tenant
   Resource Center (608-257-0006) or City of Madison Building Inspection (608-266-4551)."*
-- MGO **Ch. 27** = Minimum Housing & Property Maintenance Code. **MGO 32.04** = rent abatement (violation affects use →
-  notify landlord, give time → if not fixed, complain to Building Inspection → take the inspector's call and schedule an inspection).
-  **MGO Ch. 32** anti-retaliation: adverse action within 6 months of a complaint may be presumed retaliatory. Building
-  Inspection says cases generally resolve in 30–60 days.
+- MGO **Ch. 27** = Minimum Housing & Property Maintenance Code. **MGO 32.04** = rent abatement. The city's page lists six
+  conditions: violation affects use → tenant contacted the landlord and allowed time → complaint filed with Building
+  Inspection → tenant answered the inspector's call and scheduled an inspection → a specific violation with an **Official
+  Notice** setting a repair deadline → the deadline passed unresolved. **MGO Ch. 32** anti-retaliation: the city says actions
+  within six months of a complaint "may be seen as retaliation" (its page links MGO 32.15). Building Inspection: "Generally,
+  cases are resolved within 30 to 60 days." Only current tenants can file interior complaints. Sources + check date:
+  PROGRESS.md → "Official sources".
 - **Never guess section numbers.** Until the Ch. 27 PDF is parsed, `code_sections` seed rows are marked
   `verified=false` and the UI shows "section number pending verification". After `notebooks/10_parse_code.sql` runs,
   the taxonomy's `code_sections` are remapped from the parsed text.
@@ -124,7 +127,7 @@ sidecar/  notebooks/  eval/  demo/{demo_inputs,cached_outputs}
 - Commit working states often. Update `PROGRESS.md` after every milestone.
 
 ## 10. Current status (2026-11-14)
-- All P0 features are built and run end to end **locally** (SQLite + Demo Mode). 36 tests pass (`make test`).
+- All P0 features are built and run end to end **locally** (SQLite + Demo Mode), verified in a real browser. 44 tests pass.
 - Databricks notebooks, the warehouse backend, Volumes, Vector Search, the Genie client and the App bundle are written but **not yet run
   against a workspace**.
 - Code section ids are placeholders (`CH27-*`) until the Ch. 27 PDF is parsed and the matches are human-reviewed.

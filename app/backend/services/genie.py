@@ -127,7 +127,7 @@ def local_answer(question: str, now: datetime | None = None) -> dict | None:
 
 # ---------------------------------------------------------------- Genie Conversation API
 def _genie(question: str, timeout_s: float = 45) -> dict:
-    host = config.DATABRICKS_HOST
+    host = llm._host()  # scheme-normalized; also resolves a CLI profile's host
     headers = llm._auth_headers()
     base = f"{host}/api/2.0/genie/spaces/{config.GENIE_SPACE_ID}"
     r = httpx.post(f"{base}/start-conversation", headers=headers, json={"content": question}, timeout=20)

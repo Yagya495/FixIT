@@ -90,6 +90,36 @@ def test_scripted_call_is_coherent_and_confirms_thursday():
     assert "Thursday, November 19" in replies[-1]
 
 
+def test_databricks_host_normalized():
+    from app.backend import config
+    assert config._normalize_host("dbc-123.cloud.databricks.com") == "https://dbc-123.cloud.databricks.com"
+    assert config._normalize_host("https://x.cloud.databricks.com/") == "https://x.cloud.databricks.com"
+    assert config._normalize_host("") == ""
+
+
+def test_timestamp_params_bound_as_datetimes_only_on_databricks(monkeypatch):
+    from app.backend import config, db
+    p = {"a": "2026-11-14T16:52:42+00:00", "b": "2026-11-19T17:00", "c": "Thursday", "d": 3, "e": "2026-11-14"}
+    monkeypatch.setattr(config, "DATA_BACKEND", "local")
+    assert db._bind(p) == p
+    monkeypatch.setattr(config, "DATA_BACKEND", "databricks")
+    out = db._bind(p)
+    assert isinstance(out["a"], datetime) and out["a"].utcoffset() is not None
+    assert out["b"] == datetime(2026, 11, 19, 17, 0)
+    assert out["c"] == "Thursday" and out["d"] == 3 and out["e"] == "2026-11-14"
+
+
+def test_auto_matched_sections_never_marked_verified(monkeypatch):
+    # Parsed (verified=1) sections exist but the taxonomy still points at placeholder ids: the automatic
+    # fallback match must not be shown as a verified section number.
+    parsed = [{"section_id": "27.99(1)", "title": "Smoke detectors", "text": "smoke detector required in each bedroom",
+               "source_doc": "ch27.pdf", "page": 3, "url": None, "verified": 1}]
+    monkeypatch.setattr(code_match, "_cache", parsed)
+    monkeypatch.setattr(code_match, "_type_map", {})
+    hits = code_match.sections_for_type("SMOKE_DETECTOR_MISSING")
+    assert hits and all(h["verified"] is False for h in hits)
+
+
 def test_parse_commitment_dates_and_vague():
     assert deadlines.parse_commitment("by 11/20", MON).date().isoformat() == "2026-11-20"
     assert deadlines.parse_commitment("December 3rd", MON).date().isoformat() == "2026-12-03"

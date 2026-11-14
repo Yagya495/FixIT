@@ -81,6 +81,9 @@ function Result({ res, onReset }: { res: any; onReset: () => void }) {
         <ul className="mt-4 space-y-1 text-lg list-disc pl-6">{res.verdict.reasons.map((r: string) => <li key={r}>{r}</li>)}</ul>
       </div>
       <p className="text-sm text-neutral-600">{res.caveat}</p>
+      {res.source === "none" && (
+        <ErrorBox error="The vision model didn't respond, so the photos weren't analyzed. This verdict is based on the building's history only." />
+      )}
 
       <div className="grid md:grid-cols-3 gap-4">
         <div className="md:col-span-2 space-y-3">

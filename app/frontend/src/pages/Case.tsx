@@ -311,6 +311,8 @@ function Complaint({ p }: { p: any }) {
         <ul className="list-disc pl-5 text-sm space-y-1">{p.next_steps.map((s: string) => <li key={s}>{s}</li>)}</ul>
         <div className="flex flex-wrap gap-3 text-sm mt-2">
           <a className="text-badger underline" href={p.links.rent_abatement} target="_blank">Rent abatement (city)</a>
+          {p.links.retaliation && <a className="text-badger underline" href={p.links.retaliation} target="_blank">Retaliation (city)</a>}
+          {p.links.complaint_process && <a className="text-badger underline" href={p.links.complaint_process} target="_blank">Complaint process (city)</a>}
           <a className="text-badger underline" href={p.links.tenant_resource_center} target="_blank">Tenant Resource Center</a>
         </div>
       </div>

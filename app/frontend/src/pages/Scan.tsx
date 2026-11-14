@@ -36,6 +36,8 @@ export default function Scan() {
       const r = await postForm(`/api/scans/${id}/frames`, fd);
       setViolations(r.violations);
       setFrames((n) => n + blobs.length);
+      // "none" = the vision model didn't respond and Demo Mode is off: say so, don't imply the room is clean.
+      if (r.source === "none") setError("The vision model didn't respond, so these photos weren't analyzed (they're still saved as evidence). Try again, or add issues manually.");
     } catch (e: any) { setError(e.message); } finally { setBusy(false); }
   }
 

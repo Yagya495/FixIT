@@ -7,6 +7,8 @@ env:
     value: "databricks"
   - name: FIXIT_CATALOG
     value: "fixit"
+  - name: FIXIT_DATA_DIR            # only used if you flip DATA_BACKEND to "local" as a stage fallback
+    value: "/tmp/fixit-data"
   - name: DATABRICKS_WAREHOUSE_ID
     valueFrom: sql-warehouse        # app resource key; bind the warehouse in the App UI
   - name: CHAT_ENDPOINT

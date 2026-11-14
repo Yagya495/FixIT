@@ -32,8 +32,15 @@ DATA_BACKEND = os.getenv("DATA_BACKEND", "local").strip().lower()
 SHOW_BBOXES = _bool("SHOW_BBOXES", False)
 
 # Databricks
-DATABRICKS_HOST = os.getenv("DATABRICKS_HOST", "").rstrip("/")
+def _normalize_host(h: str) -> str:
+    """Databricks Apps may inject DATABRICKS_HOST as a bare hostname; URLs need the scheme."""
+    h = h.strip().rstrip("/")
+    return f"https://{h}" if h and not h.startswith(("http://", "https://")) else h
+
+
+DATABRICKS_HOST = _normalize_host(os.getenv("DATABRICKS_HOST", ""))
 DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN", "")
+DATABRICKS_CONFIG_PROFILE = os.getenv("DATABRICKS_CONFIG_PROFILE", "").strip()
 DATABRICKS_WAREHOUSE_ID = os.getenv("DATABRICKS_WAREHOUSE_ID", "")
 CATALOG = os.getenv("FIXIT_CATALOG", "fixit")
 
@@ -74,10 +81,15 @@ DISCLAIMER = (
     "(608-257-0006) or City of Madison Building Inspection (608-266-4551)."
 )
 
+# Checked against the live City of Madison site on 2026-11-14 (see PROGRESS.md "Official sources"). The old
+# /dpced/bi/report-a-problem/ URL silently redirected to the generic Building Inspection home page.
 OFFICIAL_LINKS = {
     "chapter_27": "https://library.municode.com/wi/madison/codes/code_of_ordinances?nodeId=COORMAWIVOIICH20--31_CH27MIHOPRMACO",
-    "building_inspection": "https://www.cityofmadison.com/dpced/bi/",
-    "report_problem": "https://www.cityofmadison.com/dpced/bi/report-a-problem/",
-    "rent_abatement": "https://www.cityofmadison.com/dpced/bi/rent-abatement/",
+    "building_inspection": "https://www.cityofmadison.com/dpced/building-inspection",
+    "report_problem": "https://www.cityofmadison.com/dpced/building-inspection/file-a-complaint/interior-property",
+    "complaint_process": "https://www.cityofmadison.com/dpced/building-inspection/file-a-complaint/process",
+    "rent_abatement": "https://www.cityofmadison.com/dpced/building-inspection/home-property/rental-housing/rent-abatement",
+    "retaliation": "https://www.cityofmadison.com/dpced/building-inspection/home-property/rental-housing/retaliation",
+    "common_code_violations": "https://www.cityofmadison.com/dpced/building-inspection/home-property/rental-housing/common-code-violations",
     "tenant_resource_center": "https://www.tenantresourcecenter.org/",
 }

@@ -49,7 +49,9 @@ def _databricks():
     if conn is None:
         from databricks import sql as dbsql  # type: ignore
 
-        host = config.DATABRICKS_HOST.replace("https://", "")
+        from . import llm
+
+        host = llm._host().replace("https://", "")  # env host, or the CLI profile's host
         kwargs: dict[str, Any] = {
             "server_hostname": host,
             "http_path": f"/sql/1.0/warehouses/{config.DATABRICKS_WAREHOUSE_ID}",
@@ -87,7 +89,7 @@ def _cursor():
 # ---------------------------------------------------------------- query API
 def q(sql: str, params: dict | None = None) -> list[dict]:
     with _cursor() as cur:
-        cur.execute(_resolve(sql), params or {})
+        cur.execute(_resolve(sql), _bind(params))
         if cur.description is None:
             return []
         cols = [d[0] for d in cur.description]
@@ -110,9 +112,22 @@ def q1(sql: str, params: dict | None = None) -> dict | None:
     return rows[0] if rows else None
 
 
+_ISO_TS = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z)?$")
+
+
+def _bind(params: dict | None) -> dict:
+    """On Databricks, bind ISO timestamp strings as datetimes so Delta TIMESTAMP columns get a TIMESTAMP, not a
+    STRING (avoids relying on implicit string→timestamp store assignment). SQLite keeps the strings as-is."""
+    params = params or {}
+    if config.DATA_BACKEND != "databricks":
+        return params
+    return {k: (datetime.fromisoformat(v.replace("Z", "+00:00")) if isinstance(v, str) and _ISO_TS.match(v) else v)
+            for k, v in params.items()}
+
+
 def execute(sql: str, params: dict | None = None) -> None:
     with _cursor() as cur:
-        cur.execute(_resolve(sql), params or {})
+        cur.execute(_resolve(sql), _bind(params))
 
 
 def insert(table: str, row: dict) -> None:

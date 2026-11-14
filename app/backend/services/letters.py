@@ -41,7 +41,8 @@ def repair_letter(violations: list[dict], address: str, unit: str | None, landlo
         opening = (f"{landlord}:\n\nFINAL NOTICE. I have previously notified you of the following conditions at {where}, "
                    f"which may violate the City of Madison Minimum Housing and Property Maintenance Code (MGO Chapter 27):")
         ask = (f"If these conditions are not corrected by {fix_s}, I intend to file a complaint with City of Madison "
-               f"Building Inspection and may apply for rent abatement under MGO 32.04. Under MGO Chapter 32, retaliation "
+               f"Building Inspection, and may seek rent abatement under MGO 32.04 if the conditions remain uncorrected "
+               f"after the city's inspection deadline. Under MGO Chapter 32, retaliation "
                f"against a tenant for requesting code repairs or contacting Building Inspection is prohibited.")
         close = "Sincerely,"
     else:
@@ -98,7 +99,7 @@ def lease_addendum(violations: list[dict], address: str, unit: str | None, move_
 def city_complaint(case: dict, violations: list[dict], notified_dates: list[str], evidence_count: int) -> dict:
     """Pre-filled City of Madison Building Inspection complaint. NEVER auto-submitted."""
     return {
-        "form": "City of Madison Building Inspection — Report a Problem (interior housing)",
+        "form": "City of Madison Building Inspection — File a Complaint (interior property)",
         "official_url": config.OFFICIAL_LINKS["report_problem"],
         "submit_note": "FixIt does not submit this for you. Review it, then submit through the official city page or call 608-266-4551.",
         "fields": {
@@ -110,13 +111,19 @@ def city_complaint(case: dict, violations: list[dict], notified_dates: list[str]
             "Owner's promised repair date": case.get("commitment_date") or "None given",
             "Evidence": f"Evidence packet attached ({evidence_count} photos with SHA-256 hashes and timestamps)",
         },
+        # Each line paraphrases an official city page (linked below); see PROGRESS.md "Official sources".
         "next_steps": [
-            "Submit the complaint, then answer the inspector's call and schedule an inspection.",
-            "Rent abatement (MGO 32.04) may apply if an inspector finds a code violation that affects use of the unit and it isn't fixed in time. See the city's rent abatement page for the official steps.",
-            "Retaliation for complaining to Building Inspection or asking for code repairs is prohibited (MGO Ch. 32). Adverse actions within six months of a complaint may be presumed retaliatory.",
-            "Building Inspection says complaint cases generally resolve within 30–60 days.",
+            "Submit the complaint (the city says only current tenants can report interior problems), then answer the "
+            "inspector's call and schedule an inspection. Check on it at 608-266-4551 ext. 4.",
+            "Rent abatement (MGO 32.04) may apply only after the inspector issues an Official Notice with a repair "
+            "deadline and that deadline passes with the violation still unfixed. See the city's rent abatement page "
+            "for all eligibility steps.",
+            "The city says actions against a tenant within six months of their complaint may be seen as retaliation "
+            "(MGO Ch. 32). See the city's retaliation page.",
+            "Building Inspection says cases are generally resolved within 30 to 60 days, and stay open until fixed.",
         ],
-        "links": {k: config.OFFICIAL_LINKS[k] for k in ("report_problem", "rent_abatement", "tenant_resource_center")},
+        "links": {k: config.OFFICIAL_LINKS[k] for k in
+                  ("report_problem", "rent_abatement", "retaliation", "complaint_process", "tenant_resource_center")},
         "disclaimer": config.DISCLAIMER,
     }
 

@@ -7,6 +7,7 @@ os.environ["DATA_BACKEND"] = "local"
 os.environ["DEMO_MODE"] = "true"
 os.environ["DATABRICKS_HOST"] = ""
 os.environ["DATABRICKS_TOKEN"] = ""
+os.environ["DATABRICKS_CONFIG_PROFILE"] = ""  # tests must never reach a real workspace
 
 import pytest
 from fastapi.testclient import TestClient
@@ -27,7 +28,7 @@ def client(tmp_path_factory):
     config.DATA_DIR = d
     config.SQLITE_PATH = d / "fixit.db"
     config.LOCAL_EVIDENCE_DIR = d / "evidence"
-    config.DATABRICKS_HOST = config.DATABRICKS_TOKEN = ""
+    config.DATABRICKS_HOST = config.DATABRICKS_TOKEN = config.DATABRICKS_CONFIG_PROFILE = ""
     from app.backend.main import app
     with TestClient(app) as c:
         yield c

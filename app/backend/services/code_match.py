@@ -178,5 +178,6 @@ def sections_for_type(type_id: str) -> list[dict]:
                         "url": s.get("url") or config.OFFICIAL_LINKS["chapter_27"], "score": 1.0,
                         "verified": bool(s.get("verified"))})
     if not out:
-        out = match_code(f'{v["name"]} {v["plain_explanation"]}')[:2]
+        # Automatic match, not a human-approved mapping: never present its section number as verified.
+        out = [{**h, "verified": False} for h in match_code(f'{v["name"]} {v["plain_explanation"]}')[:2]]
     return out

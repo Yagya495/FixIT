@@ -29,16 +29,16 @@ def _auth_headers() -> dict[str, str]:
 def _host() -> str:
     if config.DATABRICKS_HOST:
         return config.DATABRICKS_HOST
-    try:
+    try:  # CLI profile (DATABRICKS_CONFIG_PROFILE) or other SDK unified-auth source
         from databricks.sdk.core import Config
 
-        return Config().host.rstrip("/")
+        return config._normalize_host(Config().host or "")
     except Exception as e:
         raise LLMUnavailable(f"no Databricks host: {e}") from e
 
 
 def available() -> bool:
-    return bool(config.DATABRICKS_HOST or config.DATABRICKS_TOKEN)
+    return bool(config.DATABRICKS_HOST or config.DATABRICKS_TOKEN or config.DATABRICKS_CONFIG_PROFILE)
 
 
 def chat(messages: list[dict], endpoint: str | None = None, max_tokens: int = 1200, temperature: float = 0.2,

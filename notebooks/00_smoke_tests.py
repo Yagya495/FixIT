@@ -29,7 +29,10 @@ EMBED = "databricks-gte-large-en"
 # MAGIC %md ## 2. ai_query chat
 
 # COMMAND ----------
-display(spark.sql(f"SELECT ai_query('{CHAT}', 'Reply with exactly: OK') AS reply"))
+import secrets
+NONCE = secrets.token_hex(3)  # a fixed "OK" could be matched by luck; a random code can't
+reply = spark.sql(f"SELECT ai_query('{CHAT}', 'Reply with exactly this code and nothing else: {NONCE}') AS r").first()["r"]
+print(repr(reply), "-> PASS" if NONCE in reply else "-> FAIL")
 
 # COMMAND ----------
 # MAGIC %md ## 3. ai_extract / ai_classify
@@ -44,19 +47,24 @@ SELECT ai_classify('There are mouse droppings under my kitchen sink', ARRAY('PES
 # MAGIC %md ## 4. Vision: image input via serving endpoint (base64)
 
 # COMMAND ----------
-import base64, io, json, struct, zlib, requests
-def tiny_png():
+import base64, random, struct, zlib
+COLORS = {"red": (220, 30, 30), "green": (30, 170, 60), "blue": (30, 60, 220), "yellow": (240, 220, 30)}
+def tiny_png(rgb):
     w_, h_ = 64, 48
-    raw = b"".join(b"\x00" + bytes([200, 60, 60]) * w_ for _ in range(h_))
+    raw = b"".join(b"\x00" + bytes(rgb) * w_ for _ in range(h_))
     c = lambda t, d: struct.pack(">I", len(d)) + t + d + struct.pack(">I", zlib.crc32(t + d) & 0xFFFFFFFF)
     return b"\x89PNG\r\n\x1a\n" + c(b"IHDR", struct.pack(">IIBBBBB", w_, h_, 8, 2, 0, 0, 0)) + c(b"IDAT", zlib.compress(raw)) + c(b"IEND", b"")
-b64 = base64.b64encode(tiny_png()).decode()
+# Random color each run: a text-only model can't pass except by a 1-in-4 guess. Run twice to be sure.
+color = random.choice(list(COLORS))
+b64 = base64.b64encode(tiny_png(COLORS[color])).decode()
 resp = w.api_client.do("POST", f"/serving-endpoints/{VISION}/invocations", body={
     "messages": [{"role": "user", "content": [
-        {"type": "text", "text": "What color is this image? One word."},
+        {"type": "text", "text": "What single color fills this image? One word from: red, green, blue, yellow."},
         {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}}]}],
-    "max_tokens": 20})
-print(resp["choices"][0]["message"]["content"])
+    "max_tokens": 10, "temperature": 0})
+content = resp["choices"][0]["message"]["content"]
+content = "".join(p.get("text", "") for p in content) if isinstance(content, list) else content
+print(f"expected={color} got={content!r}", "-> PASS" if color in content.lower() else "-> FAIL")
 # If this fails: try another endpoint from the list; otherwise use the sidecar local detector fallback.
 
 # COMMAND ----------
