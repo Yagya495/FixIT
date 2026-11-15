@@ -251,6 +251,22 @@ over FixIt tables, App deployment, service-principal permissions.
 - Tests: 94 → 116 (detection) → **133 passed** (legal prep). Frontend `tsc -b` clean.
 - Not verified: the UI changes in a real browser; live model accuracy on real photos.
 
+## Video walkthrough verified end to end (2026-11-15; local, not deployed)
+- Live test: headless Chrome against the Scan page (Vite dev) and a scratch local backend with DEMO_MODE=false,
+  calling the live Llama 4 Maverick endpoint (profile `fixit`, inference only; no Databricks data touched).
+  Synthetic drawn videos: 12 s MP4, 12 s WebM (duration reported as Infinity), 40 s WebM; desktop 1280px and phone
+  emulation (iPhone 13 viewport, Chrome engine); live-camera still capture with Chrome's fake camera. All frames
+  "live"; the uncovered outlet was found in 3 (or 8) consecutive frames and consolidated into one finding citing exactly
+  those frames; the case evidence packet flags the same frames. The drawn ceiling stain was never detected.
+- Fixed: WebM recordings with unknown duration were sampled 30 times past the end ("30 frames analyzed" for 13 real
+  frames); videos over 30 s only covered the first 30 s (now 30 frames spread over the whole video); seeks could hang;
+  all frames went in one long request (now batches of 5 with progress, 2 parallel model calls per batch, frames stored in
+  order); a 429 from the endpoint lost the frame (now bounded retry); partly failed analysis was labeled "live" (now
+  "partial" with counts); no in-app way to record (new "Record a walkthrough video" input, `capture="environment"`).
+- Tests: backend 133 -> 148 (`test_video_walkthrough.py`); new frontend unit tests (`npm test`, Node test runner, 10).
+- Not verified: a real iPhone/Android device (Safari/WebKit not tested; HEVC .mov may not decode in desktop Chrome);
+  real apartment footage accuracy. Local live mode needs the Databricks CLI on PATH (winget install isn't on PATH here).
+
 ## Next (priorities set by the user, 2026-11-14)
 1. **Complete the Chapter 27 citation review**: plumbing, heat and surfaces are verified and deployed. Next: the
    reviewer fills `docs/legal/HUMAN_REVIEW_CHECKLIST.md`; exits wait on Building Inspection (draft inquiry ready, not sent).
