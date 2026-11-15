@@ -1,6 +1,11 @@
 """Exercise the deployed FixIt App's API end to end (as you, via your CLI profile's OAuth token; never printed).
 
   python scripts/app_smoke.py --profile fixit --url https://fixit-madison-....databricksapps.com
+      [--address "1770 Fair Oaks Ave" --unit QA-SMOKE]
+
+It creates persistent records (2 scans + evidence, a repair request with a building report, a simulated call, a deadline
+and 2 complaints). By default they land on the demo building (1234 Demo St, unit 9) and change the demo story; pass a
+disposable synthetic building with --address/--unit to keep the demo story intact.
 """
 from __future__ import annotations
 
@@ -23,6 +28,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--profile", required=True)
     ap.add_argument("--url", required=True)
+    ap.add_argument("--address", default="1234 Demo St")
+    ap.add_argument("--unit", default="9")
     a = ap.parse_args()
     if a.profile == "sleepsafe":
         return 2
@@ -50,12 +57,12 @@ def main() -> int:
     state = {}
 
     def listing():
-        x = j(c.post("/api/listing/xray", data={"address": "1234 Demo St"},
+        x = j(c.post("/api/listing/xray", data={"address": a.address},
                      files=[("files", (f"l{i}.png", png(30 * i, 90, 140), "image/png")) for i in range(3)]))
         return x["verdict"]["label"], x["history"]["heat_reports_recent"], x["history"]["owner"]["grade"], x["source"]
 
     def scan():
-        s = j(c.post("/api/scans", data={"mode": "walkthrough", "address": "1234 Demo St", "unit": "9"}))
+        s = j(c.post("/api/scans", data={"mode": "walkthrough", "address": a.address, "unit": a.unit}))
         r = j(c.post(f"/api/scans/{s['scan_id']}/frames", files=[("files", ("w.png", png(200, 60, 60), "image/png"))]))
         if not r["violations"]:
             r = j(c.post(f"/api/scans/{s['scan_id']}/manual", json={"type_id": "NO_HEAT", "note": "smoke test"}))
