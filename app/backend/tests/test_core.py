@@ -349,3 +349,16 @@ def test_letter_never_presents_a_citation_as_a_finding():
     assert "Possibly relevant code:" in line and "MGO § 27.04(2)(h)" in line
     assert "Carbon monoxide alarms (legal source not yet verified)" in line
     assert "Heating facilities (MGO Ch. 27 — section pending verification)" in line
+
+
+def test_approve_uses_only_checked_excerpts_from_approved_categories():
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+    from code_parse import approved_rows
+    lock = approved_rows(["27.05(2)(h)"], {"BROKEN_LOCK"})[0]["text"]
+    assert "hardware" in lock and "weathertight" not in lock       # the window excerpt is not pulled in
+    heat = approved_rows(["27.04(2)(h)"], {"NO_HEAT"})[0]["text"]
+    assert "sixty-seven" in heat and "lesser temperature" in heat  # rule + occupant exception
+    with pytest.raises(KeyError):
+        approved_rows(["27.05"], {"NO_HEAT"})                      # whole parsed sections are never stored

@@ -64,24 +64,20 @@ def parse_sql(c: str) -> list[str]:
     ]
 
 
-def approved_rows(ids: list[str]) -> list[dict]:
+def approved_rows(ids: list[str], types: set[str] | None = None) -> list[dict]:
     """Rows for approved ids, built only from the parsed official text and the excerpt-checked proposals.
 
-    A top-level id ("27.04") uses the whole parsed section. A subsection id ("27.04(2)(h)") uses the excerpts the
-    review sheet proposed for it, each of which scripts/ch27_review_sheet.py checked word for word against the parse.
-    Raises KeyError for an id that is in neither (no guessing).
+    Each id uses only the excerpts the review sheet proposed for it *in the approved categories* (`types`), each of
+    which scripts/ch27_review_sheet.py checked word for word against the parse and the PDF text layer.
+    Whole parsed sections are never stored: ai_parse_document drops words at some page breaks (seen in 27.05(2)(h)7.
+    and 27.05(2)(x)), so only excerpts are trusted. Raises KeyError for an id with no proposed excerpt (no guessing).
     """
     legal = ROOT / "docs" / "legal"
     parsed = {s["section_id"]: s for s in json.loads((legal / "ch27_parsed_sections.json").read_text(encoding="utf-8"))}
     items = [i for p in json.loads((legal / "ch27_proposed_mappings.json").read_text(encoding="utf-8"))["proposals"]
-             for i in p["items"]]
+             if types is None or p["type_id"] in types for i in p["items"]]
     out = []
     for sid in ids:
-        if sid in parsed:
-            s = parsed[sid]
-            out.append({"section_id": sid, "title": " ".join(s["title"].split()), "text": s["text"],
-                        "source_doc": s["source_doc"], "page": s["page"], "url": OFFICIAL_URL})
-            continue
         mine = [i for i in items if i["section_id"] == sid]
         if not mine:
             raise KeyError(sid)
@@ -188,7 +184,7 @@ def main() -> int:
         return 1
     ids = sorted({s for v in approved.values() for s in v})
     try:
-        secs = approved_rows(ids)
+        secs = approved_rows(ids, set(approved))
     except KeyError as e:
         print("Approved id not in docs/legal/ch27_proposed_mappings.json or the parse (typo?):", e)
         return 1
