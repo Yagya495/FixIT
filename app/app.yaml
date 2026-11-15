@@ -12,9 +12,9 @@ env:
   - name: DATABRICKS_WAREHOUSE_ID
     valueFrom: sql-warehouse        # app resource key; bind the warehouse in the App UI
   - name: CHAT_ENDPOINT
-    value: "databricks-claude-sonnet-4-5"   # VERIFY via notebooks/00_smoke_tests.py
+    value: "databricks-llama-4-maverick"   # verified 2026-11-14 (chat nonce + 3/3 random-color vision); alt: databricks-gemma-3-12b
   - name: VISION_ENDPOINT
-    value: "databricks-claude-sonnet-4-5"
+    value: "databricks-llama-4-maverick"
   - name: EMBEDDING_ENDPOINT
     value: "databricks-gte-large-en"
   - name: GENIE_SPACE_ID

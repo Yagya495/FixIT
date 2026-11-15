@@ -65,7 +65,14 @@ SYSTEM_LISTING = SYSTEM_WALKTHROUGH.replace(
 
 
 def _parse(text: str) -> FrameResult:
-    return FrameResult.model_validate(llm.extract_json(text))
+    data = llm.extract_json(text)
+    if isinstance(data, dict) and isinstance(data.get("detections"), list):
+        # Open models sometimes invent a type id; drop that one detection instead of discarding the whole frame.
+        kept = [d for d in data["detections"] if isinstance(d, dict) and d.get("violation_type") in BY_ID]
+        if len(kept) != len(data["detections"]):
+            log.info("vision: dropped %d detection(s) with unknown types", len(data["detections"]) - len(kept))
+        data = {**data, "detections": kept}
+    return FrameResult.model_validate(data)
 
 
 def analyze_frame_live(image: bytes, mode: str, media_type: str = "image/jpeg") -> FrameResult:

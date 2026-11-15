@@ -90,6 +90,13 @@ def test_scripted_call_is_coherent_and_confirms_thursday():
     assert "Thursday, November 19" in replies[-1]
 
 
+def test_vision_parse_drops_unknown_types_keeps_rest():
+    reply = ('```json\n{"detections":[{"violation_type":"SMOKE_DETECTOR_MISSING","confidence":0.8},'
+             '{"violation_type":"CRACKED_CEILING_FAN","confidence":0.9}],"scene":"bedroom"}\n```')
+    res = vision._parse(reply)
+    assert [d.violation_type for d in res.detections] == ["SMOKE_DETECTOR_MISSING"] and res.scene == "bedroom"
+
+
 def test_databricks_host_normalized():
     from app.backend import config
     assert config._normalize_host("dbc-123.cloud.databricks.com") == "https://dbc-123.cloud.databricks.com"

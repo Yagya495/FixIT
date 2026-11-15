@@ -28,8 +28,17 @@ Pick candidates from step 1's list (chat, image-capable, embedding), then:
 A name is not proof: chat must echo a random nonce, vision must name a **random** color, embeddings must return a
 vector. Run the vision test twice (a text-only model can guess 1 in 4). Record the winners in `.env` and `app/app.yaml`.
 
-## 3. 💸 Catalog, schemas, volumes, tables
-Add this repo as a **Git folder** in the workspace, then run in order:
+## 3. 💸 Catalog, schemas, volumes, tables, synthetic data
+**Recommended (from the laptop, no Git folder needed):** `scripts/dbx_setup.py` runs the same SQL as notebooks 01 + 30
+(catalog substituted) and loads data from the same generator as the local demo. Dry run by default:
+```powershell
+.venv\Scripts\python scripts\dbx_setup.py --profile fixit --warehouse 6361516ab33ba2d2 --catalog fixit           # plan
+.venv\Scripts\python scripts\dbx_setup.py --profile fixit --warehouse 6361516ab33ba2d2 --catalog fixit --apply   # do it
+# If CREATE CATALOG is denied:  --catalog workspace   (and FIXIT_CATALOG=workspace in .env / app.yaml)
+```
+It ends with the story check (6 / D / 11 / 0 non-synthetic rows).
+
+**Alternative (in the workspace):** add this repo as a **Git folder**, then run in order:
 1. `notebooks/00_smoke_tests.py` (same checks in-workspace + `ai_query`, `ai_classify`, `ai_parse_document`)
 2. `notebooks/01_setup_catalog.sql`: catalog `fixit`, 6 schemas, 6 volumes. If `CREATE CATALOG` is denied
    (possible on Free Edition), use the default catalog and set `FIXIT_CATALOG` everywhere.

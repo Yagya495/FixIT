@@ -21,8 +21,8 @@ for e in sorted(eps):
 
 # COMMAND ----------
 # Set candidates (edit after looking at the list above)
-CHAT = "databricks-claude-sonnet-4-5"
-VISION = "databricks-claude-sonnet-4-5"
+CHAT = "databricks-llama-4-maverick"
+VISION = "databricks-llama-4-maverick"
 EMBED = "databricks-gte-large-en"
 
 # COMMAND ----------

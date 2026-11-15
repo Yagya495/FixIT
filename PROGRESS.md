@@ -52,9 +52,28 @@ env vars exist on this laptop.
 | Silent failures / blocking `alert()` on call, deadline, joint, scan actions | Inline error messages |
 | Windows: evidence paths with backslashes (1 test failed) | POSIX paths |
 
-## Databricks features confirmed working
-**None yet.** Nothing has been run against a workspace. Do not claim any Databricks feature works in the demo until
-`scripts/dbx_check.py` / the notebooks have confirmed it.
+## Databricks features confirmed working (read-only checks, 2026-11-14, profile `fixit`)
+Workspace `https://dbc-bae64bde-0c7f.cloud.databricks.com`, **Free Edition** (per the user). Databricks CLI v1.26.0.
+No resources have been created yet.
+
+| Feature | Result | How verified |
+|---|---|---|
+| Auth (OAuth via CLI profile `fixit`) | ✅ | SDK + SQL connector authenticated; only profile on this machine |
+| SQL warehouse `6361516ab33ba2d2` "Serverless Starter Warehouse" (2X-Small) | ✅ | Started on demand (~3 s); `:named` params; Python datetime binds as `timestamp` |
+| Chat: `databricks-llama-4-maverick`, `gpt-oss-120b`, `llama-3-3-70b`, `qwen3-next-80b`, `gemma-3-12b` | ✅ | Each echoed a random nonce. `qwen35-122b` returned an empty reply ❌ |
+| Vision: `databricks-llama-4-maverick`, `databricks-gemma-3-12b` | ✅ 3/3 random-color trials each | + FixIt's real strict-JSON prompt: valid output, 0 false positives on a blank image. `llama-3-3-70b`, `qwen35-122b`: "Image input is not supported" ❌ |
+| Embeddings: `gte-large-en`, `bge-large-en`, `qwen3-embedding-0-6b` | ✅ 1024 dims | |
+| Commitment extraction (app code, live) | ✅ `source=live` | maverick returned 2026-11-19T17:00 (Thursday), matching the state machine |
+| AI Functions on the warehouse: `ai_query`, `ai_classify`, `ai_extract` | ✅ | Correct answers (PESTS; {"repair":"fix the heat","date":"Thursday"}) |
+| `ai_parse_document` | ✅ exists | Not yet run on a PDF (needs the Ch. 27 PDF) |
+| Genie API | ✅ reachable | 1 existing space ("Bakehouse Sales Starter Space"), not ours, untouched |
+| Vector Search | ⚠️ no endpoint exists | Creating one is optional; code matching falls back to BM25 |
+| Databricks Apps | ✅ API reachable, 0 apps | |
+| Catalogs | `system`, `samples`, `workspace` | `CREATE CATALOG` is granted to the account group `_workspace_admins_…`; the user is in workspace `admins` but `is_account_group_member` returned **False** → may be denied. Fallback: `--catalog workspace` |
+| Claude endpoints | ❌ none in this workspace | Defaults switched to `databricks-llama-4-maverick` (chat + vision) |
+
+**Not yet verified:** detection quality on real problem photos (needs staged photos), table writes, Volumes, Genie
+over FixIt tables, App deployment, service-principal permissions.
 
 ## Next
 1. 🧑 Install CLI + `databricks auth login --profile fixit` (docs/DATABRICKS_SETUP.md §0). Then: discovery → model tests

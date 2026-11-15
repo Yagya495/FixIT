@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS ref.violation_types (
 
 CREATE TABLE IF NOT EXISTS silver.code_sections (
   section_id STRING NOT NULL, title STRING, text STRING, source_doc STRING, page INT, url STRING,
-  verified INT COMMENT '1 = parsed from the official PDF; 0 = unverified seed'
+  verified INT COMMENT '1 = text parsed from the official PDF and section id human-reviewed; 0 = unverified FixIt summary'
 ) COMMENT 'MGO Chapter 27 sections parsed with ai_parse_document';
 
 -- COMMAND ----------

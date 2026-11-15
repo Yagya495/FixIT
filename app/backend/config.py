@@ -45,8 +45,8 @@ DATABRICKS_WAREHOUSE_ID = os.getenv("DATABRICKS_WAREHOUSE_ID", "")
 CATALOG = os.getenv("FIXIT_CATALOG", "fixit")
 
 # Model endpoints — VERIFY with notebooks/00_smoke_tests.py and record the winners here / in .env
-CHAT_ENDPOINT = os.getenv("CHAT_ENDPOINT", "databricks-claude-sonnet-4-5")
-VISION_ENDPOINT = os.getenv("VISION_ENDPOINT", "databricks-claude-sonnet-4-5")
+CHAT_ENDPOINT = os.getenv("CHAT_ENDPOINT", "databricks-llama-4-maverick")
+VISION_ENDPOINT = os.getenv("VISION_ENDPOINT", "databricks-llama-4-maverick")
 EMBEDDING_ENDPOINT = os.getenv("EMBEDDING_ENDPOINT", "databricks-gte-large-en")
 VECTOR_SEARCH_ENDPOINT = os.getenv("VECTOR_SEARCH_ENDPOINT", "fixit-vs")
 VECTOR_INDEX = os.getenv("VECTOR_INDEX", f"{CATALOG}.silver.code_chunks_index")
