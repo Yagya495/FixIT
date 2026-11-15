@@ -1,8 +1,13 @@
 # PROGRESS.md
 
-_Last updated: 2026-11-14 (evening)_
+_Last updated: 2026-11-15 (afternoon)_
 
-## Status: P0 verified in a real browser (local + Demo Mode). Databricks Milestone 1 blocked on login (no CLI/profile on this machine)
+> **Current status (2026-11-15):** deployed App = `ch27-review` @ `2c74f5d` (video walkthrough), but its compute is
+> **STOPPED** ("workspace or account status"; see "App stopped + public demo prep" below). Speed change `003565b` and the
+> public-demo / security commits are local-only on `ch27-review`, not deployed. Tests: **168 backend + 10 frontend
+> passing**. The sections below are in chronological order; older headings describe their own date.
+
+## Status (2026-11-14): P0 verified in a real browser (local + Demo Mode). Databricks Milestone 1 blocked on login (no CLI/profile on this machine)
 
 The whole P0 demo flow runs end to end on the local backend and was driven through the real React UI in Chrome.
 Bugs found in that pass are fixed and covered by tests. The Databricks side is written, statically reviewed and
@@ -304,12 +309,31 @@ over FixIt tables, App deployment, service-principal permissions.
   is sequential warehouse/Volume writes before the model calls. Proposed A+B+C (parallel storage, batched inserts, one
   duplicate check per batch): needs approval. Stage advice: 8–10 s clip, warm-up 5–10 min before, backup clip + photos.
 
-## Next (user priority, 2026-11-15: reliable video detection + polished demo)
-1. **Real-phone test** on Android and iPhone with the checklist; fix only what it finds.
-2. **Speed for the demo:** if approved, A+B+C locally → live-endpoint measurement → one reviewed redeploy.
-3. **Clean the deployed test records** once the exact manifest is authorized.
-4. **Three-minute demo:** stage clip recorded and tested on the demo device; dry run ×3 with Demo Mode on; warm-up
-   routine; redeploy on judging day only if the App stopped (Apps auto-stop ~24 h).
+## App stopped + public demo prep (2026-11-15, afternoon; new Claude account took over; nothing deployed)
+- **Handoff check:** speed commit `003565b` (A+B+C) is committed and pushed but **not deployed** (deployed = `2c74f5d`).
+  The test-record cleanup was already executed (`4ffa67b`). The ~40% speedup isn't recorded in the repo (only the 35–40%
+  estimate in `docs/DEMO_PERFORMANCE.md`): re-measure before deploying.
+- **App STOPPED** (read-only CLI): *"App compute was stopped due to workspace or account status"*, 13:52 UTC, ~6.5 h after
+  the last deploy, so not the 24 h auto-stop. The workspace API, Model Serving (READY, answered a 3-token call) and the
+  warehouse (normal auto-stop) are fine. Likely cause, not confirmed: the Free Edition daily fair-usage quota (docs:
+  compute shut down for the rest of the day). Which usage hit it is unknown. Restore steps: `docs/PUBLIC_HOSTING.md` §1.
+- **Public access:** Databricks Apps can't be anonymous. Recommended: the same app in `PUBLIC_DEMO=true` mode on Render's
+  free plan (synthetic data, scripted/saved AI results labeled, no credentials). Live Databricks from outside isn't
+  recommended (only the admin PAT is verified, and public traffic would burn the quota that stopped the App).
+  `docs/PUBLIC_HOSTING.md`, `deploy/public/Dockerfile`, `render.yaml`. Not deployed; needs approval and a Render account.
+- **Security:** path traversal in the SPA route (arbitrary file read, e.g. `/%2e%2e/%2e%2e/backend/config.py`; on
+  Databricks Apps `/proc/self/environ` holds the app service principal's credentials) fixed and tested. **Still present
+  in the deployed App** (only signed-in workspace users can reach it) until the next approved redeploy. Added upload limits
+  (all modes) and a per-IP POST limit (public demo). Git history secret scan: clean.
+- **Docs:** `docs/DEMO_SCRIPT.md` rewritten (3 verified citations, video beat, architecture, synthetic disclosure,
+  fallbacks, quota warning); README test counts and public-demo section.
+- Tests: 152 → **168 backend** (`test_public_hosting.py`, 16), 10 frontend, `tsc -b` clean.
+
+## Next (user priority, 2026-11-15 afternoon: judges' access + running App)
+1. **Restore the Databricks App** (owner approval): `apps get` → `apps start` once the quota resets → manual checklist.
+2. **Public demo** (owner approval + Render account): push `ch27-review` → Render Blueprint → verify (`docs/PUBLIC_HOSTING.md` §8).
+3. **One reviewed redeploy** of `ch27-review` HEAD: path-traversal fix + speed change (re-measure first). Restarts the 24 h clock.
+4. **Real-phone test** (`docs/PHONE_TEST_CHECKLIST.md`) and **demo dry runs** ×3 with the new script.
 - Paused: legal approvals/research, YOLO, real-data ingestion, Twilio, P1.
 
 ## Data decision (user, 2026-11-14): synthetic dataset for the demo

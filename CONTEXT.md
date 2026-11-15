@@ -279,10 +279,15 @@ scripts/  dbx_setup · app_smoke · genie_verify · code_parse · ch27_review_sh
 - Vector Search skipped (not created). No P1 work started (no Twilio).
 - Quick start: `make setup && make build && make api` → http://localhost:8000 (Windows commands in README).
 
+- **2026-11-15 afternoon:** App compute **STOPPED** by Databricks ("workspace or account status"; likely the Free
+  Edition daily quota, not confirmed). New local-only commits: `PUBLIC_DEMO` mode + Render/Docker files
+  (`docs/PUBLIC_HOSTING.md`), path-traversal fix (still live in the deployed App until the next approved redeploy), demo
+  script rewrite. Tests 168 backend + 10 frontend.
+
 ## 11. Inputs still needed from the human
-- **Now:** authorize (or not) the targeted cleanup of the deployment test records (`docs/ops/TEST_RECORD_CLEANUP_PLAN.md`,
-  manifest `docs/ops/test_records_2026-11-15.json`); run the real-phone checklist; approve (or not) the speed changes
-  A+B+C in `docs/DEMO_PERFORMANCE.md` (local first, then one reviewed redeploy).
+- **Now (2026-11-15 afternoon):** approve restarting the App (`apps start`, once the quota resets); approve the public
+  demo (Render account, push, deploy; `docs/PUBLIC_HOSTING.md`); approve one reviewed redeploy (path-traversal fix +
+  speed change `003565b`, re-measured first); run the real-phone checklist. (Test-record cleanup: done, `4ffa67b`.)
 - **Paused until after the demo (no action now):** `docs/legal/HUMAN_REVIEW_CHECKLIST.md`, the City inquiry draft, the
   smoke/CO deadline and state-law display (both stay off).
 - Decide whether to merge `ch27-review` into `main`, and whether to update the local fallback.
