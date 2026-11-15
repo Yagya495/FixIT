@@ -24,7 +24,7 @@
 | Exposed wiring / missing outlet or switch cover (`EXPOSED_WIRING`) | §27.04(2)(g) | general safety and maintenance obligation (+ reference to the Wisconsin Electric Code) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
 | Water damage / suspected mold (`WATER_DAMAGE_MOLD`) | §27.05(2)(g)1., §27.05(2)(g)2. | general maintenance obligation (potentially relevant) | **Yes** | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) (mold aspect pending a separate legal source) |
 | Droppings / insects / pest damage (`PEST_EVIDENCE`) | §27.07(2)(d), §27.03 | direct (single-family dwellings, with exceptions), direct (dwellings other than single-family), direct (definition) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
-| Broken/missing entry or window lock (`BROKEN_LOCK`) | §27.05(2)(h), §27.05(2)(h)3., §27.05(2)(h)4., §27.05(2)(h)6. | direct, condition (applies to rented units; Paragraph 9. = bed and breakfasts), exception (approved alternatives) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
+| Broken/missing entry or window lock (`BROKEN_LOCK`) | §27.05(2)(h), §27.05(2)(h)3., §27.05(2)(h)4., §27.05(2)(h)6. | direct, condition (applies to rented units; Paragraph 9. = bed and breakfasts), supporting reference (alternative devices only WITH Building Inspection approval) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
 | Broken/cracked window or screen (`BROKEN_WINDOW`) | §27.05(2)(h), §27.04(2)(f), §27.07(2)(c) | general maintenance obligation, direct (seasonal: screens by June 1 until storm windows go in), direct (seasonal: storm windows Oct 15 - Nov 15), direct (owner responsibility for screens and storm windows) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
 | Active leak / damaged fixtures (`LEAK_PLUMBING`) | §27.05(2)(j) | direct | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
 | Holes, peeling paint, damaged flooring (`DAMAGED_SURFACES`) | §27.05(2)(g)1. | general maintenance obligation, direct | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
@@ -56,7 +56,7 @@
 - *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '43. 34.907 a. Smoke alarms not installed where required in: i. Inside every bedroom and sleeping area ii. Within 6 feet of each door leading to a bedroom or sleeping area … iii. Each floor of the building'. MGO 34.907's own text is still unread.
 - *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Hardwired or tamperproof; every bedroom or sleeping area, within six feet of bedroom entry doors, each floor incl. basements.
 
-**Decision so far:** User: keep pending additional legal-source verification (smoke alarms, CO detectors, mold).
+**Decision so far:** User: keep pending additional legal-source verification. Keep MGO 34.907, the Wisconsin smoke-alarm statutes (101.145, 101.645), the Wisconsin CO statutes (101.149, 101.647) and the SPS references separate; document overlaps and uncertainty; do not choose a governing rule without sufficient evidence. A 5-day written-notice repair deadline may be shown only when the applicable source and its conditions are established (design pending user review).
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
@@ -76,7 +76,7 @@
 - *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '41. 29.19 a. Carbon Monoxide Detectors not Installed Where Required' (basement; each floor level; outside each separate sleeping area; sleeping rooms with a fuel-burning appliance). So Madison has a CO ordinance, MGO 29.19, outside Chapter 27. Its text is still unread.
 - *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). 1-2 unit dwellings: every floor; 3+ units: within 15 feet of bedroom doors in units with fuel-burning appliances.
 
-**Decision so far:** User: keep pending additional legal-source verification (smoke alarms, CO detectors, mold).
+**Decision so far:** User: keep pending additional legal-source verification. Keep MGO 34.907, the Wisconsin smoke-alarm statutes (101.145, 101.645), the Wisconsin CO statutes (101.149, 101.647) and the SPS references separate; document overlaps and uncertainty; do not choose a governing rule without sufficient evidence. A 5-day written-notice repair deadline may be shown only when the applicable source and its conditions are established (design pending user review).
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
@@ -105,7 +105,7 @@
 - *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Lists 'Missing or damaged cover plates' under Electrical, without citing a section. Recorded as City guidance; it does NOT establish that Chapter 27 expressly requires cover plates.
 - *interpretation*: FixIt. Mapping a missing cover plate to 27.04(2)(g) ('properly installed … good and safe working condition') remains an interpretation; the specific electrical-code requirement is still unidentified.
 
-**Decision so far:** PROVISIONAL: user accepted 27.04(2)(g) as a general safety and maintenance mapping (2026-11-14). (g)3. not mapped automatically. Specific electrical-code requirements (e.g. cover plates) must be identified separately before asserting they are expressly required. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
+**Decision so far:** PROVISIONAL: user accepted 27.04(2)(g) as a general safety and maintenance mapping (2026-11-14). (g)3. not mapped automatically. Specific electrical-code requirements (e.g. cover plates) must be identified separately before asserting they are expressly required. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user. Cover plates: City guidance only (Common Code Violations page); no specific legal citation is forced.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
@@ -140,7 +140,7 @@
 - *interpretation*: FixIt. This is the City's classification for RENT ABATEMENT (Chapter 32, available only after the 32.04 process, e.g. an inspection order). Chapter 27's own text still does not mention mold, so it is not a mold-specific Chapter 27 rule. Mold stays pending.
 - *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Lists 'water damage' on interior surfaces; links a separate 'Mold' page (that URL returned 404 when fetched).
 
-**Decision so far:** PROVISIONAL: user accepted 27.05(2)(g)1. and (g)2. as potentially relevant general maintenance provisions (2026-11-14). A water stain alone does not prove a leak, a code violation, or mold. Wording distinguishes visible water damage from suspected mold; mold-specific requirements stay unverified (pending additional legal-source verification). Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
+**Decision so far:** PROVISIONAL: user accepted 27.05(2)(g)1. and (g)2. as potentially relevant general maintenance provisions (2026-11-14). A water stain alone does not prove a leak, a code violation, or mold. Wording distinguishes visible water damage from suspected mold; mold-specific requirements stay unverified (pending additional legal-source verification). Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user. Mold: keep City guidance, the general maintenance obligation (27.05(2)(g)1./2.), the rent-abatement classification (MGO 32.04(4)(d)) and any specific legal requirement (none verified) distinct; no citation is forced.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
@@ -232,7 +232,7 @@
 
 > All basement, first, and second story windows and all other windows accessible by balconies, fire escapes, trees or other existing means shall be provided with sash fasteners.
 
-**§27.05(2)(h)6.**: exception (approved alternatives)
+**§27.05(2)(h)6.**: supporting reference (alternative devices only WITH Building Inspection approval)
 
 - Section title: *27.05 - SAFE AND SANITARY MAINTENANCE OF PROPERTY.*
 - PDF page: 15
@@ -248,7 +248,7 @@
 
 - *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Keyed deadbolt with at least a one-inch throw and 2.5-inch strike-plate screws; vent locks 1-5 inches; consistent with 27.05(2)(h).
 
-**Decision so far:** PROVISIONAL: user accepted 27.05(2)(h), (h)3. and (h)4. (2026-11-14), subject to verifying the exact requirements and applicability. Include the rented-unit condition, approved alternative locking devices (quoted from (h)6., a supporting citation for the exception) and the window floor/access distinction. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
+**Decision so far:** PROVISIONAL: user accepted 27.05(2)(h), (h)3. and (h)4. (2026-11-14), subject to verifying the exact requirements and applicability. Include the rented-unit condition, approved alternative locking devices ((h)6. kept as a supporting reference, subject to final verification; an alternative device is NOT automatically permitted: (h)6. requires the approval of the Madison Building Inspection Division) and the window floor/access distinction. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
@@ -395,7 +395,7 @@
 - *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '4. 27.04(2)(d) [27.05(2)(i)] [27.05(2)(h)] a. Required exit … iii. Blocked by accumulation of stored items … iv. … movable furniture obstructing exit path'; row '28. 27.05(2)(i)' covers stairs and handrails/guardrails. Neither mentions 27.06(4): the cross-reference stays unresolved.
 - *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). 'Missing handrail on stairs with more than three steps'; guardrails for areas higher than 24 inches (no source cited).
 
-**Decision so far:** ON HOLD (user, 2026-11-14): final approval waits for review of the 27.06(4) cross-reference discrepancy and the relevant Wisconsin SPS requirements (SPS 321.04, SPS 362). Category renamed 'Blocked exit / unsafe stairs / missing handrail', with the three conditions kept distinct; a photo of stairs must not trigger a blocked-exit or missing-handrail finding by itself.
+**Decision so far:** ON HOLD (user, 2026-11-14): final approval waits for review of the 27.06(4) cross-reference discrepancy and the relevant Wisconsin SPS requirements (SPS 321.04, SPS 362). Category renamed 'Blocked exit / unsafe stairs / missing handrail', with the three conditions kept distinct; a photo of stairs must not trigger a blocked-exit or missing-handrail finding by itself. Investigated 2026-11-14 (live text and the oldest Municode version, Feb 2018): unresolved. City of Madison Building Inspection clarification is needed; the intended meaning is not guessed.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 

@@ -111,21 +111,50 @@ Finish every P0 before starting any P1.
   provisional becomes verified without her explicit approval. Approval means the citation and quoted text were checked
   against the official source; it does **not** mean she is a lawyer or City inspector, or that an AI-detected condition
   is a confirmed violation (recorded as `review_meaning` in `code_sections_verified.json`).
+- **Live official check (2026-11-14):** all 26 provisional excerpts match live Municode Chapter 27 (version Sep 1, 2026;
+  no amendments newer than the PDF). Plumbing, heat and surfaces were re-checked structurally (right subsection label,
+  exceptions present) and are **ready for the reviewer's personal approval**. MGO 32.04(4)(d) (rent-abatement
+  schedule) independently confirms several subsection numbers. Record: `docs/legal/ch27_live_check.md`.
 - **Review status (2026-11-14):** all decisions **provisional, nothing verified**. Provisionally accepted: plumbing
   §27.05(2)(j); heat §27.04(2)(h) (67°F in habitable rooms, kitchens, bathrooms + occupant exception; no "heating
-  season"); surfaces §27.05(2)(g)1.; locks §27.05(2)(h), (h)3., (h)4. (+ (h)6. alternatives, to be confirmed); windows
+  season"); surfaces §27.05(2)(g)1.; locks §27.05(2)(h), (h)3., (h)4., with (h)6. as a supporting reference only
+  (alternative devices are allowed only with Building Inspection approval, never automatically); windows
   §27.05(2)(h) + §27.04(2)(f) / §27.07(2)(c) for screens (by June 1) and storm windows (Oct 15–Nov 15); pests §27.07(2)(d)
   + §27.03 "infestation" (sustained presence; owner exterminates except in single-family dwellings); electrical §27.04(2)(g)
-  only; water damage §27.05(2)(g)1./(g)2. as potentially relevant. **On hold:** exits (§27.04(2)(d) cites §27.06(4),
-  which is about rooms below grade: unresolved cross-reference; SPS stair/handrail specs unreviewed). **Pending other
-  sources:** smoke alarms, CO, mold. Considered and not mapped: §27.05(2)(m) for heat, §27.04(2)(g)3. for electrical.
+  only; water damage §27.05(2)(g)1./(g)2. as potentially relevant. **On hold:** exits (see the §27.06(4) item below;
+  SPS stair/handrail specs unreviewed). **Pending other sources:** smoke alarms, CO, mold. Considered and not mapped:
+  §27.05(2)(m) for heat, §27.04(2)(g)3. for electrical.
+- **§27.06(4) cross-reference (UNRESOLVED, do not guess):** §27.04(2)(d) says "except as provided in Sec. 27.06(4), MGO",
+  but §27.06(4) is about habitable rooms below grade. Identical in the live text and the oldest Municode version (Feb
+  2018); the rent-abatement exit row doesn't mention it. **City Building Inspection clarification is needed** (or the
+  amending ordinances, e.g. Ord. 9326 (1987), Ord. 12,349 (1999)).
 - **Chapter 27 does not mention** carbon monoxide, mold, cover plates or cracked glass, and has no general "pest-free" rule.
   Smoke alarms: §27.05(2)(w) only incorporates MGO 34.907 + SPS codes.
-- **Outside Ch. 27** (research notes, unverified: `docs/legal/OTHER_SOURCES_REVIEW.md`): smoke detectors Wis. Stat.
-  §101.145 (residential buildings) / §101.645 (1–2 family); CO §101.149 (residential buildings) / §101.647 (1–2 unit
-  dwellings, §101.61(1)); for both, the owner must fix within **5 days of the tenant's written notice** (a real legal
-  deadline, unlike FixIt's defaults). MGO 34.907 (per the Fire Dept. page) has the same 5-day rule; its text is not yet
-  read. Mold: no mold-specific requirement found; general repair duty in Wis. Stat. §704.07(2)(a).
+- **Keep these distinct (user decision):** official City guidance (e.g. the Common Code Violations page lists missing
+  cover plates and "at least 67°F at all times") vs general maintenance obligations (e.g. §27.05(2)(g)1.) vs specific
+  legal requirements. The rent-abatement schedule MGO 32.04(4)(d) lists mold under §27.05(2)(g)1. for abatement: that's
+  the City's abatement classification, not a Chapter 27 mold rule. No citation is forced.
+- **Smoke alarms, read on official sources** (`docs/legal/OTHER_SOURCES_REVIEW.md` §5):
+  - **MGO 34.907** ("Fire Alarm and Detection Systems") applies to buildings built before 2009 (after 2009: IFC 907);
+    owner-occupied single-family homes excluded from (1)(b). Alarms in each bedroom, every sleeping area, within 6 ft of
+    each bedroom door and on each floor; hardwired+battery or sealed 10-year battery; the tenant maintains and tests
+    in-unit alarms; the owner repairs within **5 days of written notice** ((1)(c)4.). Its internal references
+    ("sub. (2)(a)/(2)(b)/(3)(h)") don't match the current numbering (unresolved).
+  - **Wis. Stat. §101.145** (residential buildings): basement, head of each stairway on every floor, each sleeping area or
+    within 6 ft. **§101.645** (dwellings; SPS 328 for 1-2 family built before 6/1/1980): basement and each floor. Both:
+    the occupant maintains in-unit; the owner fixes within 5 days of written notice.
+- **CO alarms:** not in Chapter 27. **Wis. Stat. §101.149** (residential buildings): triggered by a fuel-burning appliance,
+  forced-air furnace, outside appliance or attached garage (with exemptions); outside each sleeping area. **§101.647**
+  (1-2 unit dwellings): basement + each floor unless no attached garage, no fireplace and no fuel-burning appliance.
+  Both: 5 days after written notice. Madison: **MGO 29.19 is "Accrediting Standards and Tests"** (not CO); CO enters
+  only via **MGO 29.22** (adopts SPS 328). The rent-abatement row "29.19 … Carbon Monoxide Detectors" doesn't match the
+  current code (unresolved).
+- **Applicability (user decision):** keep MGO 34.907, the state smoke statutes, the state CO statutes and SPS references
+  separate; document overlaps; **do not choose a governing rule without sufficient evidence**. A 5-day written-notice
+  deadline may be shown only when the applicable source and its conditions are established, always separate from
+  FixIt's reminders. Building facts (units, construction year, garage/fireplace/fuel-burning appliances/heating) come
+  only from the user or explicit data, never inferred from photos or synthetic records. Design: pending user review.
+- Mold: no mold-specific requirement found; general repair duty in Wis. Stat. §704.07(2)(a).
 - Default deadline windows (7 days routine / 48h urgent / 24h emergency) are **FixIt defaults, not legal deadlines**.
 
 ## 6. Safety / privacy
@@ -184,9 +213,9 @@ scripts/  dbx_setup · app_smoke · genie_verify · code_parse · ch27_review_sh
 - Quick start: `make setup && make build && make api` → http://localhost:8000 (Windows commands in README).
 
 ## 11. Inputs still needed from the human
-- Ch. 27: confirm §27.05(2)(h)6. for alternative locks; decide on showing the legal 5-day notice deadline for smoke/CO;
-  decide how to handle CO rules that depend on building size; approve the live cross-check against Municode (browser) incl.
-  MGO 34.907 and the §27.06(4) cross-reference; give the reviewer name.
+- Ch. 27: the reviewer's personal approval of plumbing, heat and surfaces (ready), then the rest; City Building
+  Inspection clarification of the §27.06(4) cross-reference; SPS 321.04 / SPS 362 for stairs and handrails.
+- Smoke/CO: review the design for building questions and the 5-day written-notice deadline (not implemented).
 - Manual checklist on the App + phone (`docs/DEMO_SCRIPT.md`); staged photos for `scripts/eval_vision.py` and the stage cache.
 - 19 photos from the user's manual test remain in `/Volumes/fixit/raw/evidence/` (resets never delete files).
 - P1 only: Twilio keys + consenting allowlist numbers. Details in `PROGRESS.md`.

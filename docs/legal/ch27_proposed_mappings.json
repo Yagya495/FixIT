@@ -28,7 +28,7 @@
       "why": "This is the only Chapter 27 provision on smoke alarms. It requires that smoke alarms be installed and maintained, but only 'in accordance with' other codes.",
       "uncertainty": "Chapter 27 does not itself say where alarms go, how many, or what counts as 'maintained'. Those rules are in MGO 34.907 and the SPS codes, which FixIt has not obtained or reviewed. Treating a covered or disabled alarm as 'not maintained' is an interpretation for an inspector.",
       "separate_source_required": true,
-      "decision": "User: keep pending additional legal-source verification (smoke alarms, CO detectors, mold).",
+      "decision": "User: keep pending additional legal-source verification. Keep MGO 34.907, the Wisconsin smoke-alarm statutes (101.145, 101.645), the Wisconsin CO statutes (101.149, 101.647) and the SPS references separate; document overlaps and uncertainty; do not choose a governing rule without sufficient evidence. A 5-day written-notice repair deadline may be shown only when the applicable source and its conditions are established (design pending user review).",
       "related": [
         {
           "level": "ordinance text (independently confirmed)",
@@ -48,7 +48,7 @@
       "why": "No match. The terms 'carbon', 'monoxide' and 'CO alarm' appear nowhere in Chapter 27 (checked in both the Databricks parse and the PDF text).",
       "uncertainty": "The current placeholder maps this type to CH27-SMOKE, whose summary says CO alarms are required. That is NOT supported by Chapter 27, and 27.05(2)(w) covers smoke alarms only. Possible sources to research (not verified by FixIt): MGO Chapter 34 (Fire Prevention Code), Wisconsin Statutes, Wis. Admin. Code SPS. Recommendation: keep this type unmapped to Chapter 27 and show 'legal source not yet verified'.",
       "separate_source_required": true,
-      "decision": "User: keep pending additional legal-source verification (smoke alarms, CO detectors, mold).",
+      "decision": "User: keep pending additional legal-source verification. Keep MGO 34.907, the Wisconsin smoke-alarm statutes (101.145, 101.645), the Wisconsin CO statutes (101.149, 101.647) and the SPS references separate; document overlaps and uncertainty; do not choose a governing rule without sufficient evidence. A 5-day written-notice repair deadline may be shown only when the applicable source and its conditions are established (design pending user review).",
       "related": [
         {
           "level": "ordinance text (independently confirmed)",
@@ -90,7 +90,7 @@
           "reason": "User decision: 'exposed abandoned wiring' is narrower than a missing outlet cover or active exposed wiring; not mapped automatically."
         }
       ],
-      "decision": "PROVISIONAL: user accepted 27.04(2)(g) as a general safety and maintenance mapping (2026-11-14). (g)3. not mapped automatically. Specific electrical-code requirements (e.g. cover plates) must be identified separately before asserting they are expressly required. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.",
+      "decision": "PROVISIONAL: user accepted 27.04(2)(g) as a general safety and maintenance mapping (2026-11-14). (g)3. not mapped automatically. Specific electrical-code requirements (e.g. cover plates) must be identified separately before asserting they are expressly required. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user. Cover plates: City guidance only (Common Code Violations page); no specific legal citation is forced.",
       "related": [
         {
           "level": "ordinance text (independently confirmed)",
@@ -136,7 +136,7 @@
       "why": "Water stains on walls or ceilings are damage to interior surfaces (good repair) and may indicate the building is not watertight.",
       "uncertainty": "Chapter 27 never mentions mold (0 hits for 'mold' or 'mildew'). It cannot support any statement about mold or its health effects. The placeholder CH27-MOISTURE ('conditions that support mold growth') is not supported by the text. A stain alone does not show an active leak or which surface failed.",
       "separate_source_required": true,
-      "decision": "PROVISIONAL: user accepted 27.05(2)(g)1. and (g)2. as potentially relevant general maintenance provisions (2026-11-14). A water stain alone does not prove a leak, a code violation, or mold. Wording distinguishes visible water damage from suspected mold; mold-specific requirements stay unverified (pending additional legal-source verification). Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.",
+      "decision": "PROVISIONAL: user accepted 27.05(2)(g)1. and (g)2. as potentially relevant general maintenance provisions (2026-11-14). A water stain alone does not prove a leak, a code violation, or mold. Wording distinguishes visible water damage from suspected mold; mold-specific requirements stay unverified (pending additional legal-source verification). Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user. Mold: keep City guidance, the general maintenance obligation (27.05(2)(g)1./2.), the rent-abatement classification (MGO 32.04(4)(d)) and any specific legal requirement (none verified) distinct; no citation is forced.",
       "related": [
         {
           "level": "ordinance text (independently confirmed)",
@@ -269,7 +269,7 @@
           "section": "27.05",
           "caption": "",
           "excerpt": "Alternative locking devices to equally resist illegal entry may be substituted with the approval of the Madison Building Inspection Division",
-          "kind": "exception (approved alternatives)",
+          "kind": "supporting reference (alternative devices only WITH Building Inspection approval)",
           "references": [],
           "page": 15,
           "numbering_evidence": "Inline marker '6.' under (h); 27.05(2)(h)7. lists 'Paragraphs 1., 2., 3., 4., 5. and 6.'"
@@ -278,7 +278,7 @@
       "why": "27.05(2)(h) directly requires working door and window hardware, keyed deadbolts on doors into dwelling units, and sash fasteners on accessible windows.",
       "uncertainty": "Paragraphs 1.-6. apply to rented dwelling units 'Except as provided in Paragraph 9.' (bed and breakfasts). Window rules depend on the story and accessibility. The parse of paragraph 7. (lodging rooms / shared entrances) came back with lines out of order, so it is not quoted; check it on Municode if needed.",
       "separate_source_required": false,
-      "decision": "PROVISIONAL: user accepted 27.05(2)(h), (h)3. and (h)4. (2026-11-14), subject to verifying the exact requirements and applicability. Include the rented-unit condition, approved alternative locking devices (quoted from (h)6., a supporting citation for the exception) and the window floor/access distinction. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.",
+      "decision": "PROVISIONAL: user accepted 27.05(2)(h), (h)3. and (h)4. (2026-11-14), subject to verifying the exact requirements and applicability. Include the rented-unit condition, approved alternative locking devices ((h)6. kept as a supporting reference, subject to final verification; an alternative device is NOT automatically permitted: (h)6. requires the approval of the Madison Building Inspection Division) and the window floor/access distinction. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.",
       "related": [
         {
           "level": "City guidance (not ordinance text)",
@@ -484,7 +484,7 @@
       "why": "Two unobstructed means of egress are required directly; stairs must be safe and in repair; handrail and guardrail specifics come from the SPS codes.",
       "uncertainty": "The handrail sentence sits in a passage about exterior stairways and exit platforms, and the actual handrail specs are in SPS (not reviewed). Whether furniture temporarily blocking a door makes an exit 'obstructed' is an inspector's call. Exception 27.06(4) not reviewed.",
       "separate_source_required": false,
-      "decision": "ON HOLD (user, 2026-11-14): final approval waits for review of the 27.06(4) cross-reference discrepancy and the relevant Wisconsin SPS requirements (SPS 321.04, SPS 362). Category renamed 'Blocked exit / unsafe stairs / missing handrail', with the three conditions kept distinct; a photo of stairs must not trigger a blocked-exit or missing-handrail finding by itself.",
+      "decision": "ON HOLD (user, 2026-11-14): final approval waits for review of the 27.06(4) cross-reference discrepancy and the relevant Wisconsin SPS requirements (SPS 321.04, SPS 362). Category renamed 'Blocked exit / unsafe stairs / missing handrail', with the three conditions kept distinct; a photo of stairs must not trigger a blocked-exit or missing-handrail finding by itself. Investigated 2026-11-14 (live text and the oldest Municode version, Feb 2018): unresolved. City of Madison Building Inspection clarification is needed; the intended meaning is not guessed.",
       "related": [
         {
           "level": "ordinance text (independently confirmed)",
