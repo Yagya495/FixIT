@@ -438,3 +438,29 @@ def test_public_demo_disables_real_calls_even_with_keys_set():
             "print(config.CALLS_ENABLED, len(config.CALL_ALLOWLIST), bool(config.RETELL_API_KEY), retell.configured())")
     out = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True, check=True).stdout.split()
     assert out == ["False", "0", "False", "False"]
+
+
+def test_apply_date_sets_deadline_only_when_operator_confirms(setup, monkeypatch):
+    start()
+    retell.refresh(BODY["attempt_id"])  # the fixture's set_deadline mock fails if refresh ever sets a deadline
+    applied = Mock()
+    monkeypatch.setattr(retell.cases, "set_deadline", applied)
+    out = retell.apply_date(BODY["attempt_id"])
+    applied.assert_called_once_with("RR-test", datetime(2026, 11, 17, 17, 0))
+    assert out["outcome_json"]["applied_to_deadline_at"]
+
+
+def test_apply_date_refuses_calls_without_a_grounded_date(setup, monkeypatch):
+    start()
+    setup.side_effect = None
+    setup.return_value = finished(quote="Maybe next week", date="next week")
+    retell.refresh(BODY["attempt_id"])
+    with pytest.raises(HTTPException) as e:
+        retell.apply_date(BODY["attempt_id"])
+    assert e.value.status_code == 409
+
+
+def test_apply_date_route_requires_operator_token(setup):
+    from app.backend.main import app
+    client = TestClient(app)
+    assert client.post("/api/retell/calls/a/apply-date").status_code == 401

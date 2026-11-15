@@ -441,3 +441,23 @@ def stop(attempt_id: str) -> dict:
     if row["status"] not in TERMINAL:
         request("POST", f"/v2/stop-call/{row['provider_call_id']}")
     return {"stop_requested": True}
+
+
+def apply_date(attempt_id: str) -> dict:
+    """Operator-confirmed: use the date the recipient gave on this call as the case's follow-up deadline.
+
+    Never automatic: the outcome is machine-extracted, so a person must review it and press the button.
+    Only dates that passed normalize_outcome's grounding checks (recipient's own words, not in the past) exist here.
+    """
+    row = _get(attempt_id)
+    outcome = db.jl(row["outcome_json"]) or {}
+    when = outcome.get("appointment_date") or ""
+    try:
+        due = datetime.strptime(when, "%Y-%m-%d").replace(hour=17)
+    except ValueError:
+        raise HTTPException(409, "This call has no confirmed date to use.")
+    cases.set_deadline(row["request_id"], due)
+    outcome["applied_to_deadline_at"] = _now()
+    db.execute("UPDATE {silver.retell_calls} SET outcome_json = :o, updated_at = :u WHERE attempt_id = :a",
+               {"o": json.dumps(outcome), "u": _now(), "a": attempt_id})
+    return public(_get(attempt_id))

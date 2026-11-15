@@ -60,7 +60,6 @@ export default function Case() {
         <div className="space-y-6">
           <Letter c={c} onChange={reload} />
           <Call c={c} onDone={reload} />
-          <RetellCall key={c.request_id} caseId={c.request_id} />
           <Deadline c={c} onChange={setC} />
         </div>
       </div>
@@ -175,6 +174,7 @@ function Call({ c, onDone }: { c: any; onDone: () => void }) {
   const [script, setScript] = useState<string[]>([]);
   const [scriptIdx, setScriptIdx] = useState(0);
   const [err, setErr] = useState<string | null>(null);
+  const [mode, setMode] = useState<"simulated" | "real">("simulated");  // simulated stays the stage default
   const [sending, setSending] = useState(false);  // one landlord line at a time (double-clicks used to hit a closed call)
   const inFlight = useRef(false);  // synchronous guard: state updates land after the click handler returns
   const endRef = useRef<HTMLDivElement>(null);
@@ -224,8 +224,16 @@ function Call({ c, onDone }: { c: any; onDone: () => void }) {
     <section className="card p-5 space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="h2 flex items-center gap-2"><Bot className="w-6 h-6 text-badger" /> AI calls your landlord</h2>
-        <button className="text-neutral-500" onClick={() => setVoice(!voice)} title="Toggle voice">{voice ? <Volume2 /> : <VolumeX />}</button>
+        {mode === "simulated" && <button className="text-neutral-500" onClick={() => setVoice(!voice)} title="Toggle voice">{voice ? <Volume2 /> : <VolumeX />}</button>}
       </div>
+      <div className="inline-flex rounded-xl border border-neutral-300 p-1 text-sm font-semibold" role="tablist">
+        {(["simulated", "real"] as const).map((m) => (
+          <button key={m} role="tab" aria-selected={mode === m} disabled={!!callId}
+            className={`px-3 py-1.5 rounded-lg ${mode === m ? "bg-badger text-white" : "text-neutral-600 hover:bg-neutral-100"}`}
+            onClick={() => setMode(m)}>{m === "simulated" ? "Simulated call" : "Real phone call (Retell)"}</button>
+        ))}
+      </div>
+      {mode === "real" ? <RetellCall key={c.request_id} caseId={c.request_id} embedded onApplied={onDone} /> : <>
       <p className="text-sm text-neutral-500">Simulated call: a teammate plays the landlord. The AI says up front that it's an AI acting for you. It never threatens and never claims to be a lawyer or the city.</p>
       {!callId && <button className="btn-primary text-lg" onClick={start}><Phone className="w-5 h-5" /> {transcript.length ? "Call again" : "Call landlord"}</button>}
       {transcript.length > 0 && (
@@ -272,6 +280,7 @@ function Call({ c, onDone }: { c: any; onDone: () => void }) {
           ) : <div className="font-bold">No repair date given. A FixIt default deadline was set. Follow up in writing.</div>}
         </div>
       )}
+      </>}
     </section>
   );
 }

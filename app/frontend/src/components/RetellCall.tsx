@@ -8,7 +8,8 @@ type CallRecord = { attempt_id: string; provider_call_id?: string; status: strin
 // "rejected": Retell refused the create request, so no call exists.
 const terminal = new Set(["ended", "error", "not_connected", "rejected"]);
 
-export function RetellCall({ caseId }: { caseId: string }) {
+/** Real Retell phone call. `embedded` renders it inside the "AI calls your landlord" card (no card or heading of its own). */
+export function RetellCall({ caseId, embedded = false, onApplied }: { caseId: string; embedded?: boolean; onApplied?: () => void }) {
   const [enabled, setEnabled] = useState(false);
   const [token, setToken] = useState("");
   const [unlocked, setUnlocked] = useState(false);
@@ -78,11 +79,11 @@ export function RetellCall({ caseId }: { caseId: string }) {
   const usedAttempt = records.some(r => r.attempt_id === attempt);
   const outcome = latest?.outcome_json;
 
-  return <section className="card p-5 space-y-3">
-    <h2 className="h2 flex items-center gap-2"><Phone className="w-5 h-5 text-badger" /> Retell phone call</h2>
+  const body = <>
+    {!embedded && <h2 className="h2 flex items-center gap-2"><Phone className="w-5 h-5 text-badger" /> Retell phone call</h2>}
     <p className="text-sm text-neutral-600">Place a real phone call to a consenting teammate playing the landlord.
       The AI identifies this as a test. Calls are recorded and transcribed.</p>
-    {!enabled && <p className="rounded-lg bg-amber-50 p-3 text-sm">Phone calling is disabled. An operator must finish Retell setup before calls can be placed. The simulated call above is available.</p>}
+    {!enabled && <p className="rounded-lg bg-amber-50 p-3 text-sm">Phone calling is disabled. An operator must finish Retell setup before calls can be placed. Switch to Simulated to use the simulated call.</p>}
     <label className="block text-sm font-semibold">Operator access token
       <input className="input mt-1" type="password" autoComplete="off" value={token} disabled={unlocked}
         onChange={e => setToken(e.target.value)} placeholder="Provided by the app operator" />
@@ -148,6 +149,13 @@ export function RetellCall({ caseId }: { caseId: string }) {
             <div><dt className="font-semibold">Next steps</dt><dd>{outcome.next_steps || "None captured"}</dd></div>
             <div><dt className="font-semibold">Follow-up needed</dt><dd>{outcome.follow_up_needed ? "Yes" : "No, according to the call analysis"}</dd></div>
           </dl>
+          {outcome.appointment_date && (outcome.applied_to_deadline_at
+            ? <p className="text-sm rounded-lg bg-emerald-50 text-emerald-900 p-2">This date is now the case's follow-up deadline.</p>
+            : <button className="btn-primary" disabled={busy} onClick={() => action(async () => {
+                const updated = await api(`/calls/${latest.attempt_id}/apply-date`, {});
+                setRecords(old => old.map(r => r.attempt_id === updated.attempt_id ? updated : r));
+                onApplied?.();
+              })}>Use {outcome.appointment_date} as the follow-up deadline</button>)}
         </> : <p className="text-sm">{terminal.has(latest.status) ? "No analyzed outcome yet. Refresh after Retell finishes processing." : "The transcript and outcome will appear when available."}</p>}
         {latest.disconnection_reason && <p className="text-xs">Call ended: {latest.disconnection_reason.replace(/_/g, " ")}</p>}
         <Transcript record={latest} />
@@ -159,7 +167,8 @@ export function RetellCall({ caseId }: { caseId: string }) {
       </details>}
     </>}
     <ErrorBox error={error} />
-  </section>;
+  </>;
+  return embedded ? <div className="space-y-3">{body}</div> : <section className="card p-5 space-y-3">{body}</section>;
 }
 
 function Transcript({ record }: { record: CallRecord }) {

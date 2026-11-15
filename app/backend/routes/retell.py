@@ -46,3 +46,9 @@ def resume(attempt_id: str):
 @router.post("/calls/{attempt_id}/stop", dependencies=[Depends(operator)])
 def stop(attempt_id: str):
     return retell.stop(attempt_id)
+
+
+@router.post("/calls/{attempt_id}/apply-date", dependencies=[Depends(operator)])
+def apply_date(attempt_id: str):
+    """Operator confirms the date captured on the call; it becomes the case's follow-up deadline."""
+    return retell.apply_date(attempt_id)
