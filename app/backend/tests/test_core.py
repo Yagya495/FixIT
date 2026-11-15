@@ -362,3 +362,24 @@ def test_approve_uses_only_checked_excerpts_from_approved_categories():
     assert "sixty-seven" in heat and "lesser temperature" in heat  # rule + occupant exception
     with pytest.raises(KeyError):
         approved_rows(["27.05"], {"NO_HEAT"})                      # whole parsed sections are never stored
+
+
+def test_second_batch_wording_decisions():
+    from app.backend.services.taxonomy import BY_ID, SEED_CODE_SECTIONS
+    seeds = {s["section_id"]: s["text"] for s in SEED_CODE_SECTIONS}
+    pest = BY_ID["PEST_EVIDENCE"]
+    assert "free of insects" not in pest["plain_explanation"] and "professional" not in pest["remedy_request"].lower()
+    assert "single-family" in pest["plain_explanation"] and "sustained presence" in pest["plain_explanation"]
+    assert "free of insects" not in seeds["CH27-PESTS"]
+    water = BY_ID["WATER_DAMAGE_MOLD"]
+    assert water["name"] == "Water damage / suspected mold"
+    assert "does not prove" in water["plain_explanation"] and "free of dampness" not in water["plain_explanation"]
+    egress = BY_ID["BLOCKED_EGRESS"]
+    assert egress["name"] == "Blocked exit / unsafe stairs / missing handrail"
+    assert "not an issue" in egress["visual_cues"] and "firmly fastened" not in seeds["CH27-EGRESS"]
+    elec = BY_ID["EXPOSED_WIRING"]["plain_explanation"]
+    assert "does not name cover plates" in elec and "not a Chapter 27 requirement" in elec
+    lock = BY_ID["BROKEN_LOCK"]["plain_explanation"]
+    assert "rented units" in lock and "alternative" in lock
+    win = BY_ID["BROKEN_WINDOW"]["plain_explanation"]
+    assert "June 1" in win and "October 15" in win and "does not specifically mention cracked glass" in win

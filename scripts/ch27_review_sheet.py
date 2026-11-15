@@ -48,6 +48,8 @@ def main() -> int:
     prop = json.loads((LEGAL / "ch27_proposed_mappings.json").read_text(encoding="utf-8"))
     parsed = {s["section_id"]: s for s in json.loads((LEGAL / "ch27_parsed_sections.json").read_text(encoding="utf-8"))}
     pages = pdf_pages(Path(a.pdf_text)) if a.pdf_text else None
+    cf = LEGAL / "ch27_parse_corrections.json"
+    corrections = json.loads(cf.read_text(encoding="utf-8"))["corrections"] if cf.exists() else []
     names = {v["type_id"]: v for v in VIOLATION_TYPES}
     errors = []
 
@@ -93,10 +95,11 @@ def main() -> int:
 
     def status(p: dict) -> str:
         d = p.get("decision", "")
-        if d.startswith("User approved"):
-            return "Approved in review; **not verified** (pending live-source check + reviewer name)"
-        if d.startswith("Under review"):
-            return "Under review (mold aspect pending a separate legal source)"
+        if d.startswith("PROVISIONAL"):
+            extra = " (mold aspect pending a separate legal source)" if "mold" in d.lower() else ""
+            return "Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name)" + extra
+        if d.startswith("ON HOLD"):
+            return "**On hold** (27.06(4) cross-reference + SPS requirements)"
         if "pending additional legal-source" in d:
             return "Pending separate legal source"
         return "Under review"
@@ -166,11 +169,24 @@ def main() -> int:
         "- **CH27-WINDOWS** says windows must be \"glazed without cracks or holes\". Chapter 27 says \"proper repair\" and",
         "  \"weathertight\"; screens are required seasonally.",
         "- **CH27-HEAT** gives no temperature. Chapter 27 sets 67°F in habitable rooms, kitchens and bathrooms.",
+        "- **CH27-PESTS** says dwellings must be \"kept free of insects, rodents\". Chapter 27 assigns extermination",
+        "  responsibility once an infestation (sustained presence) exists; it has no general pest-free rule.",
+        "- **CH27-SECURITY** omitted the rented-unit condition, the story/access rule for windows and approved alternatives.",
+        "- **CH27-EGRESS** says handrails must be \"firmly fastened\". Chapter 27 refers handrails to the SPS code.",
+        "- Category wording (explanations, remedies, names) for heat, plumbing, surfaces, locks, windows, pests, exits,",
+        "  electrical and water damage was corrected on the same branch (see the git log).",
         "",
-        "## Parse defects (do not quote these passages from the parse)",
+        "## Unresolved source discrepancies (not silently resolved)",
         "",
-        "- §27.05(2)(h)7. (lodging rooms / shared entrances): lines came back out of order.",
-        "- §27.05(2)(x) (storm sewers): the forfeiture sentence lost words (\"not twenty-five dollars\").",
+        *[f"- **{u['where']}** ({u['status']}): {u['issue']}" for u in prop.get("unresolved_discrepancies", [])],
+        "",
+        "## Parse defects, corrected from the PDF's own text layer",
+        "",
+        "ai_parse_document lost words at these page breaks. The raw parse (`ch27_parsed_sections.json`) is kept unmodified;",
+        "the correct text is in `docs/legal/ch27_parse_corrections.json`. Neither passage is used in a mapping.",
+        "",
+        *[f"- **§{c['section_id']}** (PDF pp. {', '.join(map(str, c['pdf_pages']))}; {c['defect']}): "
+          f"> {c['pdf_text']}" for c in corrections],
         "",
         "## How to approve",
         "",

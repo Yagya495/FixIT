@@ -1,0 +1,25 @@
+{
+  "note": "ai_parse_document dropped or reordered words where these passages cross a page break. The correct text below is copied from the PDF's own text layer (docs/legal/Madison_Chapter_27.pdf). docs/legal/ch27_parsed_sections.json is kept as the unmodified parser output. Neither passage is used in a current mapping.",
+  "corrections": [
+    {
+      "section_id": "27.05(2)(h)7.",
+      "pdf_pages": [
+        15,
+        16
+      ],
+      "defect": "lines out of order and words missing across the page break",
+      "pdf_text": "Paragraphs 1., 2., 3., 4., 5. and 6. of Subdivision (h) of Subsection (2) of Section 27.05 shall also apply in lodging rooms, except as provided in Paragraph 9. below. In addition, the main entrance door into all lodging houses and into all residential buildings with two or more dwelling units or lodging rooms where occupants of the separate dwelling units or lodging rooms share common bathroom or kitchen facilities shall be equipped with a positive locking guarded latch lock and with an approved self-closing device. An approved guard plate shall be affixed to the exterior side of the door if the Director of the Building Inspection Division determines such a device is necessary to provide adequate security against illegal entry. All other doors into said buildings shall be equipped with a deadbolt lock complying with Paragraph 3 of this Subdivision. If any door locking mechanism in said buildings utilize passwords or passcodes of any type, including but not limited to digital locks, radio-frequency or RFID locks, or electronic keypads, the passwords or passcodes must be changed at least on a yearly basis. In cases where said buildings have an attendant or attendants responsible for the security of the building on duty twenty-four (24) hours a day, they shall be exempt from the main entrance door-locking and self-closing requirements.",
+      "parsed_text_matches_pdf": false
+    },
+    {
+      "section_id": "27.05(2)(x)",
+      "pdf_pages": [
+        21,
+        22
+      ],
+      "defect": "words 'less than' and 'violation;' lost across the page break",
+      "pdf_text": "Private and Building Storm Sewers. Every private storm sewer and building storm sewer shall be properly installed and maintained in good working condition, free from defects, leaks and obstructions. Any person who violates this subsection shall be subject to a forfeiture of not less than twenty-five dollars ($25) nor more than two hundred dollars ($200) per day for each and every violation; each day of violation shall constitute a separate offense.",
+      "parsed_text_matches_pdf": false
+    }
+  ]
+}

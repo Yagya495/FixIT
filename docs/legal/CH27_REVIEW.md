@@ -18,15 +18,15 @@
 |---|---|---|---|---|
 | Missing/disabled smoke detector (`SMOKE_DETECTOR_MISSING`) | §27.05(2)(w) | reference | **Yes** | Pending separate legal source |
 | Missing CO detector near sleeping area (`CO_DETECTOR_MISSING`) | **none found in Ch. 27** | — | **Yes** | Pending separate legal source |
-| Exposed wiring / missing outlet or switch cover (`EXPOSED_WIRING`) | §27.04(2)(g), §27.04(2)(g)3. | direct + reference | No | Under review |
-| Water stains / visible mold (`WATER_DAMAGE_MOLD`) | §27.05(2)(g)1., §27.05(2)(g)2. | direct | **Yes** | Under review (mold aspect pending a separate legal source) |
-| Droppings / insects / pest damage (`PEST_EVIDENCE`) | §27.07(2)(d), §27.03 | direct, direct (definition) | No | Under review |
-| Broken/missing entry or window lock (`BROKEN_LOCK`) | §27.05(2)(h), §27.05(2)(h)3., §27.05(2)(h)4. | direct | No | Under review |
-| Broken/cracked window or screen (`BROKEN_WINDOW`) | §27.05(2)(h), §27.04(2)(f), §27.07(2)(c) | direct | No | Under review |
-| Active leak / damaged fixtures (`LEAK_PLUMBING`) | §27.05(2)(j) | direct | No | Approved in review; **not verified** (pending live-source check + reviewer name) |
-| Holes, peeling paint, damaged flooring (`DAMAGED_SURFACES`) | §27.05(2)(g)1. | general maintenance obligation, direct | No | Approved in review; **not verified** (pending live-source check + reviewer name) |
-| Blocked exit / missing handrail (`BLOCKED_EGRESS`) | §27.04(2)(d), §27.05(2)(i) | direct, reference | No | Under review |
-| No heat (user-reported / temp evidence) (`NO_HEAT`) | §27.04(2)(h) | direct + reference, direct (exception) | No | Approved in review; **not verified** (pending live-source check + reviewer name) |
+| Exposed wiring / missing outlet or switch cover (`EXPOSED_WIRING`) | §27.04(2)(g) | general safety and maintenance obligation (+ reference to the Wisconsin Electric Code) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
+| Water damage / suspected mold (`WATER_DAMAGE_MOLD`) | §27.05(2)(g)1., §27.05(2)(g)2. | general maintenance obligation (potentially relevant) | **Yes** | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) (mold aspect pending a separate legal source) |
+| Droppings / insects / pest damage (`PEST_EVIDENCE`) | §27.07(2)(d), §27.03 | direct (single-family dwellings, with exceptions), direct (dwellings other than single-family), direct (definition) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
+| Broken/missing entry or window lock (`BROKEN_LOCK`) | §27.05(2)(h), §27.05(2)(h)3., §27.05(2)(h)4., §27.05(2)(h)6. | direct, condition (applies to rented units; Paragraph 9. = bed and breakfasts), exception (approved alternatives) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
+| Broken/cracked window or screen (`BROKEN_WINDOW`) | §27.05(2)(h), §27.04(2)(f), §27.07(2)(c) | general maintenance obligation, direct (seasonal: screens by June 1 until storm windows go in), direct (seasonal: storm windows Oct 15 - Nov 15), direct (owner responsibility for screens and storm windows) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
+| Active leak / damaged fixtures (`LEAK_PLUMBING`) | §27.05(2)(j) | direct | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
+| Holes, peeling paint, damaged flooring (`DAMAGED_SURFACES`) | §27.05(2)(g)1. | general maintenance obligation, direct | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
+| Blocked exit / unsafe stairs / missing handrail (`BLOCKED_EGRESS`) | §27.04(2)(d), §27.05(2)(i) | direct, reference | No | **On hold** (27.06(4) cross-reference + SPS requirements) |
+| No heat (user-reported / temp evidence) (`NO_HEAT`) | §27.04(2)(h) | direct + reference, direct (exception) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
 
 ## Details
 
@@ -69,7 +69,7 @@
 
 ### Exposed wiring / missing outlet or switch cover (`EXPOSED_WIRING`)
 
-**§27.04(2)(g)**: direct + reference (Electrical.)
+**§27.04(2)(g)**: general safety and maintenance obligation (+ reference to the Wisconsin Electric Code) (Electrical.)
 
 - Section title: *27.04 - MINIMUM STANDARDS FOR BASIC EQUIPMENT, LIGHTING, VENTILATION, HEATING, AND ELECTRICAL SERVICE.*
 - PDF page: 7
@@ -78,12 +78,7 @@
 
 > Every dwelling unit and all public and common areas in multiple dwellings shall be supplied with electrical service, outlets, and fixtures which shall be properly installed, shall be maintained in good and safe working condition, and shall be connected to a source of electric power in a manner prescribed by the Wisconsin Electric Code.
 
-**§27.04(2)(g)3.**: direct + reference
-
-- Section title: *27.04 - MINIMUM STANDARDS FOR BASIC EQUIPMENT, LIGHTING, VENTILATION, HEATING, AND ELECTRICAL SERVICE.*
-- PDF page: 8
-- Numbering evidence: Inline marker '3.' under (g).
-- Refers to (not reviewed by FixIt): NEC Article 400-A
+**Considered, NOT mapped: §27.04(2)(g)3.** (p. 8). User decision: 'exposed abandoned wiring' is narrower than a missing outlet cover or active exposed wiring; not mapped automatically.
 
 > All cords and temporary wiring not in compliance with NEC Article 400-A, and all exposed abandoned wiring shall be removed.
 
@@ -91,14 +86,16 @@
 
 **Uncertainty / missing source:** A missing outlet or switch cover plate is not named. Calling it 'not properly installed / not in safe working condition' is an interpretation. 'Exposed abandoned wiring' is narrower than exposed live wiring. Installation details are in the Wisconsin Electric Code / NEC (not reviewed).
 
+**Decision so far:** PROVISIONAL: user accepted 27.04(2)(g) as a general safety and maintenance mapping (2026-11-14). (g)3. not mapped automatically. Specific electrical-code requirements (e.g. cover plates) must be identified separately before asserting they are expressly required. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
+
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
-### Water stains / visible mold (`WATER_DAMAGE_MOLD`)
+### Water damage / suspected mold (`WATER_DAMAGE_MOLD`)
 
 > ⚠ **Separate legal-source verification required.** Chapter 27 does not itself establish the full
 > requirement for this category.
 
-**§27.05(2)(g)1.**: direct
+**§27.05(2)(g)1.**: general maintenance obligation (potentially relevant)
 
 - Section title: *27.05 - SAFE AND SANITARY MAINTENANCE OF PROPERTY.*
 - PDF page: 14
@@ -106,7 +103,7 @@
 
 > Every interior floor, wall and ceiling including door and window assemblies shall be kept clean and in good repair, and shall be capable of affording privacy.
 
-**§27.05(2)(g)2.**: direct
+**§27.05(2)(g)2.**: general maintenance obligation (potentially relevant)
 
 - Section title: *27.05 - SAFE AND SANITARY MAINTENANCE OF PROPERTY.*
 - PDF page: 14
@@ -118,13 +115,21 @@
 
 **Uncertainty / missing source:** Chapter 27 never mentions mold (0 hits for 'mold' or 'mildew'). It cannot support any statement about mold or its health effects. The placeholder CH27-MOISTURE ('conditions that support mold growth') is not supported by the text. A stain alone does not show an active leak or which surface failed.
 
-**Decision so far:** Under review (water damage). Mold aspect: user keeps pending additional legal-source verification.
+**Decision so far:** PROVISIONAL: user accepted 27.05(2)(g)1. and (g)2. as potentially relevant general maintenance provisions (2026-11-14). A water stain alone does not prove a leak, a code violation, or mold. Wording distinguishes visible water damage from suspected mold; mold-specific requirements stay unverified (pending additional legal-source verification). Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### Droppings / insects / pest damage (`PEST_EVIDENCE`)
 
-**§27.07(2)(d)**: direct
+**§27.07(2)(d)**: direct (single-family dwellings, with exceptions)
+
+- Section title: *27.07 - FIXING THE RESPONSIBILITY OF OWNERS, OPERATORS, AND OCCUPANTS.*
+- PDF page: 30 (continues onto the next page)
+- Numbering evidence: Inline markers (2) ... (d) in 27.07.
+
+> Every occupant of a single-family dwelling shall be responsible for the extermination of any pests, vermin or rodents therein with the following exceptions: when the owner or operator has failed to clean the dwelling prior to occupancy or when the owner or operator is out of compliance with Madison General Ordinances Sec. 27.05(2)(g)2., extermination shall be the responsibility of the owner.
+
+**§27.07(2)(d)**: direct (dwellings other than single-family)
 
 - Section title: *27.07 - FIXING THE RESPONSIBILITY OF OWNERS, OPERATORS, AND OCCUPANTS.*
 - PDF page: 30
@@ -144,6 +149,8 @@
 
 **Uncertainty / missing source:** In a single-family dwelling the occupant is responsible, with exceptions (owner failed to clean before occupancy, or owner out of compliance with 27.05(2)(g)2.). 'Sustained presence' means one photo of droppings may not show an infestation. Building type must be known.
 
+**Decision so far:** PROVISIONAL: user accepted 27.07(2)(d) with the 27.03 definition of infestation (2026-11-14). Explain single-family vs other dwellings and the stated exceptions; a photo of possible droppings does not establish a sustained infestation; no claim that rentals must be entirely pest-free or that professional extermination is legally required. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
+
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### Broken/missing entry or window lock (`BROKEN_LOCK`)
@@ -156,6 +163,14 @@
 
 > All door and window hardware shall be installed and maintained in proper working condition.
 
+**§27.05(2)(h)**: condition (applies to rented units; Paragraph 9. = bed and breakfasts)
+
+- Section title: *27.05 - SAFE AND SANITARY MAINTENANCE OF PROPERTY.*
+- PDF page: 15
+- Numbering evidence: Inline markers (2) ... (h); history note '(Sec. 27.05(2)(h) Am. by Ord. 7481 ...)'.
+
+> Except as provided in Paragraph 9. below, the following shall apply in dwelling units all or a portion thereof which are rented:
+
 **§27.05(2)(h)3.**: direct
 
 - Section title: *27.05 - SAFE AND SANITARY MAINTENANCE OF PROPERTY.*
@@ -163,6 +178,22 @@
 - Numbering evidence: Inline marker '3.' under (h); 27.05(2)(h)7. refers to 'Paragraphs 1., 2., 3., ... of Subdivision (h) of Subsection (2) of Section 27.05'.
 
 > All doors into each dwelling unit shall have a keyed deadbolt lock with a minimum one (1) inch throw, which is openable with a key on the exterior side of the door and a knob on the interior side of the door.
+
+**§27.05(2)(h)3.**: direct
+
+- Section title: *27.05 - SAFE AND SANITARY MAINTENANCE OF PROPERTY.*
+- PDF page: 15
+- Numbering evidence: Inline marker '3.' under (h); 27.05(2)(h)7. refers to 'Paragraphs 1., 2., 3., ... of Subdivision (h) of Subsection (2) of Section 27.05'.
+
+> The strike plate shall be held in place by 2½ inch screws.
+
+**§27.05(2)(h)3.**: direct
+
+- Section title: *27.05 - SAFE AND SANITARY MAINTENANCE OF PROPERTY.*
+- PDF page: 15
+- Numbering evidence: Inline marker '3.' under (h); 27.05(2)(h)7. refers to 'Paragraphs 1., 2., 3., ... of Subdivision (h) of Subsection (2) of Section 27.05'.
+
+> Sliding doors shall have an approved secondary locking device.
 
 **§27.05(2)(h)4.**: direct
 
@@ -172,15 +203,25 @@
 
 > All basement, first, and second story windows and all other windows accessible by balconies, fire escapes, trees or other existing means shall be provided with sash fasteners.
 
+**§27.05(2)(h)6.**: exception (approved alternatives)
+
+- Section title: *27.05 - SAFE AND SANITARY MAINTENANCE OF PROPERTY.*
+- PDF page: 15
+- Numbering evidence: Inline marker '6.' under (h); 27.05(2)(h)7. lists 'Paragraphs 1., 2., 3., 4., 5. and 6.'
+
+> Alternative locking devices to equally resist illegal entry may be substituted with the approval of the Madison Building Inspection Division
+
 **Why it matches:** 27.05(2)(h) directly requires working door and window hardware, keyed deadbolts on doors into dwelling units, and sash fasteners on accessible windows.
 
 **Uncertainty / missing source:** Paragraphs 1.-6. apply to rented dwelling units 'Except as provided in Paragraph 9.' (bed and breakfasts). Window rules depend on the story and accessibility. The parse of paragraph 7. (lodging rooms / shared entrances) came back with lines out of order, so it is not quoted; check it on Municode if needed.
+
+**Decision so far:** PROVISIONAL: user accepted 27.05(2)(h), (h)3. and (h)4. (2026-11-14), subject to verifying the exact requirements and applicability. Include the rented-unit condition, approved alternative locking devices (quoted from (h)6., a supporting citation for the exception) and the window floor/access distinction. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### Broken/cracked window or screen (`BROKEN_WINDOW`)
 
-**§27.05(2)(h)**: direct
+**§27.05(2)(h)**: general maintenance obligation
 
 - Section title: *27.05 - SAFE AND SANITARY MAINTENANCE OF PROPERTY.*
 - PDF page: 15
@@ -188,7 +229,7 @@
 
 > Every window, exterior door, interior door, and basement hatchway shall be reasonably weathertight, watertight, and rodentproof and kept in proper repair.
 
-**§27.04(2)(f)**: direct
+**§27.04(2)(f)**: direct (seasonal: screens by June 1 until storm windows go in)
 
 - Section title: *27.04 - MINIMUM STANDARDS FOR BASIC EQUIPMENT, LIGHTING, VENTILATION, HEATING, AND ELECTRICAL SERVICE.*
 - PDF page: 7
@@ -196,7 +237,15 @@
 
 > All doors required for ventilation and all windows shall be protected with insect screen equivalent to not less than sixteen (16) wire mesh installed to prevent the entrance of flies, mosquitoes and other insects, annually during May before June 1 and maintained until storm windows are installed in autumn.
 
-**§27.07(2)(c)**: direct
+**§27.04(2)(f)**: direct (seasonal: storm windows Oct 15 - Nov 15)
+
+- Section title: *27.04 - MINIMUM STANDARDS FOR BASIC EQUIPMENT, LIGHTING, VENTILATION, HEATING, AND ELECTRICAL SERVICE.*
+- PDF page: 7
+- Numbering evidence: Inline markers (2) ... (f); history note '(Sec. 27.04(2)(f) Am. by Ord. 12,349 ...)'.
+
+> All exterior doors and windows shall have storm windows or storm doors installed or maintained to prevent excessive drafts and heat loss no earlier than October 15, but no later than November 15 annually.
+
+**§27.07(2)(c)**: direct (owner responsibility for screens and storm windows)
 
 - Section title: *27.07 - FIXING THE RESPONSIBILITY OF OWNERS, OPERATORS, AND OCCUPANTS.*
 - PDF page: 30
@@ -207,6 +256,8 @@
 **Why it matches:** Windows must be kept in proper repair and weathertight; screens are required seasonally, and the owner is responsible for screens.
 
 **Uncertainty / missing source:** 'Cracked glass' is not named explicitly; it falls under 'proper repair' / 'weathertight' by interpretation. The screen requirement is seasonal (by June 1 until storm windows go in), so a missing screen in winter may not be a violation.
+
+**Decision so far:** PROVISIONAL: user accepted 27.05(2)(h) for general window condition and repair, and 27.04(2)(f) / 27.07(2)(c) only for the screen and storm-window requirements with their seasonal dates (2026-11-14). Do not claim Chapter 27 explicitly names cracked glazing. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
@@ -224,7 +275,7 @@
 
 **Uncertainty / missing source:** Low. Whether a given drip is a 'leak' is still an inspector's call; FixIt cannot see inside walls.
 
-**Decision so far:** User approved 27.05(2)(j) as the primary mapping (2026-11-14). 27.04(2)(a) not added. Applies only to plumbing fixtures and water/waste pipes, not roof leaks or unexplained water stains. Pending: final check against the current official ordinance (Municode) and a reviewer name.
+**Decision so far:** PROVISIONAL: user accepted 27.05(2)(j) as the primary mapping (2026-11-14). 27.04(2)(a) not added. Applies only to plumbing fixtures and water/waste pipes, not roof leaks or unexplained water stains. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
@@ -250,11 +301,11 @@
 
 **Uncertainty / missing source:** 'Serious' cracking is a judgment call. Nothing here addresses lead paint; do not imply a lead hazard from this section.
 
-**Decision so far:** User approved 27.05(2)(g)1. for interior surfaces (2026-11-14). Keep 'serious cracking' / 'peeling paint' (direct) distinct from general 'good repair'. Damaged stairs removed from this category (stair safety handled separately under 27.05(2)(i)). Lead paint labeled general safety information, not a Chapter 27 requirement. Pending: final check against the current official ordinance (Municode) and a reviewer name.
+**Decision so far:** PROVISIONAL: user accepted 27.05(2)(g)1. for interior surfaces (2026-11-14). Keep 'serious cracking' / 'peeling paint' (direct) distinct from general 'good repair'. Damaged stairs removed from this category (stair safety handled separately under 27.05(2)(i)). Lead paint labeled general safety information, not a Chapter 27 requirement. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
-### Blocked exit / missing handrail (`BLOCKED_EGRESS`)
+### Blocked exit / unsafe stairs / missing handrail (`BLOCKED_EGRESS`)
 
 **§27.04(2)(d)**: direct
 
@@ -287,6 +338,8 @@
 
 **Uncertainty / missing source:** The handrail sentence sits in a passage about exterior stairways and exit platforms, and the actual handrail specs are in SPS (not reviewed). Whether furniture temporarily blocking a door makes an exit 'obstructed' is an inspector's call. Exception 27.06(4) not reviewed.
 
+**Decision so far:** ON HOLD (user, 2026-11-14): final approval waits for review of the 27.06(4) cross-reference discrepancy and the relevant Wisconsin SPS requirements (SPS 321.04, SPS 362). Category renamed 'Blocked exit / unsafe stairs / missing handrail', with the three conditions kept distinct; a photo of stairs must not trigger a blocked-exit or missing-handrail finding by itself.
+
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### No heat (user-reported / temp evidence) (`NO_HEAT`)
@@ -316,7 +369,7 @@
 
 **Uncertainty / missing source:** The occupant may keep a lower temperature if it doesn't affect other units. Chapter 27 sets no repair response time: FixIt's 24h/48h/7-day follow-up windows are FixIt defaults, not from this ordinance. The history note says 'Ord. 9326, 11-13-76' here but '11-13-87' elsewhere (an inconsistency in the source, quoted as-is).
 
-**Decision so far:** User approved 27.04(2)(h) as the primary mapping (2026-11-14), including the 67°F minimum, the rooms covered (habitable rooms, kitchens and bathrooms) and the occupant exception. 27.05(2)(m) not added. Remove the unsupported 'heating season' limit; FixIt follow-up deadlines are not legal requirements. Pending: final check against the current official ordinance (Municode) and a reviewer name.
+**Decision so far:** PROVISIONAL: user accepted 27.04(2)(h) as the primary mapping (2026-11-14), including the 67°F minimum, the rooms covered (habitable rooms, kitchens and bathrooms) and the occupant exception. 27.05(2)(m) not added. Remove the unsupported 'heating season' limit; FixIt follow-up deadlines are not legal requirements. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
@@ -331,11 +384,25 @@ Corrected on git branch `ch27-review` (not deployed yet):
 - **CH27-WINDOWS** says windows must be "glazed without cracks or holes". Chapter 27 says "proper repair" and
   "weathertight"; screens are required seasonally.
 - **CH27-HEAT** gives no temperature. Chapter 27 sets 67°F in habitable rooms, kitchens and bathrooms.
+- **CH27-PESTS** says dwellings must be "kept free of insects, rodents". Chapter 27 assigns extermination
+  responsibility once an infestation (sustained presence) exists; it has no general pest-free rule.
+- **CH27-SECURITY** omitted the rented-unit condition, the story/access rule for windows and approved alternatives.
+- **CH27-EGRESS** says handrails must be "firmly fastened". Chapter 27 refers handrails to the SPS code.
+- Category wording (explanations, remedies, names) for heat, plumbing, surfaces, locks, windows, pests, exits,
+  electrical and water damage was corrected on the same branch (see the git log).
 
-## Parse defects (do not quote these passages from the parse)
+## Unresolved source discrepancies (not silently resolved)
 
-- §27.05(2)(h)7. (lodging rooms / shared entrances): lines came back out of order.
-- §27.05(2)(x) (storm sewers): the forfeiture sentence lost words ("not twenty-five dollars").
+- **27.04(2)(d) (p. 6)** (open): The egress rule says 'except as provided in Sec. 27.06(4), MGO', but 27.06(4) in this document (p. 29) is about habitable rooms below grade and says nothing about egress. Possibly an outdated cross-reference. Check the current official source; do not resolve it silently.
+- **27.04(2)(h) history note (p. 9)** (open (cosmetic)): 'Ord. 9326, 11-13-76' here; the same ordinance is dated '11-13-87' elsewhere in Chapter 27. Quoted as written; does not change the requirement.
+
+## Parse defects, corrected from the PDF's own text layer
+
+ai_parse_document lost words at these page breaks. The raw parse (`ch27_parsed_sections.json`) is kept unmodified;
+the correct text is in `docs/legal/ch27_parse_corrections.json`. Neither passage is used in a mapping.
+
+- **§27.05(2)(h)7.** (PDF pp. 15, 16; lines out of order and words missing across the page break): > Paragraphs 1., 2., 3., 4., 5. and 6. of Subdivision (h) of Subsection (2) of Section 27.05 shall also apply in lodging rooms, except as provided in Paragraph 9. below. In addition, the main entrance door into all lodging houses and into all residential buildings with two or more dwelling units or lodging rooms where occupants of the separate dwelling units or lodging rooms share common bathroom or kitchen facilities shall be equipped with a positive locking guarded latch lock and with an approved self-closing device. An approved guard plate shall be affixed to the exterior side of the door if the Director of the Building Inspection Division determines such a device is necessary to provide adequate security against illegal entry. All other doors into said buildings shall be equipped with a deadbolt lock complying with Paragraph 3 of this Subdivision. If any door locking mechanism in said buildings utilize passwords or passcodes of any type, including but not limited to digital locks, radio-frequency or RFID locks, or electronic keypads, the passwords or passcodes must be changed at least on a yearly basis. In cases where said buildings have an attendant or attendants responsible for the security of the building on duty twenty-four (24) hours a day, they shall be exempt from the main entrance door-locking and self-closing requirements.
+- **§27.05(2)(x)** (PDF pp. 21, 22; words 'less than' and 'violation;' lost across the page break): > Private and Building Storm Sewers. Every private storm sewer and building storm sewer shall be properly installed and maintained in good working condition, free from defects, leaks and obstructions. Any person who violates this subsection shall be subject to a forfeiture of not less than twenty-five dollars ($25) nor more than two hundred dollars ($200) per day for each and every violation; each day of violation shall constitute a separate offense.
 
 ## How to approve
 
