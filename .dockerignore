@@ -13,3 +13,4 @@ scripts
 .git
 .env
 .env.*
+.private

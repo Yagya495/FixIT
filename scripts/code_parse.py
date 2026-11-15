@@ -29,6 +29,42 @@ VERIFIED_JSON = ROOT / "app" / "backend" / "code_sections_verified.json"
 REVIEW_MEANING = ("Reviewer approval means the ordinance citation and quoted text were checked against the official "
                   "source. It does not mean the reviewer is a lawyer or a City inspector, or that an AI-detected "
                   "condition is a confirmed legal violation.")
+# Public files show this role label; the reviewer's actual name is kept only in the private, git-ignored audit record.
+PUBLIC_REVIEWER_LABEL = "Legal Reviewer"
+PRIVATE_AUDIT = ROOT / ".private" / "legal_review_audit.json"
+
+
+def split_reviewers(approved: dict[str, list[str]], rows: list[dict], prev: dict) -> tuple[dict, list[dict], list[str]]:
+    """(public reviewers map, private audit entries for new approvals, errors).
+
+    Every approved row needs a reviewer. A NEW approval (type not already in the approvals file) needs the reviewer's
+    actual name, never just the public label, so the private audit record always names who approved it. Types already
+    approved keep their existing record (the CSV may show the public label for them)."""
+    already = set(prev.get("mapping", {}))
+    errors, entries = [], []
+    for t in approved:
+        name = next(r for r in rows if r["type_id"] == t).get("reviewer", "").strip()
+        if not name:
+            errors.append(f"{t}: every approved row needs a reviewer name")
+        elif t not in already and name.lower() == PUBLIC_REVIEWER_LABEL.lower():
+            errors.append(f"{t}: a new approval needs the reviewer's actual name (stored privately; shown publicly as "
+                          f"'{PUBLIC_REVIEWER_LABEL}')")
+        elif t not in already:
+            entries.append({"type_id": t, "section_ids": approved[t], "reviewer": name})
+    public = {**prev.get("reviewers", {}), **{t: PUBLIC_REVIEWER_LABEL for t in approved}}
+    return public, entries, errors
+
+
+def record_private_approvals(entries: list[dict], when: str) -> None:
+    """Append new approvals (with the reviewer's name) to the private audit record. Never committed or bundled."""
+    if not entries:
+        return
+    rec = json.loads(PRIVATE_AUDIT.read_text(encoding="utf-8")) if PRIVATE_AUDIT.exists() else {
+        "purpose": "Private audit record of Chapter 27 reviewer identities. Do not commit or bundle this file.",
+        "public_display_label": PUBLIC_REVIEWER_LABEL, "approvals": []}
+    rec.setdefault("approvals", []).extend({**e, "approved_on": when} for e in entries)
+    PRIVATE_AUDIT.parent.mkdir(parents=True, exist_ok=True)
+    PRIVATE_AUDIT.write_text(json.dumps(rec, indent=2), encoding="utf-8")
 
 
 def parse_sql(c: str) -> list[str]:
@@ -181,9 +217,10 @@ def main() -> int:
     rows = list(csv.DictReader(open(a.csv, encoding="utf-8")))
     approved = {r["type_id"]: [s.strip() for s in r["approved_section_ids"].replace(";", ",").split(",") if s.strip()]
                 for r in rows if r.get("approved_section_ids", "").strip()}
-    missing_reviewer = [t for t in approved if not next(r for r in rows if r["type_id"] == t).get("reviewer", "").strip()]
-    if missing_reviewer:
-        print("Every approved row needs a reviewer name:", missing_reviewer)
+    prev = json.loads(VERIFIED_JSON.read_text(encoding="utf-8")) if VERIFIED_JSON.exists() else {}
+    public_reviewers, private_entries, reviewer_errors = split_reviewers(approved, rows, prev)
+    if reviewer_errors:
+        print("Reviewer check failed:", *reviewer_errors, sep="\n  ")
         return 1
     ids = sorted({s for v in approved.values() for s in v})
     try:
@@ -208,14 +245,16 @@ def main() -> int:
     for t, s in approved.items():
         cur.execute(f"UPDATE {c}.ref.violation_types SET code_sections = :v WHERE type_id = :t", {"v": json.dumps(s), "t": t})
     # Merge with earlier approvals: never drop a previously approved mapping or section.
-    prev = json.loads(VERIFIED_JSON.read_text(encoding="utf-8")) if VERIFIED_JSON.exists() else {}
     sections = {s["section_id"]: s for s in prev.get("sections", [])}
     sections.update({s["section_id"]: {**s, "verified": 1} for s in secs})
-    reviewers = {**prev.get("reviewers", {}),
-                 **{t: next(r for r in rows if r["type_id"] == t)["reviewer"].strip() for t in approved}}
-    VERIFIED_JSON.write_text(json.dumps({"source": OFFICIAL_URL, "review_meaning": REVIEW_MEANING,
-                                         "mapping": {**prev.get("mapping", {}), **approved}, "reviewers": reviewers,
-                                         "sections": list(sections.values())}, indent=2), encoding="utf-8")
+    from datetime import date
+    record_private_approvals(private_entries, date.today().isoformat())  # reviewer names: private record only
+    out = {"source": OFFICIAL_URL, "review_meaning": REVIEW_MEANING,
+           "mapping": {**prev.get("mapping", {}), **approved}, "reviewers": public_reviewers}
+    if "reviewer_identity" in prev:
+        out["reviewer_identity"] = prev["reviewer_identity"]
+    out["sections"] = list(sections.values())
+    VERIFIED_JSON.write_text(json.dumps(out, indent=2), encoding="utf-8")
     print(f"Databricks updated; wrote {VERIFIED_JSON.relative_to(ROOT)} (local backend picks it up on reset).")
     return 0
 

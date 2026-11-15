@@ -14,3 +14,6 @@ eval/labels.csv
 demo/demo_inputs/**/*.jpg
 demo/demo_inputs/**/*.jpeg
 demo/demo_inputs/**/*.png
+
+# Private, never committed: original legal-reviewer identity (public files show "Legal Reviewer")
+.private/

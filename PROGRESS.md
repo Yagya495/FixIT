@@ -188,7 +188,7 @@ Workspace `https://dbc-bae64bde-0c7f.cloud.databricks.com`, **Free Edition** (pe
 over FixIt tables, App deployment, service-principal permissions.
 
 ## Chapter 27: first three citations verified and deployed (2026-11-14, night; approved by the user)
-- **Reviewer:** Naisha Chadha personally reviewed against the official Chapter 27 (Municode, Sep 1, 2026) and explicitly
+- **Reviewer:** the project's Legal Reviewer personally reviewed against the official Chapter 27 (Municode, Sep 1, 2026) and explicitly
   approved:
   - `LEAK_PLUMBING` → §27.05(2)(j)
   - `NO_HEAT` → §27.04(2)(h) (67°F + occupant exception)
@@ -328,6 +328,20 @@ over FixIt tables, App deployment, service-principal permissions.
 - **Docs:** `docs/DEMO_SCRIPT.md` rewritten (3 verified citations, video beat, architecture, synthetic disclosure,
   fallbacks, quota warning); README test counts and public-demo section.
 - Tests: 152 → **168 backend** (`test_public_hosting.py`, 16), 10 frontend, `tsc -b` clean.
+
+## Reviewer name replaced by "Legal Reviewer" in public files (2026-11-15, user privacy decision; local, not pushed)
+- Public files (approvals file `reviewers` values, review CSV, proposals' decision text, CH27_REVIEW, live check, docs,
+  review-sheet generator, test) now say **"Legal Reviewer"**. Approvals unchanged: same three mappings, sections, exact
+  text, `verified`, `review_meaning`. The approvals file gains a `reviewer_identity` note.
+- The original identity is preserved in `.private/legal_review_audit.json` (git-ignored, docker-ignored, local only)
+  and in git history (`e49ebfc`, `aeb7598`; history not rewritten).
+- `scripts/code_parse.py approve`: a reviewer is still required. A **new** approval needs the reviewer's actual name
+  (refuses the bare label); the name goes only to the private record and public files get the label.
+- The app never displayed reviewer names (UI, API, letters, packet, addendum, complaints); the Databricks tables have no
+  reviewer column. The deployed App's bundle still contains the old approvals file until the next approved redeploy.
+- Regression test `test_reviewer_privacy.py` (5): all public-demo API responses and generated PDFs, every tracked file,
+  approvals-file label, `.private/` never committed, approval-tool behavior. Mutation-checked: an injected name in the
+  approvals file or a letter fails it. Tests: **173 backend**, 10 frontend.
 
 ## Next (user priority, 2026-11-15 afternoon: judges' access + running App)
 1. **Restore the Databricks App** (owner approval): `apps get` → `apps start` once the quota resets → manual checklist.

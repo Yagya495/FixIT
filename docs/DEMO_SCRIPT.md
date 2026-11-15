@@ -17,7 +17,7 @@ Presenter (P) drives; Teammate (T) plays the landlord on the call.
 | Llama 4 Maverick vision + chat on Databricks Model Serving; Delta tables in Unity Catalog; UC Volume evidence with SHA-256; Genie space; the three verified Chapter 27 citations | All 2,004 buildings, 251 owners, 11,941 reports, complaint histories and landlord grades (only street geography is real) | The landlord call (teammate plays the landlord); "+8 days"; complaint and joint-complaint drafts are never submitted |
 
 ## The three verified citations (the only ones)
-Reviewed against the official Chapter 27 and approved by Naisha Chadha (2026-11-14). The App shows "Possibly relevant:
+Reviewed against the official Chapter 27 and approved by the project's Legal Reviewer (2026-11-14). The App shows "Possibly relevant:
 MGO § …", the exact excerpt, and "Whether this condition violates it is for a City of Madison inspector to decide."
 | Issue | Citation |
 |---|---|
