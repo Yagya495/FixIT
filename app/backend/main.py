@@ -28,6 +28,8 @@ async def lifespan(_app):
 
 
 app = FastAPI(title="FixIt Madison", version="0.1.0", lifespan=lifespan)
+from .routes.retell import router as retell_router
+app.include_router(retell_router)
 
 
 # ---------------------------------------------------------------- meta

@@ -187,6 +187,7 @@ def jl(value: Any) -> Any:
 
 # ---------------------------------------------------------------- local schema
 LOCAL_DDL = {
+    "silver.retell_calls": "attempt_id TEXT PRIMARY KEY, request_id TEXT, provider_call_id TEXT, to_number TEXT, status TEXT, context_json TEXT, consent_json TEXT, transcript TEXT, outcome_json TEXT, disconnection_reason TEXT, created_at TEXT, updated_at TEXT",
     "ref.violation_types": "type_id TEXT PRIMARY KEY, name TEXT, category TEXT, visual_cues TEXT, default_severity TEXT, code_sections TEXT, plain_explanation TEXT, remedy_request TEXT",
     "silver.code_sections": "section_id TEXT PRIMARY KEY, title TEXT, text TEXT, source_doc TEXT, page INTEGER, url TEXT, verified INTEGER",
     "gold.owners": "owner_id TEXT PRIMARY KEY, name TEXT, management_company TEXT, is_synthetic INTEGER",
@@ -207,7 +208,8 @@ LOCAL_DDL = {
 def init_local_schema(drop: bool = False) -> None:
     conn = _sqlite()
     for name, cols in LOCAL_DDL.items():
-        if drop:
+        # Consent, opt-outs and uncertain call attempts must survive a demo reset.
+        if drop and name != "silver.retell_calls":
             conn.execute(f"DROP TABLE IF EXISTS {t(name)}")
         conn.execute(f"CREATE TABLE IF NOT EXISTS {t(name)} ({cols})")
     conn.execute(f"CREATE INDEX IF NOT EXISTS ix_reports_prop ON {t('gold.reports')}(property_id)")

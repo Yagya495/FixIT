@@ -4,6 +4,7 @@ import { AlertOctagon, Bot, Clock, FastForward, FileDown, Mic, Phone, PhoneOff, 
 import { get, imgUrl, post } from "../api";
 import { CopyButton, DemoBadge, Disclaimer, ErrorBox, SeverityChip, Spinner, ViolationCard } from "../components/ui";
 import { AlarmRules } from "../components/AlarmRules";
+import { RetellCall } from "../components/RetellCall";
 
 // Smoke/CO source prototype is shown only for cases that include an alarm issue.
 const alarmTypes = (c: any): ("smoke" | "co")[] => {
@@ -59,6 +60,7 @@ export default function Case() {
         <div className="space-y-6">
           <Letter c={c} onChange={reload} />
           <Call c={c} onDone={reload} />
+          <RetellCall key={c.request_id} caseId={c.request_id} />
           <Deadline c={c} onChange={setC} />
         </div>
       </div>

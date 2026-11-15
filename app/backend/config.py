@@ -77,6 +77,11 @@ DEFAULT_WINDOW_HOURS = {"routine": 7 * 24, "urgent": 48, "emergency": 24}
 # Calls (P1)
 CALLS_ENABLED = _bool("CALLS_ENABLED", False)
 CALL_ALLOWLIST = {n.strip() for n in os.getenv("CALL_ALLOWLIST", "").split(",") if n.strip()}
+RETELL_API_KEY = os.getenv("RETELL_API_KEY", "").strip()
+RETELL_AGENT_ID = os.getenv("RETELL_AGENT_ID", "").strip()
+RETELL_FROM_NUMBER = os.getenv("RETELL_FROM_NUMBER", "").strip()
+# Separate from the provider key. Required because the demo app has no tenant authentication.
+RETELL_OPERATOR_TOKEN = os.getenv("RETELL_OPERATOR_TOKEN", "").strip()
 
 DISCLAIMER = (
     "FixIt is not a lawyer and this is not legal advice. For help, contact the Tenant Resource Center "
