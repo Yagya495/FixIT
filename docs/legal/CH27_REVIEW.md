@@ -8,25 +8,25 @@
 - **Official page:** https://library.municode.com/wi/madison/codes/code_of_ordinances?nodeId=COORMAWIVOIICH20--31_CH27MIHOPRMACO
 - **Parsed by:** Databricks ai_parse_document -> fixit.bronze.code_sections_parsed (exported to docs/legal/ch27_parsed_sections.json)
 - **Numbering:** Subsection ids are read from the inline markers in the parsed official text, e.g. '(2)' then '(h)' under 27.04. Where the ordinance's own history note repeats the id (e.g. '(Sec. 27.04(2)(h) Am. by ...)') that is noted in numbering_evidence.
-- **Excerpt check:** every excerpt below was machine-checked to appear word for word in the Databricks parse.
+- **Excerpt check:** every excerpt below was machine-checked to appear word for word in the Databricks parse and in the PDF's own text layer, on the page shown.
 - **Kinds:** *direct* = Chapter 27 itself states the requirement. *reference* = Chapter 27 only says to follow
   another law or code, whose text FixIt has not reviewed.
 
 ## Summary
 
-| FixIt issue category | Proposed section(s) | Kind | Separate legal source needed? | Human approval required |
+| FixIt issue category | Proposed section(s) | Kind | Separate legal source needed? | Status |
 |---|---|---|---|---|
-| Missing/disabled smoke detector (`SMOKE_DETECTOR_MISSING`) | §27.05(2)(w) | reference | **Yes** | Yes |
-| Missing CO detector near sleeping area (`CO_DETECTOR_MISSING`) | **none found in Ch. 27** | — | **Yes** | Yes |
-| Exposed wiring / missing outlet or switch cover (`EXPOSED_WIRING`) | §27.04(2)(g), §27.04(2)(g)3. | direct + reference | No | Yes |
-| Water stains / visible mold (`WATER_DAMAGE_MOLD`) | §27.05(2)(g)1., §27.05(2)(g)2. | direct | **Yes** | Yes |
-| Droppings / insects / pest damage (`PEST_EVIDENCE`) | §27.07(2)(d), §27.03 | direct, direct (definition) | No | Yes |
-| Broken/missing entry or window lock (`BROKEN_LOCK`) | §27.05(2)(h), §27.05(2)(h)3., §27.05(2)(h)4. | direct | No | Yes |
-| Broken/cracked window or screen (`BROKEN_WINDOW`) | §27.05(2)(h), §27.04(2)(f), §27.07(2)(c) | direct | No | Yes |
-| Active leak / damaged fixtures (`LEAK_PLUMBING`) | §27.05(2)(j) | direct | No | Yes |
-| Holes, peeling paint, damaged flooring (`DAMAGED_SURFACES`) | §27.05(2)(g)1. | direct | No | Yes |
-| Blocked exit / missing handrail (`BLOCKED_EGRESS`) | §27.04(2)(d), §27.05(2)(i) | direct, reference | No | Yes |
-| No heat (user-reported / temp evidence) (`NO_HEAT`) | §27.04(2)(h), §27.05(2)(m) | direct + reference, direct | No | Yes |
+| Missing/disabled smoke detector (`SMOKE_DETECTOR_MISSING`) | §27.05(2)(w) | reference | **Yes** | Pending separate legal source |
+| Missing CO detector near sleeping area (`CO_DETECTOR_MISSING`) | **none found in Ch. 27** | — | **Yes** | Pending separate legal source |
+| Exposed wiring / missing outlet or switch cover (`EXPOSED_WIRING`) | §27.04(2)(g), §27.04(2)(g)3. | direct + reference | No | Under review |
+| Water stains / visible mold (`WATER_DAMAGE_MOLD`) | §27.05(2)(g)1., §27.05(2)(g)2. | direct | **Yes** | Under review (mold aspect pending a separate legal source) |
+| Droppings / insects / pest damage (`PEST_EVIDENCE`) | §27.07(2)(d), §27.03 | direct, direct (definition) | No | Under review |
+| Broken/missing entry or window lock (`BROKEN_LOCK`) | §27.05(2)(h), §27.05(2)(h)3., §27.05(2)(h)4. | direct | No | Under review |
+| Broken/cracked window or screen (`BROKEN_WINDOW`) | §27.05(2)(h), §27.04(2)(f), §27.07(2)(c) | direct | No | Under review |
+| Active leak / damaged fixtures (`LEAK_PLUMBING`) | §27.05(2)(j) | direct | No | Approved in review; **not verified** (pending live-source check + reviewer name) |
+| Holes, peeling paint, damaged flooring (`DAMAGED_SURFACES`) | §27.05(2)(g)1. | general maintenance obligation, direct | No | Approved in review; **not verified** (pending live-source check + reviewer name) |
+| Blocked exit / missing handrail (`BLOCKED_EGRESS`) | §27.04(2)(d), §27.05(2)(i) | direct, reference | No | Under review |
+| No heat (user-reported / temp evidence) (`NO_HEAT`) | §27.04(2)(h) | direct + reference, direct (exception) | No | Approved in review; **not verified** (pending live-source check + reviewer name) |
 
 ## Details
 
@@ -48,7 +48,9 @@
 
 **Uncertainty / missing source:** Chapter 27 does not itself say where alarms go, how many, or what counts as 'maintained'. Those rules are in MGO 34.907 and the SPS codes, which FixIt has not obtained or reviewed. Treating a covered or disabled alarm as 'not maintained' is an interpretation for an inspector.
 
-**Human approval required:** Yes
+**Decision so far:** User: keep pending additional legal-source verification (smoke alarms, CO detectors, mold).
+
+**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### Missing CO detector near sleeping area (`CO_DETECTOR_MISSING`)
 
@@ -61,7 +63,9 @@
 
 **Uncertainty / missing source:** The current placeholder maps this type to CH27-SMOKE, whose summary says CO alarms are required. That is NOT supported by Chapter 27, and 27.05(2)(w) covers smoke alarms only. Possible sources to research (not verified by FixIt): MGO Chapter 34 (Fire Prevention Code), Wisconsin Statutes, Wis. Admin. Code SPS. Recommendation: keep this type unmapped to Chapter 27 and show 'legal source not yet verified'.
 
-**Human approval required:** Yes
+**Decision so far:** User: keep pending additional legal-source verification (smoke alarms, CO detectors, mold).
+
+**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### Exposed wiring / missing outlet or switch cover (`EXPOSED_WIRING`)
 
@@ -87,7 +91,7 @@
 
 **Uncertainty / missing source:** A missing outlet or switch cover plate is not named. Calling it 'not properly installed / not in safe working condition' is an interpretation. 'Exposed abandoned wiring' is narrower than exposed live wiring. Installation details are in the Wisconsin Electric Code / NEC (not reviewed).
 
-**Human approval required:** Yes
+**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### Water stains / visible mold (`WATER_DAMAGE_MOLD`)
 
@@ -114,7 +118,9 @@
 
 **Uncertainty / missing source:** Chapter 27 never mentions mold (0 hits for 'mold' or 'mildew'). It cannot support any statement about mold or its health effects. The placeholder CH27-MOISTURE ('conditions that support mold growth') is not supported by the text. A stain alone does not show an active leak or which surface failed.
 
-**Human approval required:** Yes
+**Decision so far:** Under review (water damage). Mold aspect: user keeps pending additional legal-source verification.
+
+**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### Droppings / insects / pest damage (`PEST_EVIDENCE`)
 
@@ -138,7 +144,7 @@
 
 **Uncertainty / missing source:** In a single-family dwelling the occupant is responsible, with exceptions (owner failed to clean before occupancy, or owner out of compliance with 27.05(2)(g)2.). 'Sustained presence' means one photo of droppings may not show an infestation. Building type must be known.
 
-**Human approval required:** Yes
+**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### Broken/missing entry or window lock (`BROKEN_LOCK`)
 
@@ -170,7 +176,7 @@
 
 **Uncertainty / missing source:** Paragraphs 1.-6. apply to rented dwelling units 'Except as provided in Paragraph 9.' (bed and breakfasts). Window rules depend on the story and accessibility. The parse of paragraph 7. (lodging rooms / shared entrances) came back with lines out of order, so it is not quoted; check it on Municode if needed.
 
-**Human approval required:** Yes
+**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### Broken/cracked window or screen (`BROKEN_WINDOW`)
 
@@ -202,7 +208,7 @@
 
 **Uncertainty / missing source:** 'Cracked glass' is not named explicitly; it falls under 'proper repair' / 'weathertight' by interpretation. The screen requirement is seasonal (by June 1 until storm windows go in), so a missing screen in winter may not be a violation.
 
-**Human approval required:** Yes
+**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### Active leak / damaged fixtures (`LEAK_PLUMBING`)
 
@@ -218,9 +224,19 @@
 
 **Uncertainty / missing source:** Low. Whether a given drip is a 'leak' is still an inspector's call; FixIt cannot see inside walls.
 
-**Human approval required:** Yes
+**Decision so far:** User approved 27.05(2)(j) as the primary mapping (2026-11-14). 27.04(2)(a) not added. Applies only to plumbing fixtures and water/waste pipes, not roof leaks or unexplained water stains. Pending: final check against the current official ordinance (Municode) and a reviewer name.
+
+**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### Holes, peeling paint, damaged flooring (`DAMAGED_SURFACES`)
+
+**§27.05(2)(g)1.**: general maintenance obligation
+
+- Section title: *27.05 - SAFE AND SANITARY MAINTENANCE OF PROPERTY.*
+- PDF page: 14
+- Numbering evidence: Inline markers '(g) 1.'.
+
+> Every interior floor, wall and ceiling including door and window assemblies shall be kept clean and in good repair, and shall be capable of affording privacy.
 
 **§27.05(2)(g)1.**: direct
 
@@ -234,14 +250,16 @@
 
 **Uncertainty / missing source:** 'Serious' cracking is a judgment call. Nothing here addresses lead paint; do not imply a lead hazard from this section.
 
-**Human approval required:** Yes
+**Decision so far:** User approved 27.05(2)(g)1. for interior surfaces (2026-11-14). Keep 'serious cracking' / 'peeling paint' (direct) distinct from general 'good repair'. Damaged stairs removed from this category (stair safety handled separately under 27.05(2)(i)). Lead paint labeled general safety information, not a Chapter 27 requirement. Pending: final check against the current official ordinance (Municode) and a reviewer name.
+
+**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### Blocked exit / missing handrail (`BLOCKED_EGRESS`)
 
 **§27.04(2)(d)**: direct
 
 - Section title: *27.04 - MINIMUM STANDARDS FOR BASIC EQUIPMENT, LIGHTING, VENTILATION, HEATING, AND ELECTRICAL SERVICE.*
-- PDF page: 6
+- PDF page: 6 (continues onto the next page)
 - Numbering evidence: Inline markers (2) ... (d).
 - Refers to (not reviewed by FixIt): MGO Sec. 27.06(4) (exception, not reviewed)
 
@@ -269,7 +287,7 @@
 
 **Uncertainty / missing source:** The handrail sentence sits in a passage about exterior stairways and exit platforms, and the actual handrail specs are in SPS (not reviewed). Whether furniture temporarily blocking a door makes an exit 'obstructed' is an inspector's call. Exception 27.06(4) not reviewed.
 
-**Human approval required:** Yes
+**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ### No heat (user-reported / temp evidence) (`NO_HEAT`)
 
@@ -282,11 +300,15 @@
 
 > A minimum temperature of sixty-seven degrees Fahrenheit (67°) shall be maintained in all habitable rooms, kitchens and bathrooms.
 
-**§27.05(2)(m)**: direct
+**§27.04(2)(h)**: direct (exception)
 
-- Section title: *27.05 - SAFE AND SANITARY MAINTENANCE OF PROPERTY.*
-- PDF page: 18
-- Numbering evidence: Inline markers (2) ... (m).
+- Section title: *27.04 - MINIMUM STANDARDS FOR BASIC EQUIPMENT, LIGHTING, VENTILATION, HEATING, AND ELECTRICAL SERVICE.*
+- PDF page: 9
+- Numbering evidence: Same paragraph (h).
+
+> The occupant of a room or an apartment may maintain a lesser temperature than is specified above as long as it does not affect the temperature in other habitable areas of the building.
+
+**Considered, NOT mapped: §27.05(2)(m)** (p. 18). User decision: concerns removing/shutting off/discontinuing a required service, not every heating failure. Not added automatically.
 
 > No owner, operator or occupant shall cause any service, facility, equipment, or utility which is required under this ordinance to be removed from or shut off from or discontinued for any occupied dwelling, dwelling unit or lodging room let or occupied by them except for such temporary interruption as may be necessary while actual repairs are in process, or during temporary emergencies when discontinuance of service is approved by an authorized inspector.
 
@@ -294,12 +316,14 @@
 
 **Uncertainty / missing source:** The occupant may keep a lower temperature if it doesn't affect other units. Chapter 27 sets no repair response time: FixIt's 24h/48h/7-day follow-up windows are FixIt defaults, not from this ordinance. The history note says 'Ord. 9326, 11-13-76' here but '11-13-87' elsewhere (an inconsistency in the source, quoted as-is).
 
-**Human approval required:** Yes
+**Decision so far:** User approved 27.04(2)(h) as the primary mapping (2026-11-14), including the 67°F minimum, the rooms covered (habitable rooms, kitchens and bathrooms) and the occupant exception. 27.05(2)(m) not added. Remove the unsupported 'heating season' limit; FixIt follow-up deadlines are not legal requirements. Pending: final check against the current official ordinance (Municode) and a reviewer name.
+
+**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
 ## Problems found in the current placeholder summaries
 
-These FixIt summaries are shown in the app today, labeled "plain-language summary, not official text". They are
-not changed by this review; the reviewer should decide whether to reword them:
+These FixIt summaries are shown in the deployed app today, labeled "plain-language summary, not official text".
+Corrected on git branch `ch27-review` (not deployed yet):
 
 - **CH27-SMOKE** says carbon monoxide alarms are required. Chapter 27 does not mention carbon monoxide.
 - **CH27-MOISTURE** mentions "conditions that support mold growth". Chapter 27 does not mention mold.

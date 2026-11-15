@@ -27,14 +27,16 @@
       ],
       "why": "This is the only Chapter 27 provision on smoke alarms. It requires that smoke alarms be installed and maintained, but only 'in accordance with' other codes.",
       "uncertainty": "Chapter 27 does not itself say where alarms go, how many, or what counts as 'maintained'. Those rules are in MGO 34.907 and the SPS codes, which FixIt has not obtained or reviewed. Treating a covered or disabled alarm as 'not maintained' is an interpretation for an inspector.",
-      "separate_source_required": true
+      "separate_source_required": true,
+      "decision": "User: keep pending additional legal-source verification (smoke alarms, CO detectors, mold)."
     },
     {
       "type_id": "CO_DETECTOR_MISSING",
       "items": [],
       "why": "No match. The terms 'carbon', 'monoxide' and 'CO alarm' appear nowhere in Chapter 27 (checked in both the Databricks parse and the PDF text).",
       "uncertainty": "The current placeholder maps this type to CH27-SMOKE, whose summary says CO alarms are required. That is NOT supported by Chapter 27, and 27.05(2)(w) covers smoke alarms only. Possible sources to research (not verified by FixIt): MGO Chapter 34 (Fire Prevention Code), Wisconsin Statutes, Wis. Admin. Code SPS. Recommendation: keep this type unmapped to Chapter 27 and show 'legal source not yet verified'.",
-      "separate_source_required": true
+      "separate_source_required": true,
+      "decision": "User: keep pending additional legal-source verification (smoke alarms, CO detectors, mold)."
     },
     {
       "type_id": "EXPOSED_WIRING",
@@ -95,7 +97,8 @@
       ],
       "why": "Water stains on walls or ceilings are damage to interior surfaces (good repair) and may indicate the building is not watertight.",
       "uncertainty": "Chapter 27 never mentions mold (0 hits for 'mold' or 'mildew'). It cannot support any statement about mold or its health effects. The placeholder CH27-MOISTURE ('conditions that support mold growth') is not supported by the text. A stain alone does not show an active leak or which surface failed.",
-      "separate_source_required": true
+      "separate_source_required": true,
+      "decision": "Under review (water damage). Mold aspect: user keeps pending additional legal-source verification."
     },
     {
       "type_id": "PEST_EVIDENCE",
@@ -217,11 +220,22 @@
       ],
       "why": "Directly requires plumbing fixtures and pipes to be free from leaks and in good working condition.",
       "uncertainty": "Low. Whether a given drip is a 'leak' is still an inspector's call; FixIt cannot see inside walls.",
-      "separate_source_required": false
+      "separate_source_required": false,
+      "decision": "User approved 27.05(2)(j) as the primary mapping (2026-11-14). 27.04(2)(a) not added. Applies only to plumbing fixtures and water/waste pipes, not roof leaks or unexplained water stains. Pending: final check against the current official ordinance (Municode) and a reviewer name."
     },
     {
       "type_id": "DAMAGED_SURFACES",
       "items": [
+        {
+          "section_id": "27.05(2)(g)1.",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "Every interior floor, wall and ceiling including door and window assemblies shall be kept clean and in good repair, and shall be capable of affording privacy.",
+          "kind": "general maintenance obligation",
+          "references": [],
+          "page": 14,
+          "numbering_evidence": "Inline markers '(g) 1.'."
+        },
         {
           "section_id": "27.05(2)(g)1.",
           "section": "27.05",
@@ -235,7 +249,8 @@
       ],
       "why": "Directly addresses cracking and peeling paint; the same paragraph requires interior floors, walls and ceilings to be in good repair.",
       "uncertainty": "'Serious' cracking is a judgment call. Nothing here addresses lead paint; do not imply a lead hazard from this section.",
-      "separate_source_required": false
+      "separate_source_required": false,
+      "decision": "User approved 27.05(2)(g)1. for interior surfaces (2026-11-14). Keep 'serious cracking' / 'peeling paint' (direct) distinct from general 'good repair'. Damaged stairs removed from this category (stair safety handled separately under 27.05(2)(i)). Lead paint labeled general safety information, not a Chapter 27 requirement. Pending: final check against the current official ordinance (Municode) and a reviewer name."
     },
     {
       "type_id": "BLOCKED_EGRESS",
@@ -298,19 +313,28 @@
           "numbering_evidence": "Inline markers (2) ... (h); history note '(Sec. 27.04(2)(h) Am. by Ord. 9326 ...)'."
         },
         {
-          "section_id": "27.05(2)(m)",
-          "section": "27.05",
+          "section_id": "27.04(2)(h)",
+          "section": "27.04",
           "caption": "",
-          "excerpt": "No owner, operator or occupant shall cause any service, facility, equipment, or utility which is required under this ordinance to be removed from or shut off from or discontinued for any occupied dwelling, dwelling unit or lodging room let or occupied by them except for such temporary interruption as may be necessary while actual repairs are in process, or during temporary emergencies when discontinuance of service is approved by an authorized inspector.",
-          "kind": "direct",
+          "excerpt": "The occupant of a room or an apartment may maintain a lesser temperature than is specified above as long as it does not affect the temperature in other habitable areas of the building.",
+          "kind": "direct (exception)",
           "references": [],
-          "page": 18,
-          "numbering_evidence": "Inline markers (2) ... (m)."
+          "page": 9,
+          "numbering_evidence": "Same paragraph (h)."
         }
       ],
       "why": "27.04(2)(h) directly sets the 67°F minimum in habitable rooms, kitchens and bathrooms; 27.05(2)(m) prohibits shutting off required services except for repairs or approved emergencies.",
       "uncertainty": "The occupant may keep a lower temperature if it doesn't affect other units. Chapter 27 sets no repair response time: FixIt's 24h/48h/7-day follow-up windows are FixIt defaults, not from this ordinance. The history note says 'Ord. 9326, 11-13-76' here but '11-13-87' elsewhere (an inconsistency in the source, quoted as-is).",
-      "separate_source_required": false
+      "separate_source_required": false,
+      "not_mapped": [
+        {
+          "section_id": "27.05(2)(m)",
+          "reason": "User decision: concerns removing/shutting off/discontinuing a required service, not every heating failure. Not added automatically.",
+          "page": 18,
+          "excerpt": "No owner, operator or occupant shall cause any service, facility, equipment, or utility which is required under this ordinance to be removed from or shut off from or discontinued for any occupied dwelling, dwelling unit or lodging room let or occupied by them except for such temporary interruption as may be necessary while actual repairs are in process, or during temporary emergencies when discontinuance of service is approved by an authorized inspector."
+        }
+      ],
+      "decision": "User approved 27.04(2)(h) as the primary mapping (2026-11-14), including the 67°F minimum, the rooms covered (habitable rooms, kitchens and bathrooms) and the occupant exception. 27.05(2)(m) not added. Remove the unsupported 'heating season' limit; FixIt follow-up deadlines are not legal requirements. Pending: final check against the current official ordinance (Municode) and a reviewer name."
     }
   ]
 }

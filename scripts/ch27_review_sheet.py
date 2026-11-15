@@ -75,6 +75,10 @@ def main() -> int:
                     it["page"] = hit
                 elif hit != it["page"]:
                     errors.append(f"{p['type_id']} {it['section_id']}: page is {hit}, JSON says {it['page']}")
+        for nm in p.get("not_mapped", []):
+            sec = parsed[nm["section_id"].split("(")[0]]
+            if norm(nm["excerpt"]) not in norm(sec["text"]):
+                errors.append(f"{p['type_id']} not_mapped {nm['section_id']}: excerpt not in the parse")
     missing = set(names) - {p["type_id"] for p in prop["proposals"]}
     if missing:
         errors.append(f"types with no proposal row: {sorted(missing)}")
@@ -86,6 +90,16 @@ def main() -> int:
                                                          for i in p["items"]]} for p in prop["proposals"]]}
         (LEGAL / "ch27_proposed_mappings.json").write_text(json.dumps(clean, indent=2, ensure_ascii=False) + "\n",
                                                             encoding="utf-8")
+
+    def status(p: dict) -> str:
+        d = p.get("decision", "")
+        if d.startswith("User approved"):
+            return "Approved in review; **not verified** (pending live-source check + reviewer name)"
+        if d.startswith("Under review"):
+            return "Under review (mold aspect pending a separate legal source)"
+        if "pending additional legal-source" in d:
+            return "Pending separate legal source"
+        return "Under review"
 
     title = lambda sid: f"{sid} - {norm(parsed[sid]['title'])}"
     md = [
@@ -106,7 +120,7 @@ def main() -> int:
         "",
         "## Summary",
         "",
-        "| FixIt issue category | Proposed section(s) | Kind | Separate legal source needed? | Human approval required |",
+        "| FixIt issue category | Proposed section(s) | Kind | Separate legal source needed? | Status |",
         "|---|---|---|---|---|",
     ]
     for p in prop["proposals"]:
@@ -114,7 +128,7 @@ def main() -> int:
         ids = ", ".join(dict.fromkeys(f"§{i['section_id']}" for i in p["items"])) or "**none found in Ch. 27**"
         kinds = ", ".join(dict.fromkeys(i["kind"] for i in p["items"])) or "—"
         md.append(f"| {v['name']} (`{p['type_id']}`) | {ids} | {kinds} | "
-                  f"{'**Yes**' if p['separate_source_required'] else 'No'} | Yes |")
+                  f"{'**Yes**' if p['separate_source_required'] else 'No'} | {status(p)} |")
     md += ["", "## Details", ""]
     for p in prop["proposals"]:
         v = names[p["type_id"]]
@@ -133,13 +147,18 @@ def main() -> int:
             if it["references"]:
                 md.append("- Refers to (not reviewed by FixIt): " + "; ".join(it["references"]))
             md += ["", f"> {norm(it['excerpt'])}", ""]
-        md += [f"**Why it matches:** {p['why']}", "", f"**Uncertainty / missing source:** {p['uncertainty']}", "",
-               "**Human approval required:** Yes", ""]
+        for nm in p.get("not_mapped", []):
+            md += [f"**Considered, NOT mapped: §{nm['section_id']}** (p. {nm['page']}). {nm['reason']}", "",
+                   f"> {norm(nm['excerpt'])}", ""]
+        md += [f"**Why it matches:** {p['why']}", "", f"**Uncertainty / missing source:** {p['uncertainty']}", ""]
+        if p.get("decision"):
+            md += [f"**Decision so far:** {p['decision']}", ""]
+        md += ["**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.", ""]
     md += [
         "## Problems found in the current placeholder summaries",
         "",
-        "These FixIt summaries are shown in the app today, labeled \"plain-language summary, not official text\". They are",
-        "not changed by this review; the reviewer should decide whether to reword them:",
+        "These FixIt summaries are shown in the deployed app today, labeled \"plain-language summary, not official text\".",
+        "Corrected on git branch `ch27-review` (not deployed yet):",
         "",
         "- **CH27-SMOKE** says carbon monoxide alarms are required. Chapter 27 does not mention carbon monoxide.",
         "- **CH27-MOISTURE** mentions \"conditions that support mold growth\". Chapter 27 does not mention mold.",
@@ -169,7 +188,7 @@ def main() -> int:
     with out.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["type_id", "name", "proposed_section_ids", "kind", "separate_source_required", "proposed_excerpts",
-                    "uncertainty", "auto_candidates (id | title | page | score)", "approved_section_ids", "reviewer",
+                    "uncertainty", "auto_candidates (id | title | page | score)", "decision", "approved_section_ids", "reviewer",
                     "notes"])
         for p in prop["proposals"]:
             r = prev.get(p["type_id"], {})
@@ -180,7 +199,7 @@ def main() -> int:
                         " || ".join(f"[{i['section_id']}] {norm(i['excerpt'])}" for i in p["items"]),
                         p["uncertainty"], norm(r.get("candidates (id | title | page | score)",
                                                      r.get("auto_candidates (id | title | page | score)", ""))),
-                        r.get("approved_section_ids", ""), r.get("reviewer", ""), r.get("notes", "")])
+                        p.get("decision", ""), r.get("approved_section_ids", ""), r.get("reviewer", ""), r.get("notes", "")])
     print(f"OK: {sum(len(p['items']) for p in prop['proposals'])} excerpts verified. Wrote "
           f"{(LEGAL / 'CH27_REVIEW.md').relative_to(ROOT)} and {out.relative_to(ROOT)}")
     return 0

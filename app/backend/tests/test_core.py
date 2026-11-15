@@ -307,3 +307,45 @@ def test_verdict_rules():
     assert listing.verdict(v, bad_hist)["level"] == "dont_sign"
     assert listing.verdict(v, {"heat_reports_recent": 0, "open_issues": 0, "owner": {"grade": "A"}})["level"] == "ask_first"
     assert listing.verdict([], {"heat_reports_recent": 0, "open_issues": 0, "owner": {"grade": "A"}})["level"] == "sign"
+
+
+# ---- Chapter 27 review decisions (2026-11-14): wording must not overstate the ordinance
+def test_heat_wording_matches_ch27_decision():
+    from app.backend.services.taxonomy import BY_ID, SEED_CODE_SECTIONS
+    heat = BY_ID["NO_HEAT"]["plain_explanation"]
+    seed = next(s for s in SEED_CODE_SECTIONS if s["section_id"] == "CH27-HEAT")["text"]
+    for t in (heat, seed):
+        assert "67" in t and "heating season" not in t.lower()
+        assert "kitchens and bathrooms" in t and "cooler" in t      # rooms covered + occupant exception
+    assert "not a legal deadline" in heat
+
+
+def test_surfaces_and_plumbing_scope_decisions():
+    from app.backend.services.taxonomy import BY_ID
+    s = BY_ID["DAMAGED_SURFACES"]
+    assert "stair" not in s["visual_cues"].lower()
+    assert "not a Chapter 27 requirement" in s["plain_explanation"] and "lead" in s["plain_explanation"]
+    p = BY_ID["LEAK_PLUMBING"]
+    assert "pipes" in p["plain_explanation"] and "roof" in p["plain_explanation"].lower()
+
+
+def test_placeholders_do_not_claim_what_ch27_does_not_say():
+    from app.backend.services.taxonomy import BY_ID, SEED_CODE_SECTIONS
+    seeds = {s["section_id"]: s for s in SEED_CODE_SECTIONS}
+    assert "monoxide" not in seeds["CH27-SMOKE"]["text"].lower()
+    assert BY_ID["CO_DETECTOR_MISSING"]["code_sections"] == ["PENDING-CO"]
+    assert "does not mention mold" in seeds["CH27-MOISTURE"]["text"]
+    assert "covered" not in seeds["CH27-ELECTRICAL"]["text"]
+    assert "glazed" not in seeds["CH27-WINDOWS"]["text"]
+
+
+def test_letter_never_presents_a_citation_as_a_finding():
+    from app.backend.services import letters
+    v = {"name": "No heat", "severity": "emergency", "remedy": "Restore heat.", "code_sections": [
+        {"section_id": "27.04(2)(h)", "title": "Heating", "verified": 1},
+        {"section_id": "PENDING-CO", "title": "Carbon monoxide alarms", "verified": 0},
+        {"section_id": "CH27-HEAT", "title": "Heating facilities", "verified": 0}]}
+    line = letters._issue_lines([v])[0]
+    assert "Possibly relevant code:" in line and "MGO § 27.04(2)(h)" in line
+    assert "Carbon monoxide alarms (legal source not yet verified)" in line
+    assert "Heating facilities (MGO Ch. 27 — section pending verification)" in line

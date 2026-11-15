@@ -13,6 +13,7 @@ from reportlab.platypus import Image, PageBreak, Paragraph, SimpleDocTemplate, S
 
 from .. import config
 from . import evidence as ev_svc
+from .letters import _cite
 
 RED = colors.HexColor("#C5050C")
 _styles = getSampleStyleSheet()
@@ -52,8 +53,7 @@ def evidence_packet(case: dict) -> bytes:
     ]
     rows = [["#", "Issue", "FixIt severity", "AI confidence", "Code reference"]]
     for i, v in enumerate(case["violations"], 1):
-        cite = "; ".join(f'{s["title"]} ({s["section_id"] if s.get("verified") else "Ch. 27, section pending"})'
-                         for s in v.get("code_sections", []))
+        cite = "; ".join(f'{s["title"]} ({_cite(s)})' for s in v.get("code_sections", []))
         rows.append([str(i), Paragraph(escape(v["name"]), SMALL), v["severity"], f'{v["confidence"]:.2f}',
                      Paragraph(escape(cite), SMALL)])
     t = Table(rows, colWidths=[0.3 * inch, 2.2 * inch, 0.8 * inch, 0.8 * inch, 2.9 * inch], repeatRows=1)

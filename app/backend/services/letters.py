@@ -11,17 +11,23 @@ from .. import config
 TONES = ("friendly", "formal", "final")
 
 
+def _cite(s: dict) -> str:
+    if s.get("verified"):
+        return f'MGO § {s["section_id"]}'
+    if str(s.get("section_id", "")).startswith("PENDING-"):
+        return "legal source not yet verified"
+    return "MGO Ch. 27 — section pending verification"
+
+
 def _issue_lines(violations: list[dict], with_evidence: bool = True) -> list[str]:
     lines = []
     for i, v in enumerate(violations, 1):
-        secs = ", ".join(
-            f'{s["title"]} ({s["section_id"] if s.get("verified") else "MGO Ch. 27 — section pending verification"})'
-            for s in v.get("code_sections", [])
-        ) or "MGO Chapter 27"
+        secs = ", ".join(f'{s["title"]} ({_cite(s)})' for s in v.get("code_sections", [])) or "MGO Chapter 27"
         ev = ""
         if with_evidence and v.get("evidence_ids"):
             ev = f' Photo evidence: {", ".join(v["evidence_ids"][:3])}.'
-        lines.append(f'{i}. {v["name"]} ({v["severity"]}). Relevant code: {secs}. Requested fix: {v["remedy"]}{ev}')
+        # "Possibly relevant": a cited section is the rule that may apply, not a finding that it was violated.
+        lines.append(f'{i}. {v["name"]} ({v["severity"]}). Possibly relevant code: {secs}. Requested fix: {v["remedy"]}{ev}')
     return lines
 
 

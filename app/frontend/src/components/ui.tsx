@@ -92,11 +92,16 @@ export function ViolationCard({ v, open: initOpen = false }: { v: Violation; ope
           {v.code_sections.map((s) => (
             <blockquote key={s.section_id} className="border-l-4 border-badger bg-badger-light/50 rounded-r-lg p-3">
               <div className="text-xs font-bold uppercase text-badger">
-                {s.verified ? `MGO § ${s.section_id}` : "MGO Chapter 27 · section number pending verification"}
+                {s.verified ? `Possibly relevant: MGO § ${s.section_id}`
+                  : s.section_id.startsWith("PENDING-") ? "Legal source not yet verified"
+                  : "MGO Chapter 27 · section number pending verification"}
               </div>
               <div className="font-semibold">{s.title}</div>
               {s.verified ? (
-                <div className="text-sm text-neutral-700">“{s.snippet}”</div>
+                <div className="text-sm text-neutral-700">
+                  “{s.snippet}”
+                  <div className="text-xs text-neutral-500 mt-1">Official ordinance text, human-reviewed. Whether this condition violates it is for a City of Madison inspector to decide.</div>
+                </div>
               ) : s.official_text ? (
                 <div className="text-sm text-neutral-700">
                   <span className="text-xs font-semibold text-neutral-500">Text from the official Ch. 27 document{s.page ? ` (p. ${s.page})` : ""}; this match hasn't been human-reviewed: </span>“{s.snippet}”
