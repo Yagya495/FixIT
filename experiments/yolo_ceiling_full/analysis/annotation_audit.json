@@ -1,0 +1,117 @@
+{
+ "images": 500,
+ "boxes": 2068,
+ "whole_image_boxes": 46,
+ "tiny_boxes": 473,
+ "same_class_duplicate_pairs": 0,
+ "cross_class_overlap_pairs": 587,
+ "cross_class_overlap_by_pair": {
+  "hole+mold": 23,
+  "damp+hole": 47,
+  "mold+stain": 9,
+  "damp+mold": 382,
+  "crack+stain": 22,
+  "damp+stain": 49,
+  "hole+stain": 12,
+  "crack+damp": 32,
+  "crack+mold": 10,
+  "crack+hole": 1
+ },
+ "median_box_area_pct_by_class": {
+  "ceiling_crack": 2.95,
+  "ceiling_damp": 7.5,
+  "ceiling_mold": 1.17,
+  "ceiling_hole": 0.08,
+  "ceiling_stain": 4.95
+ },
+ "boxes_by_class": {
+  "ceiling_crack": 333,
+  "ceiling_damp": 301,
+  "ceiling_mold": 830,
+  "ceiling_hole": 360,
+  "ceiling_stain": 244
+ },
+ "photos_with_copies": 195,
+ "copies_with_different_box_counts": 84,
+ "copies_with_different_class_sets": 20,
+ "examples": {
+  "cross_class": [
+   "10-what_to_do_about_a_water_stain_on_the_ceiling_50-scaled_jpeg_jpg.rf.058186f111ceb392f0cf96553af225b4.jpg",
+   "10-what_to_do_about_a_water_stain_on_the_ceiling_50-scaled_jpeg_jpg.rf.fac0e913758a216b146cbd8d22171f84.jpg",
+   "11-mold-spots-on-ceiling-bathroom2_jpeg_jpg.rf.05b61f8b16b631f8601811e701dcedce.jpg",
+   "11-mold-spots-on-ceiling-bathroom2_jpeg_jpg.rf.0e376f31f7ade86e884c8af25469e577.jpg",
+   "13-thvniymvoq_jpg.rf.a7967467c6c774d2a6bb2886c125518a.jpg",
+   "14-stain-in-bathrom-ceiling_jpg.rf.56f17cce1acc734cf0e7d198e669c45e.jpg",
+   "14-stain-in-bathrom-ceiling_jpg.rf.9493b92ea35bcaaebf2877d4752a5ddb.jpg",
+   "15-how-long-does-it-take-for-a-ceiling-to-dry-after-a-leak_jpg.rf.6e3c442d57b99d3d2ffc54ac5db5756c.jpg",
+   "15-how-long-does-it-take-for-a-ceiling-to-dry-after-a-leak_jpg.rf.928ef54d1e8a1bcd8da679f088b829f0.jpg",
+   "16-black-mold-on-the-ceiling-626x400_jpg.rf.53ff05dbe032d8a0100fb95bb154f957.jpg",
+   "16-black-mold-on-the-ceiling-626x400_jpg.rf.550398f20a450a1873e7006014a3b885.jpg",
+   "16-water-stains-on-a-ceiling-with-cracks_jpg.rf.fcd59714221c6d8509ea7449e3400384.jpg"
+  ],
+  "whole_image": [
+   "11-mold-spots-on-ceiling-bathroom2_jpeg_jpg.rf.05b61f8b16b631f8601811e701dcedce.jpg",
+   "11-mold-spots-on-ceiling-bathroom2_jpeg_jpg.rf.0e376f31f7ade86e884c8af25469e577.jpg",
+   "13-bathroom-ceiling-mold-2_jpeg_jpg.rf.0f5c0d204f53a45a7756a767572429eb.jpg",
+   "13-bathroom-ceiling-mold-2_jpeg_jpg.rf.96cdb8a2ba855efa3bcf6bb7ab3bd409.jpg",
+   "16-black-mold-on-the-ceiling-626x400_jpg.rf.53ff05dbe032d8a0100fb95bb154f957.jpg",
+   "16-black-mold-on-the-ceiling-626x400_jpg.rf.550398f20a450a1873e7006014a3b885.jpg",
+   "21-depositphotos_312346496-stock-video-mold-growth-damp-walls-ceiling_jpg.rf.39133dcebe4a9bdf6f0fc58b26e72a9b.jpg",
+   "21-depositphotos_312346496-stock-video-mold-growth-damp-walls-ceiling_jpg.rf.754979b8e3a195e0ae5048250484f568.jpg",
+   "23-image0184_jpg.rf.fc4198ccfe4a7f6ee4b9d7c21d7840a5.jpg",
+   "31_JPG_jpg.rf.6a307f092196577ccca396b464b8b8dc.jpg",
+   "31_JPG_jpg.rf.bb4c750f1b9c1c31668716b285c203f5.jpg",
+   "32-popcorn_ceiling_x1_jpg.rf.af334ef6298c4b441bfeedf31885a677.jpg"
+  ]
+ },
+ "inconsistent_copy_examples": [
+  [
+   "10-3eyymfqtfqhgsxuek6hu47t5n3fub3bsa7eicgf9vz8_jpg.rf.60e18e582ced1d4f42a6dee956dc218b.jpg",
+   "10-3eyymfqtfqhgsxuek6hu47t5n3fub3bsa7eicgf9vz8_jpg.rf.b3787547ae8f1be9968914b8deac364c.jpg",
+   "11-mold-spots-on-ceiling-bathroom2_jpeg_jpg.rf.05b61f8b16b631f8601811e701dcedce.jpg"
+  ],
+  [
+   "10-what_to_do_about_a_water_stain_on_the_ceiling_50-scaled_jpeg_jpg.rf.058186f111ceb392f0cf96553af225b4.jpg",
+   "15-how-long-does-it-take-for-a-ceiling-to-dry-after-a-leak_jpg.rf.6e3c442d57b99d3d2ffc54ac5db5756c.jpg",
+   "15-how-long-does-it-take-for-a-ceiling-to-dry-after-a-leak_jpg.rf.928ef54d1e8a1bcd8da679f088b829f0.jpg"
+  ],
+  [
+   "12-ceiling-cracks_jpg.rf.11217e13a598524320a08b887039f6f4.jpg",
+   "12-ceiling-cracks_jpg.rf.20a40c0aa2f6e7dada0fcd42926e8eec.jpg",
+   "20-ceiling-water-damage_jpg.rf.e492841f13231f55bede755528138d40.jpg"
+  ],
+  [
+   "13-thvniymvoq_jpg.rf.36f7257bd1f6ff674b74eea61a104fa8.jpg",
+   "13-thvniymvoq_jpg.rf.5998ae976a0032a35e98c96afc801e9a.jpg",
+   "13-thvniymvoq_jpg.rf.a7967467c6c774d2a6bb2886c125518a.jpg"
+  ],
+  [
+   "16-water-stains-on-a-ceiling-with-cracks_jpg.rf.1b536cb2cd6b2b1386f3d30a061f7340.jpg",
+   "16-water-stains-on-a-ceiling-with-cracks_jpg.rf.fcd59714221c6d8509ea7449e3400384.jpg"
+  ],
+  [
+   "28_JPG_jpg.rf.eb6250a1e93d3cc7bd096fee0279ec7b.jpg",
+   "28_JPG_jpg.rf.349cab22382e781353fbb274077d882a.jpg"
+  ],
+  [
+   "29-5cb2ef300f56a013_2600-w500-h375-b0-p0--_jpg.rf.9b4ab62efd70024726295d2c798159ea.jpg",
+   "31_JPG_jpg.rf.bb4c750f1b9c1c31668716b285c203f5.jpg",
+   "38-ceiling-stain-bath-fan_jpg.rf.8a5dbbb3df0f8095d2e5397e4985b6c2.jpg"
+  ],
+  [
+   "44-fix-water-stains-on-ceiling-leaks-3_jpg.rf.d881c9838dfbd7e5ae863ed2892d1f85.jpg",
+   "44-fix-water-stains-on-ceiling-leaks-3_jpg.rf.afacc44003b5bf45ef193fe4d238b9ba.jpg",
+   "44-fix-water-stains-on-ceiling-leaks-3_jpg.rf.66d68c6f5b5d460389388bdaa3941a95.jpg"
+  ]
+ ],
+ "box_orientation": {
+  "axis_aligned": 2068
+ },
+ "rotated_by_class": {
+  "ceiling_damp": 0,
+  "ceiling_mold": 0,
+  "ceiling_hole": 0,
+  "ceiling_stain": 0,
+  "ceiling_crack": 0
+ }
+}
