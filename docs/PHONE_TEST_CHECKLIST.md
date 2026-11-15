@@ -44,3 +44,11 @@ the phone model, OS version and browser for each row.
 Expected on some desktop browsers; iPhone Safari normally decodes its own HEVC. If a phone can't read its own clip:
 record with "Most Compatible", or upload photos instead. Report the exact phone/OS/browser; a server-side transcode
 would be a post-demo change.
+
+## After testing
+- Write down the units used (e.g. `PHONE-A1`, `PHONE-I1`). Their scans and evidence stay on the disposable building
+  (1770 Fair Oaks Ave); they don't touch the demo building, the demo story or the saved Genie answers.
+- Cleanup works the same way as on 2026-11-15 (`docs/ops/TEST_RECORD_CLEANUP_PLAN.md`): a fresh read-only inventory,
+  a new manifest, then `scripts/cleanup_test_records.py` dry run, and `--apply` only after the owner approves that
+  exact manifest.
+- Report: phone/OS/browser per row, time for a 12 s clip, any "Partly analyzed" counts, HEVC result.
