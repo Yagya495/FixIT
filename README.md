@@ -1,4 +1,4 @@
-# # FixIt Madison
+# FixIt Madison
 
 **Catch rental problems before you sign, document them while you live there, and push back when the landlord ignores you.**
 
@@ -13,6 +13,7 @@ Databricks lakehouse links every tenant's reports into building- and owner-level
 ---
 
 ## Contents
+- [Branches](#branches)
 - [Features](#features)
 - [Architecture](#architecture)
 - [Repository layout](#repository-layout)
@@ -24,6 +25,23 @@ Databricks lakehouse links every tenant's reports into building- and owner-level
 - [Legal content and honesty rules](#legal-content-and-honesty-rules)
 - [Current status](#current-status)
 - [Documentation index](#documentation-index)
+
+---
+
+## Branches
+
+**The app is not on `main`.** All the code lives on, and runs from, the **`ch27-review`** branch.
+
+| Branch | Where | What's on it |
+|---|---|---|
+| `ch27-review` | GitHub (`origin`) | **The working project:** backend, frontend, Databricks notebooks, scripts, Chapter 27 legal review, video walkthrough, YOLO experiments, docs and tests (46 commits). **The deployed Databricks App runs from this branch** (deployed commit `2c74f5d`; the branch tip is `7c0c2df`, which adds demo speed-ups, docs and YOLO experiment files). |
+| `main` | GitHub (`origin`) | Only the initial commit with a placeholder `README.md`. It shares **no history** with `ch27-review`, so it holds none of the app. |
+
+To work on the app, start from `ch27-review`:
+```bash
+git fetch origin
+git checkout ch27-review
+```
 
 ---
 
