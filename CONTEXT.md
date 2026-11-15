@@ -169,7 +169,19 @@ Finish every P0 before starting any P1.
   verified)", "may apply", "outside stated scope", "not evaluated"; never "applies"; never a governing rule. The 5-day
   deadline display is hard-disabled (`LEGAL_DEADLINE_DISPLAY_ENABLED = False`). No DB schema change. Construction
   periods: before June 1, 1980 / June 1, 1980–2008 / 2009 or later / unknown. Tests: `test_alarm_rules.py`.
-- Mold: no mold-specific requirement found; general repair duty in Wis. Stat. §704.07(2)(a).
+- Mold: no mold-specific requirement found; general repair duty in Wis. Stat. §704.07(2)(a). City BI: "does not test
+  for mold" but "can require repairs when water damage is present".
+- **Consolidated review of the 9 remaining categories (2026-11-14, late): `docs/legal/FINAL_LEGAL_REVIEW.md`.**
+  Preparation only: nothing approved or activated, reviewer fields blank, no `--apply`. Recommendations: READY FOR HUMAN
+  REVIEW = locks, windows, pests, electrical (§27.04(2)(g); cover plates = no verified source), water damage; NEEDS
+  CLARIFICATION = exits, smoke, CO; NO VERIFIED SOURCE = mold. Wisconsin statutes and SPS read in full on
+  docs.legis.wisconsin.gov (current through 2025 Act 247, published 11-4-26); all 26 Ch. 27 excerpts re-verified against
+  an independent extraction of the official PDF. Live Municode is behind a Cloudflare check for scripts (not bypassed):
+  MGO 34.907 was not re-read. New findings: Wis. Stat. 101.01(12) "public building" includes use "by 3 or more
+  tenants"; §27.04(2)(d) cites SPS 321.04(2) but handrails are now in 321.04(3); §27.05(2)(w) cites SPS 328.02, now
+  *Scope* (smoke = 328.03 since 2011); "single-family dwelling" (§27.07(2)(d)) is undefined in §27.03; SPS 321
+  applies to 1-2 family dwellings begun on/after June 1, 1980; City BI says it cannot accept photos as proof of pests.
+  Wording for unverified categories corrected on `ch27-review` (commit 87df616, not deployed).
 - Default deadline windows (7 days routine / 48h urgent / 24h emergency) are **FixIt defaults, not legal deadlines**.
 
 ## 6. Safety / privacy
@@ -222,7 +234,9 @@ scripts/  dbx_setup · app_smoke · genie_verify · code_parse · ch27_review_sh
 - **Branches:**
   - The deployed app now runs **`ch27-review`** (deployment `01f1e0b4…`; **not merged** into `main`). It includes the
     corrected wording, explicit synthetic-data labels, the smoke/CO prototype (deadline disabled), the responsive fixes,
-    and the 3 verified citations. 89 tests pass on the branch, none skipped.
+    and the 3 verified citations. 89 tests passed at the deployed commit `aeb7598`.
+  - Local-only commits after the deployment (not deployed, not merged): `87df616` (wording for unverified categories
+    + tests, now 94 passing), `eb99af3` (review-sheet discrepancies), plus the FINAL_LEGAL_REVIEW docs commit.
   - `main` is the previous deployment.
 - **Rollback point:** git tag `deploy-pre-ch27-2026-11-14` (commit cef6822, deployment `01f1e0a5dc26…`). Delta versions
   before the change: `silver.code_sections` v11, `ref.violation_types` v7 (`RESTORE TABLE … TO VERSION AS OF`); then
@@ -233,9 +247,10 @@ scripts/  dbx_setup · app_smoke · genie_verify · code_parse · ch27_review_sh
 - Quick start: `make setup && make build && make api` → http://localhost:8000 (Windows commands in README).
 
 ## 11. Inputs still needed from the human
-- Ch. 27: personal review and approval of the remaining provisional citations (locks, windows, pests, electrical, water
-  damage); City Building Inspection clarification of the §27.06(4) cross-reference; SPS 321.04 / SPS 362 for stairs and
-  handrails.
+- Ch. 27: personal review and approval (or not) of the READY rows in `docs/legal/FINAL_LEGAL_REVIEW.md` (locks,
+  windows, pests, electrical, water damage); City Building Inspection clarification of §27.06(4), the "SPS 321.04(2)" and
+  "SPS 328.02" references, and "single-family dwelling"; whether state statutes may be shown as possibly relevant
+  sources for smoke/CO; whether to narrow the smoke/CO "absence" vision cues.
 - Smoke/CO: verify the sources and written-notice requirements before the (disabled) legal deadline can be enabled.
 - Decide whether to merge `ch27-review` into `main`, and whether to update the local fallback.
 - Manual checklist on the App + phone (`docs/DEMO_SCRIPT.md`); staged photos for `scripts/eval_vision.py` and the stage cache.

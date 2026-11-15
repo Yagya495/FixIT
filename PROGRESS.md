@@ -213,6 +213,26 @@ over FixIt tables, App deployment, service-principal permissions.
 - **Not done:** no merge into `main`; the local fallback (:8000) still runs the older code and data; the smoke/CO legal
   deadline stays disabled; no P1 work.
 
+## Consolidated legal review of the remaining 9 categories (2026-11-14, late; preparation only)
+- Report: **`docs/legal/FINAL_LEGAL_REVIEW.md`**. Nothing approved, activated or deployed; reviewer fields blank; no
+  `approve --apply`; no Databricks changes; five-day alarm deadline still hard-disabled.
+- Recommendations: **READY FOR HUMAN REVIEW** locks, windows, pests, electrical (§27.04(2)(g) only), water damage ·
+  **NEEDS CLARIFICATION** exits, smoke alarms, CO alarms · **NO VERIFIED SOURCE** mold, electrical cover plates.
+- Sources: Wis. Stats. 101.01/.145/.149/.61/.645/.647, 704.07 and SPS 320/321/328/361/362/366/316, ATCP 134.04 read in
+  full on docs.legis.wisconsin.gov (statutes current through 2025 Act 247, published 11-4-26). City BI Common Code
+  Violations + Mold/Pests/Smoke-CO pages, Fire Dept. and Public Health pages fetched. Live Municode blocked scripts
+  (Cloudflare; not bypassed), so MGO 34.907/29.22 were not re-read. All 26 Ch. 27 excerpts re-verified against an
+  independent pypdf extraction of the official PDF (hash unchanged).
+- Four new source discrepancies recorded (not interpreted): §27.04(2)(d) → "SPS 321.04(2)" (handrails now in (3));
+  §27.05(2)(w) → "SPS 328.02" (now *Scope*); "single-family dwelling" undefined; statute note → "SPS 321.095" (CO is
+  321.097). New fact: 101.01(12) "public building" includes use "by 3 or more tenants".
+- Code (commit `87df616`, local): cautious wording for smoke (no building-independent requirement, no unsupported
+  locations), CO, cover plates, mold (City BI guidance), pests (City BI: photos not accepted as proof), locks, exits; tour
+  question; alarm prototype surfaces 101.01(12) without evaluating it; Scan "Looking for possible issues…".
+- Tests: 89 before → **94 passed** after (5 new: wording, exactly three approvals, blank reviewer fields, tour question,
+  public-building note). Frontend type-check clean.
+- Not changed (needs a decision): vision cues that treat an alarm's absence from a photo as a possible issue.
+
 ## Next (priorities set by the user, 2026-11-14)
 1. **Complete the Chapter 27 citation review**: plumbing, heat and surfaces are verified and deployed. Next: the
    remaining provisional citations (`docs/legal/CH27_REVIEW.md`); exits wait on Building Inspection's §27.06(4)
