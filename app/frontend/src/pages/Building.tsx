@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import L from "leaflet";
 import { get } from "../api";
-import { DemoBadge, GradeBadge, SeverityChip, Spinner, Stat } from "../components/ui";
+import { DemoBadge, GradeBadge, SeverityChip, Spinner, Stat, SyntheticNote } from "../components/ui";
 
 const pin = L.divIcon({ className: "", html: '<div style="width:18px;height:18px;border-radius:9px;background:#C5050C;border:3px solid white;box-shadow:0 1px 4px #0006"></div>' });
 
@@ -17,6 +17,7 @@ export default function Building() {
       <div>
         <div className="flex items-center gap-2 text-neutral-500 font-semibold">{b.neighborhood} · built {b.year_built} · {b.units} units <DemoBadge /></div>
         <h1 className="h1">{b.address_norm}</h1>
+        <SyntheticNote>Synthetic building with a simulated complaint history and a fictional owner grade (demo data, not City records).</SyntheticNote>
       </div>
       <div className="grid md:grid-cols-3 gap-4">
         <Link to={`/owners/${b.owner.owner_id}`} className="card p-4 flex items-center gap-3 hover:border-badger">

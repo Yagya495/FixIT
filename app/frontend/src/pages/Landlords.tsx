@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
 import { get } from "../api";
-import { DemoBadge, GradeBadge, Spinner } from "../components/ui";
+import { DemoBadge, GradeBadge, Spinner, SyntheticNote } from "../components/ui";
 
 export default function Landlords() {
   const [q, setQ] = useState("");
@@ -20,6 +20,7 @@ export default function Landlords() {
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-3"><h1 className="h1">Landlord report cards</h1><DemoBadge /></div>
+      <SyntheticNote>All owners, buildings and grades here are fictional: grades are computed from simulated complaint records in FixIt's synthetic demo dataset.</SyntheticNote>
       <div className="relative">
         <Search className="absolute left-3 top-3 w-5 h-5 text-neutral-400" />
         <input className="input pl-10 text-lg" placeholder="Search owner, management company, or address (e.g. 1234 Demo St)" value={q} onChange={(e) => setQ(e.target.value)} />

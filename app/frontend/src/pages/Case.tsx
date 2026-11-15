@@ -73,7 +73,7 @@ function Collective({ c }: { c: any }) {
   }
   return (
     <section className="rounded-2xl bg-ink text-white p-5 space-y-3">
-      <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-red-300"><Users className="w-4 h-4" /> You're not alone <DemoBadge /></div>
+      <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-red-300"><Users className="w-4 h-4" /> You're not alone <DemoBadge label="Simulated neighbor reports" /></div>
       {col.headline && <div className="text-2xl md:text-3xl font-extrabold">{col.headline}</div>}
       {col.owner_line && <div className="text-lg text-neutral-300">{col.owner_line}</div>}
       <div className="flex flex-wrap gap-2">

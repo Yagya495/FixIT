@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { CircleMarker, MapContainer, Popup, TileLayer } from "react-leaflet";
 import { MessageSquareText, Sparkles } from "lucide-react";
 import { get, post } from "../api";
-import { DemoBadge, ErrorBox, Spinner } from "../components/ui";
+import { DemoBadge, ErrorBox, Spinner, SyntheticNote } from "../components/ui";
 
 const color = (n: number) => (n >= 6 ? "#9B0000" : n >= 3 ? "#C5050C" : n >= 1 ? "#F59E0B" : "#10B981");
 
@@ -16,6 +16,7 @@ export default function City() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3"><h1 className="h1">City view</h1><DemoBadge /></div>
+      <SyntheticNote>Synthetic buildings and simulated reports placed on real Madison streets. "Ask the data" answers describe this demo dataset, not real City records.</SyntheticNote>
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-2">
           <div className="h-[460px]">

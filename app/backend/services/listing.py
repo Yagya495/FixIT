@@ -43,7 +43,7 @@ def verdict(violations: list[dict], history: dict | None) -> dict:
     g = grade.get("grade")
     if history:
         if history["heat_reports_recent"]:
-            reasons.append(f'{history["heat_reports_recent"]} heat complaints at this building in the last 30 days')
+            reasons.append(f'{history["heat_reports_recent"]} heat complaints at this building in the last 30 days (simulated demo history)')
         if history["open_issues"]:
             reasons.append(f'{history["open_issues"]} open issues on record for this building')
         if g:

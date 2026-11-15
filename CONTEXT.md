@@ -30,6 +30,8 @@ Renter (primary) · tenant organizer · city inspector/council staff (demo perso
 ---
 
 ## 2. Priority tiers (law)
+- **Current priorities (user, 2026-11-14):** 1) complete the Chapter 27 citation review, 2) improve real-photo analysis
+  reliability, 3) finish frontend and mobile testing, 4) prepare the three-minute demo. No P1 work.
 - **P0** (demo): code KB, taxonomy, scan, listing X-Ray, evidence locker + packet PDF, repair letter, simulated call,
   deadlines + escalation, collective match, landlord report card, Genie, synthetic dataset, Demo Mode.
 - **P1**: real phone call, Lease X-Ray, risk model (MLflow), AI/BI dashboard, Ask FixIt RAG, eval panel, Chicago
@@ -49,6 +51,7 @@ Finish every P0 before starting any P1.
 | **Dual data backend** | `DATA_BACKEND=local` → SQLite (`data/fixit.db`), `DATA_BACKEND=databricks` → SQL warehouse | App runs and demos before Databricks is ready, and is a stage fallback if the warehouse fails |
 | SQL dialect | Plain ANSI SQL with `:named` params (works in sqlite3 *and* databricks-sql-connector ≥3). Dates computed in Python and passed as params. Arrays stored as JSON strings | One code path for both backends |
 | Synthetic data | One pure-Python generator (`app/backend/services/synthetic.py`) used by the local seeder, `scripts/dbx_setup.py` and `notebooks/05_generate_synthetic.py`. Generated at a fixed `REFERENCE_NOW` (2026-11-14 12:00) then shifted to the real `now`; the demo story has its own RNG stream | Same demo story everywhere, at any time of day (before this, the demo owner's grade flipped D/F with the clock) |
+| Demo dataset (user, 2026-11-14) | Keep the synthetic dataset (2,004 buildings, 251 owners, 11,941 reports) for MadHacks. UI says explicitly what is synthetic: records, simulated complaint histories, fictional landlord grades. No real property-data ingestion, listing scraping or real complaint-history integration now; real Madison property data is **future work, not P0** (PROGRESS.md) | No real tenants or landlords; honest demo |
 | Databricks profile | Only the CLI profile `fixit` (Free Edition workspace). Never `sleepsafe` | User instruction |
 | Models | `databricks-llama-4-maverick` (chat + vision), `gte-large-en` (embeddings); verified live. No Claude endpoints in this workspace | Free Edition availability |
 | Ch. 27 parse staging | `ai_parse_document` output goes to `fixit.bronze.code_sections_parsed` (staging). The App reads only silver/ref (its SP has no bronze grants) | Parsing never changes what the App shows |

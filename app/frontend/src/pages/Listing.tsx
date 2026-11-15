@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Ban, CircleHelp, ThumbsUp, Upload } from "lucide-react";
 import { postForm, sha256Hex, toJpeg, imgUrl, type Violation } from "../api";
-import { AiSource, CopyButton, DemoBadge, Disclaimer, ErrorBox, GradeBadge, Progress, ViolationCard } from "../components/ui";
+import { AiSource, CopyButton, DemoBadge, Disclaimer, ErrorBox, GradeBadge, Progress, SyntheticNote, ViolationCard } from "../components/ui";
 
 const STEPS = ["Uploading listing photos…", "Scanning photos for possible code issues…", "Matching to MGO Chapter 27…",
   "Looking up the building's complaint history…", "Checking the owner's report card…", "Writing tour questions and lease addendum…"];
@@ -107,6 +107,7 @@ function Result({ res, onReset }: { res: any; onReset: () => void }) {
         </div>
         <div className="space-y-3">
           <h2 className="h2 flex items-center gap-2">Building history <DemoBadge /></h2>
+          <SyntheticNote>Simulated complaint history and a fictional landlord grade from FixIt's synthetic demo dataset, not real City of Madison records.</SyntheticNote>
           {h ? (
             <div className="card p-4 space-y-3">
               <div className="flex items-center gap-3">

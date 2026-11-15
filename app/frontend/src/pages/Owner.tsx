@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { get } from "../api";
-import { DemoBadge, GradeBadge, Spinner, Stat } from "../components/ui";
+import { DemoBadge, GradeBadge, Spinner, Stat, SyntheticNote } from "../components/ui";
 
 export default function Owner() {
   const { id } = useParams();
@@ -19,6 +19,9 @@ export default function Owner() {
           <div className="text-neutral-600 flex items-center gap-2">{o.management_company} <DemoBadge />
             {o.repeat_offender && <span className="chip bg-red-100 text-red-800">repeat offender</span>}</div>
         </div>
+      </div>
+      <div>
+        <SyntheticNote>Fictional owner. The grade and statistics are computed from simulated complaint records in FixIt's synthetic demo dataset.</SyntheticNote>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Stat label="Open issues" value={s.open_issues} />

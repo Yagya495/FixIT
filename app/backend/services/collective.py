@@ -55,4 +55,4 @@ def match(property_id: str | None, unit: str | None, now: datetime | None = None
         owner_line = f"This owner's {len(others)} other building{'s' if len(others) != 1 else ''} have {n_open} open issues."
     return {"matched": bool(top or others), "property_id": property_id, "address": prop["address_norm"] if prop else None,
             "owner_name": prop["owner_name"] if prop else None, "neighbors": neighbors, "other_buildings": others,
-            "headline": headline, "owner_line": owner_line, "synthetic_note": "Neighbor reports are demo data."}
+            "headline": headline, "owner_line": owner_line, "synthetic_note": "Neighbor reports are simulated (synthetic demo data)."}

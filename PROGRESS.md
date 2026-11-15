@@ -182,13 +182,29 @@ Workspace `https://dbc-bae64bde-0c7f.cloud.databricks.com`, **Free Edition** (pe
 **Not yet verified:** detection quality on real problem photos (needs staged photos), table writes, Volumes, Genie
 over FixIt tables, App deployment, service-principal permissions.
 
-## Next
-1. 🧑 Open the App URL, click Continue on the OAuth prompt, and walk the demo in the browser (docs/DEMO_CHECKLIST.md).
-   Apps auto-stop ~24 h after deploy: redeploy (`databricks apps deploy …`) the day of judging.
-2. 🧑 Review `docs/legal/CH27_REVIEW.md`, fill `eval/code_review.csv` (approved ids + reviewer), then
-   `code_parse.py approve` (dry run, then `--apply`). Until then keep the "pending verification" labels.
-3. 🧑 Real demo photos into `demo/demo_inputs/{listing,walkthrough}/` → `/api/demo/warm` with live models → commit cache.
-4. MLflow tracing on vision/LLM calls. 5. Full 3-minute dry run ×3, Demo Mode on and off, on the deployed App. Then P1.
+## Next (priorities set by the user, 2026-11-14)
+1. **Complete the Chapter 27 citation review**: the reviewer's personal approval of plumbing, heat and surfaces (ready),
+   then the rest (`docs/legal/CH27_REVIEW.md`); exits wait on Building Inspection's §27.06(4) clarification.
+2. **Improve real-photo analysis reliability**: staged/real photos → `scripts/eval_vision.py`; warm the stage cache.
+3. **Finish frontend and mobile testing**: open the App URL (OAuth Continue), walk `docs/DEMO_SCRIPT.md` on laptop + phone.
+4. **Prepare the three-minute demo**: dry run ×3, Demo Mode on and off. Redeploy on judging day (Apps auto-stop ~24 h).
+
+## Data decision (user, 2026-11-14): synthetic dataset for the demo
+- The demo keeps the existing **synthetic Madison dataset**: 2,004 buildings, 251 owners, 11,941 reports. Every owner,
+  building, neighbor report, complaint history and landlord grade is fictional (only street geography is real).
+- UI labels (branch `ch27-review`, not deployed): a "Synthetic demo data" badge plus a one-line note on Listing (building
+  history), Building, Owner, Landlords and City saying exactly what is synthetic: "simulated complaint history",
+  "fictional landlord grade", "fictional owner"; grade badges have a "fictional grade" tooltip; the Case banner says
+  "Simulated neighbor reports"; the listing verdict reason and tour question say "(simulated demo history)" /
+  "FixIt's demo data (simulated)".
+- **Not now:** real property-data ingestion, live rental-listing scraping, real landlord complaint-history integration.
+
+## Future work (not required for P0)
+- **Real Madison property data**: assessor/parcel ownership, City Building Inspection complaint and Official Notice
+  history, and rental registration data, joined on normalized addresses in the lakehouse. It would need data-use terms,
+  privacy review (no tenant PII), a refresh pipeline and honest "as of" dates. A grade built from real records would need
+  its own methodology review before being shown about real landlords.
+- Listing URL fetching only where a site's terms allow it (sidecar, P1/P2).
 
 ## Known issues / deviations
 - Code section numbers are **placeholders** until Ch. 27 is parsed and mappings are human-reviewed.

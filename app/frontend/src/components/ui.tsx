@@ -15,8 +15,13 @@ export function Disclaimer({ compact = false }: { compact?: boolean }) {
   );
 }
 
-export function DemoBadge() {
-  return <span className="chip bg-violet-100 text-violet-800" title="Synthetic demo data — no real tenants or owners">Demo data</span>;
+export function DemoBadge({ label = "Synthetic demo data" }: { label?: string }) {
+  return <span className="chip bg-violet-100 text-violet-800" title="Synthetic demo data: fictional buildings, owners, neighbors and complaint histories. No real tenants, owners or City records.">{label}</span>;
+}
+
+/** One-line explanation of what on this screen is synthetic (shown next to demo data). */
+export function SyntheticNote({ children }: { children: React.ReactNode }) {
+  return <p className="text-xs text-violet-800 bg-violet-50 rounded-lg px-3 py-2">{children}</p>;
 }
 
 const SEV: Record<string, string> = {
@@ -34,7 +39,8 @@ const GRADE: Record<string, string> = {
 export function GradeBadge({ g, size = "md" }: { g?: string | null; size?: "sm" | "md" | "lg" }) {
   const dim = size === "lg" ? "w-20 h-20 text-5xl" : size === "sm" ? "w-7 h-7 text-sm" : "w-11 h-11 text-2xl";
   return (
-    <div className={`${dim} ${GRADE[g ?? ""] ?? "bg-neutral-400"} rounded-xl text-white font-extrabold grid place-items-center shrink-0`}>
+    <div title="Fictional grade computed from synthetic demo data (not a real rating of a real landlord)"
+      className={`${dim} ${GRADE[g ?? ""] ?? "bg-neutral-400"} rounded-xl text-white font-extrabold grid place-items-center shrink-0`}>
       {g ?? "?"}
     </div>
   );

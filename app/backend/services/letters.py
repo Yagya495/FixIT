@@ -76,7 +76,7 @@ def tour_questions(violations: list[dict], history: dict | None) -> list[str]:
     if "DAMAGED_SURFACES" in types:
         qs.append("Will the damaged/peeling surfaces be repaired and repainted before move-in? (Ask about lead paint if built before 1978.)")
     if history and history.get("heat_reports_recent", 0) > 0:
-        qs.append(f'This building has {history["heat_reports_recent"]} recent heat complaints. Has the heating system been repaired or replaced, and how do I report no-heat after hours?')
+        qs.append(f'FixIt\'s demo data (simulated) shows {history["heat_reports_recent"]} recent heat complaints at this building. Has the heating system been repaired or replaced, and how do I report no-heat after hours?')
     defaults = [
         "How do I submit repair requests, and what's your typical response time for urgent issues?",
         "Can we add a move-in condition checklist and a written list of repairs to complete before move-in to the lease?",
