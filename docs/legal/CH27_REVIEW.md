@@ -456,8 +456,10 @@ Corrected on git branch `ch27-review` (not deployed yet):
 
 ## Unresolved source discrepancies (not silently resolved)
 
-- **27.04(2)(d) (p. 6)** (open): The egress rule says 'except as provided in Sec. 27.06(4), MGO', but 27.06(4) in this document (p. 29) is about habitable rooms below grade and says nothing about egress. Possibly an outdated cross-reference. Check the current official source; do not resolve it silently.
+- **27.04(2)(d) (p. 6)** (open): The egress rule says 'except as provided in Sec. 27.06(4), MGO', but 27.06(4) in this document (p. 29) is about habitable rooms below grade and says nothing about egress. Possibly an outdated cross-reference. Check the current official source; do not resolve it silently. INVESTIGATED 2026-11-14: identical wording on live Municode (Sep 1, 2026) and in the oldest structured version available (Feb 7, 2018); the rent-abatement schedule's exit row does not mention 27.06(4). The reason for the reference cannot be determined from the available official text and is not guessed. Next step: ask Building Inspection or obtain the amending ordinances (Ord. 9326, 1987; Ord. 12,349, 1999).
 - **27.04(2)(h) history note (p. 9)** (open (cosmetic)): 'Ord. 9326, 11-13-76' here; the same ordinance is dated '11-13-87' elsewhere in Chapter 27. Quoted as written; does not change the requirement.
+- **MGO 32.04(4)(d) row 41 (rent abatement)** (open): Cites '29.19' for carbon monoxide detectors, but the current MGO 29.19 is 'Accrediting Standards and Tests'. CO appears in Chapter 29 only via 29.22 (adoption of SPS 328). Not interpreted.
+- **MGO 34.907 internal references** (open (outside Ch. 27)): Refers to 'sub. (2)(a)', 'sub. (2)(b)' and 'sub. (3)(h)' for alarm requirements that are now numbered (1)(b)1./(1)(b)2. Not interpreted.
 
 ## Parse defects, corrected from the PDF's own text layer
 
