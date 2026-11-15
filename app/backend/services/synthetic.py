@@ -78,10 +78,37 @@ def _severity(type_id: str, month: int) -> str:
     return SEVERITY_OF[type_id]
 
 
+# Every dataset is generated as of this fixed instant and then shifted so that "now" lands on the real clock.
+# Why: date sampling below is seasonal (rejection-sampled by calendar month), so generating at the actual `now`
+# made the number of random draws, and therefore every later draw, depend on the time of day. The demo owner's
+# repair history came out different on each reset and its grade flipped between D and F. With a fixed reference the
+# data is identical relative to `now` on every run; scoring code (landlords.py) is unchanged.
+# Mid-November = the hackathon's heating season, so seasonality also looks right on demo day.
+REFERENCE_NOW = datetime(2026, 11, 14, 12, 0, 0)
+_TIME_FIELDS = ("reported_at", "fixed_at")
+
+
 def generate(seed: int = 42, now: datetime | None = None, n_owners: int = 250, n_properties: int = 2000,
-             n_reports: int = 12000) -> dict[str, list[dict]]:
-    rng = random.Random(seed)
+             n_reports: int = 12000, reference: datetime | None = REFERENCE_NOW) -> dict[str, list[dict]]:
+    """Synthetic dataset relative to `now` (default: the current time).
+
+    Deterministic: for a given seed, every time offset from `now` (report ages, repair durations, open/fixed status)
+    is the same whatever `now` is. Pass reference=None to sample at `now` itself (old, time-dependent behavior).
+    """
     now = (now or datetime.now()).replace(microsecond=0)
+    ref = reference or now
+    data = _generate_at(seed, ref, n_owners, n_properties, n_reports)
+    shift = now - ref
+    if shift:
+        for r in data["reports"]:
+            for f in _TIME_FIELDS:
+                if r[f]:
+                    r[f] = (datetime.fromisoformat(r[f]) + shift).isoformat(timespec="seconds")
+    return data
+
+
+def _generate_at(seed: int, now: datetime, n_owners: int, n_properties: int, n_reports: int) -> dict[str, list[dict]]:
+    rng = random.Random(seed)
     start = now - timedelta(days=3 * 365)
 
     # ---------------- owners
@@ -163,7 +190,8 @@ def generate(seed: int = 42, now: datetime | None = None, n_owners: int = 250, n
                 break
         reports.append(_mk_report(rng, f"R-{i:06d}", p, t, d, now, quality))
 
-    reports.extend(_demo_reports(rng, now, quality))
+    # The hand-crafted demo story gets its own random stream, so tuning the background data can never move it.
+    reports.extend(_demo_reports(random.Random(f"fixit-demo-story-{seed}"), now, quality))
     return {"owners": owners, "properties": properties, "reports": reports}
 
 

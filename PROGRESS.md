@@ -104,12 +104,23 @@ Needs the user: staged photos for eval + stage · manual checklist on the App/ph
 - Parse defects (not quoted): 27.05(2)(h)7. lines out of order; 27.05(2)(x) dropped words.
 - **Next (user):** review the sheet, fill `approved_section_ids` + `reviewer`, then `approve` (dry run first), then redeploy.
 
-### Found: demo owner grade depends on the time of day the data is generated (NOT fixed yet)
-`synthetic.generate(now=…)` → Isthmus Edge Properties (demo) grades D at 09:00 / 17:00 on 11-14 and 11-15 09:00, but
-**F at 21:15 on 11-14 and on 11-20 12:00** (score crosses 1.0). `test_e2e::test_full_demo_flow` fails for this reason
-(fails identically on the committed code). The loaded Databricks data and local DB (generated earlier) still show D,
-**but `/api/demo/reset` at the wrong time would show F.** Fix needs an app change (pin the demo owner's story, or anchor
-generation to a fixed day) + redeploy: awaiting approval.
+### Fixed (in code, NOT yet deployed): demo owner grade depended on the time of day the data was generated
+- Was: D at 09:00 / 17:00 on 11-14, **F at 21:15 on 11-14 and noon on 11-20**; `test_e2e::test_full_demo_flow` failed.
+- Root cause: one shared RNG. Background report dates are rejection-sampled by calendar month, and the dates are
+  counted back from `now`, so the number of draws depended on the clock. The hand-crafted demo history is drawn
+  *after* that loop, so it got entirely different repair durations each time (median days-to-fix 22 → 41), and its
+  score crossed the F cut (1.0). The background barely changed (7 of 11,941 reports differed an hour apart).
+- Fix (`synthetic.py`): generate at a fixed `REFERENCE_NOW` (2026-11-14 12:00) and shift every timestamp by
+  `now − REFERENCE_NOW` (identical data relative to `now`), and give the demo story its own RNG stream. Scoring
+  (`landlords.py`, notebook 40) unchanged. Demo owner now always **D (score 0.916)**, 6 open heat, 11 open elsewhere.
+- Tests: `app/backend/tests/test_synthetic.py` (19: 14 times incl. midnight, DST, year end, leap day, summer; whole
+  dataset identical relative to now; demo story independent of background size; local seed end to end at 21:15).
+  16 of them fail on the old generator. Suite: **70 passed**.
+- Not yet applied to Databricks or the App (awaiting approval). A Databricks reload changes background numbers slightly,
+  so the 8 saved Genie answers should be re-captured live after it.
+- Databricks data right now (read-only check, 21:4x): grade D, 11 other open, but **7** open heat and 15 app-written
+  reports at 1234 Demo St from 2 scans via the deployed App at 20:47–20:52 (manual testing). A reset clears these rows;
+  uploaded evidence files in `/Volumes/fixit/raw/evidence/` are kept.
 
 ## Milestone 1 on Databricks: DONE (2026-11-14, approved by the user, profile `fixit` only)
 **Deployed App:** https://fixit-madison-7474647207905142.aws.databricksapps.com (workspace sign-in required)
