@@ -68,7 +68,7 @@ Before going on stage, put the exact demo photos in `demo/demo_inputs/{listing,w
 
 ## Retell AI phone calls
 
-_Merged into `ch27-review`; not deployed yet. Always off in `PUBLIC_DEMO` mode._
+_Deployed 2026-11-15 from `ch27-review`: Case page → "AI calls your landlord" → **Real phone call (Retell)**. Keys come from the App's `fixit-retell` secret scope. Always off in `PUBLIC_DEMO` mode._
 
 The Case page has a separate **Retell phone call** panel that places a real call to a consenting teammate or judge
 role-playing the landlord. The simulated call is unchanged and remains the stage default.
