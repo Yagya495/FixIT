@@ -4,6 +4,7 @@ from __future__ import annotations
 import base64
 import json
 import re
+import time
 from typing import Any
 
 import httpx
@@ -48,8 +49,14 @@ def chat(messages: list[dict], endpoint: str | None = None, max_tokens: int = 12
     endpoint = endpoint or config.CHAT_ENDPOINT
     url = f"{_host()}/serving-endpoints/{endpoint}/invocations"
     try:
-        r = httpx.post(url, headers=_auth_headers(), timeout=timeout or config.LLM_TIMEOUT_S,
-                       json={"messages": messages, "max_tokens": max_tokens, "temperature": temperature})
+        body = {"messages": messages, "max_tokens": max_tokens, "temperature": temperature}
+        for attempt in range(RETRIES + 1):
+            r = httpx.post(url, headers=_auth_headers(), timeout=timeout or config.LLM_TIMEOUT_S, json=body)
+            # Pay-per-token endpoints rate-limit bursts (e.g. a video's frames): back off briefly and retry.
+            if r.status_code in RETRY_STATUS and attempt < RETRIES:
+                time.sleep(_retry_delay(r, attempt))
+                continue
+            break
         r.raise_for_status()
         data = r.json()
         content = data["choices"][0]["message"]["content"]
@@ -58,6 +65,18 @@ def chat(messages: list[dict], endpoint: str | None = None, max_tokens: int = 12
         return content
     except Exception as e:
         raise LLMUnavailable(str(e)) from e
+
+
+RETRY_STATUS = {429, 503}
+RETRIES = 3
+
+
+def _retry_delay(r: httpx.Response, attempt: int) -> float:
+    """Retry-After (seconds) when the server sends it, else 1, 2, 4 s; capped at 8 s."""
+    try:
+        return min(8.0, max(0.0, float(r.headers.get("retry-after", ""))))
+    except ValueError:
+        return min(8.0, 2.0 ** attempt)
 
 
 def image_part(jpeg_bytes: bytes, media_type: str = "image/jpeg") -> dict:

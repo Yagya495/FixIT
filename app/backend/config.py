@@ -68,6 +68,8 @@ STATIC_DIR = APP_DIR / "static" if (APP_DIR / "static").exists() else APP_DIR / 
 # Vision
 CONFIDENCE_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.6"))
 MAX_FRAMES = 30
+# Parallel vision calls within one upload request (frames are still stored in order).
+VISION_CONCURRENCY = max(1, int(os.getenv("VISION_CONCURRENCY", "2")))
 
 # Deadlines (FixIt defaults — NOT legal deadlines)
 DEFAULT_WINDOW_HOURS = {"routine": 7 * 24, "urgent": 48, "emergency": 24}

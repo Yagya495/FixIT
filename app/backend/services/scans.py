@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timezone
 
 from .. import config, db
@@ -31,17 +32,54 @@ def _detection_rows(scan_id: str) -> list[dict]:
                 "FROM {silver.detections} WHERE scan_id = :s ORDER BY created_at, detection_id", {"s": scan_id})
 
 
-def process_frames(scan_id: str, frames: list[tuple]) -> dict:
-    """frames: (bytes, media_type, captured_at[, original_file_sha]). Returns per-frame results + deduped violations."""
+def overall_source(sources: list[str]) -> str:
+    """One label for a request's frames (repeats excluded), most cautious first: no answer at all -> "none"; some frames
+    unanswered -> "partial" (never reported as "live"); then scripted fallback, cache, live."""
+    s = set(sources)
+    if not s:
+        return "none"
+    if s == {"none"}:
+        return "none"
+    if "none" in s:
+        return "partial"
+    for label in ("fallback", "cache", "live"):
+        if label in s:
+            return label
+    return sorted(s)[0]
+
+
+def process_frames(scan_id: str, frames: list[tuple], frame_offset: int = 0, frame_total: int = 0) -> dict:
+    """frames: (bytes, media_type, captured_at[, original_file_sha]). Returns per-frame results + deduped violations.
+
+    frame_offset/frame_total place this request within a larger upload sent in batches. Evidence is stored and
+    detections written in frame order; only the model calls run in parallel."""
     scan = get_scan(scan_id)
     if not scan:
         raise KeyError(scan_id)
     frames = frames[: config.MAX_FRAMES]
-    per_frame, sources = [], set()
-    for i, frame in enumerate(frames):
+    total = max(frame_total, frame_offset + len(frames))
+    stored = []
+    for frame in frames:
         data, media_type, captured_at = frame[:3]
+        stored.append((frame, evidence.store(scan_id, data, media_type, captured_at)))
+
+    def analyze(k: int):
+        frame, ev = stored[k]
         orig_sha = frame[3] if len(frame) > 3 else None
-        ev = evidence.store(scan_id, data, media_type, captured_at)
+        return vision.analyze_frame(frame[0], ev["sha256"], scan["mode"], frame_offset + k, total, frame[1],
+                                    alt_sha=orig_sha)
+
+    todo = [k for k, (_, ev) in enumerate(stored) if not ev.get("reused")]
+    workers = min(config.VISION_CONCURRENCY, len(todo)) or 1
+    if workers > 1:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            results = dict(zip(todo, pool.map(analyze, todo)))
+    else:
+        results = {k: analyze(k) for k in todo}
+
+    per_frame, sources = [], []
+    for k, (frame, ev) in enumerate(stored):
+        i = frame_offset + k
         if ev.get("reused"):
             # The same photo was already analyzed in this scan (re-upload, double tap, repeated frame): don't call the
             # model again and don't add detections, so a repeat can't create duplicate or contradictory findings.
@@ -49,10 +87,10 @@ def process_frames(scan_id: str, frames: list[tuple]) -> dict:
             per_frame.append({"evidence_id": ev["evidence_id"], "sha256": ev["sha256"], "scene": None,
                               "detections": [{"violation_type": r["violation_type"], "confidence": r["confidence"],
                                               "evidence_note": r["note"], "evidence_id": ev["evidence_id"]} for r in prior],
-                              "screened_out": [], "source": "repeat", "repeat": True})
+                              "screened_out": [], "source": "repeat", "repeat": True, "frame_index": i})
             continue
-        res, source = vision.analyze_frame(data, ev["sha256"], scan["mode"], i, len(frames), media_type, alt_sha=orig_sha)
-        sources.add(source)
+        res, source = results[k]
+        sources.append(source)
         dets, screened = [], []
         for j, d in enumerate(res.detections):
             raw = d.model_dump()
@@ -74,12 +112,12 @@ def process_frames(scan_id: str, frames: list[tuple]) -> dict:
             })
             dets.append(dd)
         per_frame.append({"evidence_id": ev["evidence_id"], "sha256": ev["sha256"], "scene": res.scene,
-                          "detections": dets, "screened_out": screened, "source": source})
+                          "detections": dets, "screened_out": screened, "source": source, "frame_index": i})
     violations = rebuild_violations(scan_id)
-    source = "live" if sources == {"live"} else ("cache" if "cache" in sources else sorted(sources)[0] if sources else "none")
+    counts = {s: sources.count(s) for s in sorted(set(sources))}
     # The UI shows where results came from; name the model only when it actually answered.
-    return {"scan_id": scan_id, "frames": per_frame, "violations": violations, "source": source,
-            "model": config.VISION_ENDPOINT if "live" in sources else None}
+    return {"scan_id": scan_id, "frames": per_frame, "violations": violations, "source": overall_source(sources),
+            "source_counts": counts, "model": config.VISION_ENDPOINT if "live" in sources else None}
 
 
 def observations(scan_id: str) -> dict[str, list[dict]]:

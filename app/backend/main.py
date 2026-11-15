@@ -84,12 +84,14 @@ def create_scan(mode: str = Form("walkthrough"), address: str = Form(""), unit: 
 
 @app.post("/api/scans/{scan_id}/frames")
 async def add_frames(scan_id: str, files: list[UploadFile] = File(...), captured_at: list[str] | None = Form(None),
-                     orig_sha: list[str] | None = Form(None)):
+                     orig_sha: list[str] | None = Form(None), frame_offset: int = Form(0), frame_total: int = Form(0)):
+    """frame_offset/frame_total: position of this batch within a larger upload (the browser sends a video's frames in
+    small batches), so frame indexes stay consistent across batches."""
     frames = await _read_frames(files, captured_at, orig_sha)
     if not frames:
         raise HTTPException(400, "no images")
     try:
-        return scans.process_frames(scan_id, frames)
+        return scans.process_frames(scan_id, frames, frame_offset=max(0, frame_offset), frame_total=max(0, frame_total))
     except KeyError:
         raise HTTPException(404, "scan not found")
 
