@@ -114,6 +114,9 @@ def analyze_frame(image: bytes, sha256: str, mode: str, frame_index: int, n_fram
     if config.DEMO_MODE and cached is not None:
         # Cached demo inputs are served directly on stage: deterministic and instant.
         return FrameResult.model_validate(cached), "cache"
+    if config.PUBLIC_DEMO:  # no live model on the public demo: scripted result, labeled "Demo script" in the UI
+        dets = demo_cache.scripted_detections(mode, frame_index, n_frames)
+        return FrameResult(detections=[Detection(**d) for d in dets]), "fallback"
     try:
         res = analyze_frame_live(image, mode, media_type)
         return res, "live"

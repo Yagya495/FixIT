@@ -1,7 +1,7 @@
 # Chapter 27: automated comparison against the live official text (2026-11-14)
 
 > An **automated text comparison**, not a reviewer approval. A citation becomes verified only after the reviewer
-> (Naisha Chadha) personally checks it on the official source and explicitly approves it.
+> (the project's Legal Reviewer) personally checks it on the official source and explicitly approves it.
 
 - **Source:** Municode, Madison Code of Ordinances, Chapter 27, opened in the user's browser
   (https://library.municode.com/wi/madison/codes/code_of_ordinances?nodeId=COORMAWIVOIICH20--31_CH27MIHOPRMACO).

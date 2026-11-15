@@ -97,7 +97,7 @@ def main() -> int:
     def status(p: dict) -> str:
         d = p.get("decision", "")
         if d.startswith("VERIFIED"):
-            return "**Verified** (reviewer: Naisha Chadha, 2026-11-14; applied and deployed)"
+            return "**Verified** (reviewer: Legal Reviewer, 2026-11-14; applied and deployed)"
         if d.startswith("PROVISIONAL"):
             extra = " (mold aspect pending a separate legal source)" if "mold" in d.lower() else ""
             return "Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name)" + extra
@@ -171,7 +171,7 @@ def main() -> int:
             md += [""]
         if p.get("decision"):
             md += [f"**Decision so far:** {p['decision']}", ""]
-        md += ["**Verified:** Yes. Reviewer: Naisha Chadha (2026-11-14)." if p.get("decision", "").startswith("VERIFIED")
+        md += ["**Verified:** Yes. Reviewer: Legal Reviewer (2026-11-14)." if p.get("decision", "").startswith("VERIFIED")
                else "**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.", ""]
     md += [
         "## Problems found in the current placeholder summaries",
@@ -208,7 +208,7 @@ def main() -> int:
         "",
         "1. Read each excerpt against the current official text on Municode (link above).",
         "2. In `eval/code_review.csv`, fill `approved_section_ids` (e.g. `27.04(2)(h)`) and `reviewer` **only** for rows the",
-        "   reviewer personally checked against the official source and explicitly approved. Reviewer: **Naisha Chadha**.",
+        "   reviewer personally checked against the official source and explicitly approved. Reviewer: the project's **Legal Reviewer**.",
         "   Every other reviewer field stays blank. Leave `CO_DETECTOR_MISSING` blank unless a separate source is verified.",
         "",
         "   **What a reviewer approval means:** the ordinance citation and quoted text were checked against the official",

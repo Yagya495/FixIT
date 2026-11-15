@@ -52,6 +52,24 @@ VECTOR_SEARCH_ENDPOINT = os.getenv("VECTOR_SEARCH_ENDPOINT", "fixit-vs")
 VECTOR_INDEX = os.getenv("VECTOR_INDEX", f"{CATALOG}.silver.code_chunks_index")
 GENIE_SPACE_ID = os.getenv("GENIE_SPACE_ID", "")
 
+# Public, anonymous demo (e.g. a free web host for judges). It never uses Databricks: SQLite with the synthetic dataset,
+# Demo Mode on, and every Databricks setting cleared, so no credential can be used even if one is set by mistake.
+# AI results are the saved/scripted Demo Mode results, labeled as such in the UI.
+PUBLIC_DEMO = _bool("PUBLIC_DEMO", False)
+if PUBLIC_DEMO:
+    DEMO_MODE = True
+    DATA_BACKEND = "local"
+    DATABRICKS_HOST = DATABRICKS_TOKEN = DATABRICKS_CONFIG_PROFILE = DATABRICKS_WAREHOUSE_ID = GENIE_SPACE_ID = ""
+# Link to the live Databricks version, shown in the public-demo banner (optional).
+LIVE_APP_URL = os.getenv("LIVE_APP_URL", "").strip()
+
+# Abuse limits (always on; tighter defaults on the public demo)
+MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", str((8 if PUBLIC_DEMO else 25) * 1024 * 1024)))  # per image
+MAX_FILES_PER_REQUEST = int(os.getenv("MAX_FILES_PER_REQUEST", "30"))
+# POST requests per client IP per window; 0 disables. Public demo default allows ~4 full video scans per 10 minutes.
+RATE_LIMIT_POSTS = int(os.getenv("RATE_LIMIT_POSTS", "120" if PUBLIC_DEMO else "0"))
+RATE_LIMIT_WINDOW_S = int(os.getenv("RATE_LIMIT_WINDOW_S", "600"))
+
 LLM_TIMEOUT_S = float(os.getenv("LLM_TIMEOUT_S", "25"))
 
 # Local storage
@@ -64,6 +82,8 @@ EVIDENCE_VOLUME = f"/Volumes/{CATALOG}/raw/evidence"
 DEMO_DIR = APP_DIR / "demo" if (APP_DIR / "demo").exists() else REPO_ROOT / "demo"
 CACHE_DIR = DEMO_DIR / "cached_outputs"
 STATIC_DIR = APP_DIR / "static" if (APP_DIR / "static").exists() else APP_DIR / "frontend" / "dist"
+if os.getenv("FIXIT_STATIC_DIR"):  # optional override (container images, or testing a build without touching dist/)
+    STATIC_DIR = Path(os.environ["FIXIT_STATIC_DIR"])
 
 # Vision
 CONFIDENCE_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.6"))

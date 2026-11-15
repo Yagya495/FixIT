@@ -106,7 +106,7 @@ def test_committed_approvals_are_exactly_the_three_reviewed_citations():
     import json
     from pathlib import Path
     raw = json.loads((Path(taxonomy.__file__).resolve().parents[1] / "code_sections_verified.json").read_text(encoding="utf-8"))
-    assert raw["reviewers"] == {t: "Naisha Chadha" for t in expected}
+    assert raw["reviewers"] == {t: "Legal Reviewer" for t in expected}
     assert "not mean the reviewer is a lawyer" in raw["review_meaning"]
     assert sorted(s["section_id"] for s in review["sections"]) == ["27.04(2)(h)", "27.05(2)(g)1.", "27.05(2)(j)"]
     rows = {v["type_id"]: v["code_sections"] for v in taxonomy.taxonomy_rows()}

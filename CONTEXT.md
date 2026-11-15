@@ -111,17 +111,19 @@ Finish every P0 before starting any P1.
   excerpt verbatim against the parse and the PDF text layer and writes `docs/legal/CH27_REVIEW.md` + `eval/code_review.csv`
   → user decides → cross-check against the current official source → user supplies the reviewer name →
   `code_parse.py approve` (dry run, then `--apply`).
-- **Reviewer rule (user, 2026-11-14):** reviewer = **Naisha Chadha**, entered **only** for citations she personally
-  reviewed and explicitly approved after the official-source comparison; every other reviewer field stays blank. Nothing
-  provisional becomes verified without her explicit approval. Approval means the citation and quoted text were checked
-  against the official source; it does **not** mean she is a lawyer or City inspector, or that an AI-detected condition
+- **Reviewer rule (user, 2026-11-14):** reviewer = the project's **Legal Reviewer** (public label since 2026-11-15; the
+  identity is kept in the owner's private audit record `.private/legal_review_audit.json`, never committed), entered
+  **only** for citations the reviewer personally reviewed and explicitly approved after the official-source comparison;
+  every other reviewer field stays blank. Nothing provisional becomes verified without the reviewer's explicit approval.
+  Approval means the citation and quoted text were checked against the official source; it does **not** mean the
+  reviewer is a lawyer or City inspector, or that an AI-detected condition
   is a confirmed violation (recorded as `review_meaning` in `code_sections_verified.json`).
 - **Live official check (2026-11-14):** all 26 provisional excerpts match live Municode Chapter 27 (version Sep 1, 2026;
   no amendments newer than the PDF). Plumbing, heat and surfaces were re-checked structurally (right subsection label,
   exceptions present). MGO 32.04(4)(d) (rent-abatement schedule) independently confirms several subsection numbers.
   Record: `docs/legal/ch27_live_check.md`.
 - **VERIFIED (2026-11-14), the only verified citations:** reviewed against the official source and explicitly approved by
-  **Naisha Chadha**; applied to Databricks (`silver.code_sections` verified=1, `ref.violation_types`) and
+  the **Legal Reviewer**; applied to Databricks (`silver.code_sections` verified=1, `ref.violation_types`) and
   `app/backend/code_sections_verified.json`; deployed:
   - `LEAK_PLUMBING` → **§27.05(2)(j)** (p. 17)
   - `NO_HEAT` → **§27.04(2)(h)** (p. 9; the 67°F sentence + occupant exception)
@@ -279,10 +281,15 @@ scripts/  dbx_setup · app_smoke · genie_verify · code_parse · ch27_review_sh
 - Vector Search skipped (not created). No P1 work started (no Twilio).
 - Quick start: `make setup && make build && make api` → http://localhost:8000 (Windows commands in README).
 
+- **2026-11-15 afternoon:** App compute **STOPPED** by Databricks ("workspace or account status"; likely the Free
+  Edition daily quota, not confirmed). New local-only commits: `PUBLIC_DEMO` mode + Render/Docker files
+  (`docs/PUBLIC_HOSTING.md`), path-traversal fix (still live in the deployed App until the next approved redeploy), demo
+  script rewrite. Tests 168 backend + 10 frontend.
+
 ## 11. Inputs still needed from the human
-- **Now:** authorize (or not) the targeted cleanup of the deployment test records (`docs/ops/TEST_RECORD_CLEANUP_PLAN.md`,
-  manifest `docs/ops/test_records_2026-11-15.json`); run the real-phone checklist; approve (or not) the speed changes
-  A+B+C in `docs/DEMO_PERFORMANCE.md` (local first, then one reviewed redeploy).
+- **Now (2026-11-15 afternoon):** approve restarting the App (`apps start`, once the quota resets); approve the public
+  demo (Render account, push, deploy; `docs/PUBLIC_HOSTING.md`); approve one reviewed redeploy (path-traversal fix +
+  speed change `003565b`, re-measured first); run the real-phone checklist. (Test-record cleanup: done, `4ffa67b`.)
 - **Paused until after the demo (no action now):** `docs/legal/HUMAN_REVIEW_CHECKLIST.md`, the City inquiry draft, the
   smoke/CO deadline and state-law display (both stay off).
 - Decide whether to merge `ch27-review` into `main`, and whether to update the local fallback.

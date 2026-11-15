@@ -20,7 +20,8 @@ make test         # unit + end-to-end tests
 python -m venv .venv; .venv\Scripts\python -m pip install -r app\requirements.txt pytest
 cd app\frontend; npm install; npm run build; cd ..\..
 .venv\Scripts\python -m uvicorn app.backend.main:app --port 8000     # http://127.0.0.1:8000
-.venv\Scripts\python -m pytest -q app/backend/tests                   # 44 tests
+.venv\Scripts\python -m pytest -q app/backend/tests                   # 168 backend tests (2026-11-15)
+cd app\frontend; npm test; cd ..\..                                  # 10 frontend tests
 ```
 
 Demo day: follow [`docs/DEMO_CHECKLIST.md`](docs/DEMO_CHECKLIST.md). Databricks: [`docs/DATABRICKS_SETUP.md`](docs/DATABRICKS_SETUP.md).
@@ -65,15 +66,17 @@ Before going on stage, put the exact demo photos in `demo/demo_inputs/{listing,w
 `curl -X POST localhost:8000/api/demo/warm` (with Databricks configured) to cache live vision results. Commit
 `demo/cached_outputs/`. `POST /api/demo/reset` reseeds the local DB.
 
-## 3-minute demo script
+## Public demo (no Databricks sign-in)
 
-1. **Hook**: "Most Madison renters never use the rights they already have."
-2. **Listing X-Ray** (`/listing`): upload the demo listing photos, address `1234 Demo St`. Verdict: *Don't sign yet*, 6 heat reports, owner grade D, tour questions + addendum.
-3. **Scan** (`/scan`): live camera on the staged corner. Detections → tap one → Chapter 27 section → *Create repair request*.
-4. **Call** (case page): *Call landlord*. The AI discloses, cites code, the teammate says "Thursday", the commitment is captured, and the countdown starts. *Simulate +8 days* → *Escalate* → pre-filled city complaint.
-5. **You're not alone**: banner says 6 neighbours reported heat and the owner's 3 other buildings have 11 open issues → *File together*. Then `/city`: map, "Where to inspect next", and the Genie question.
-6. **Under the hood**: `/about`.
-7. **Close**: "FixIt: catch it before you sign, document it while you live there, fight it when they ignore you."
+Databricks Apps always require a workspace sign-in. For judges, the same app can run in **`PUBLIC_DEMO=true`** mode:
+SQLite with the synthetic dataset, saved/scripted AI results labeled on screen, no Databricks credentials, per-browser
+case lists, upload and rate limits. Container: `deploy/public/Dockerfile`; Render Blueprint: `render.yaml`. Findings,
+security and costs: [`docs/PUBLIC_HOSTING.md`](docs/PUBLIC_HOSTING.md). **Not deployed yet.**
+
+## 3-minute demo
+
+See [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md): listing X-Ray → video walkthrough → verified Chapter 27 citation →
+repair letter → simulated call → complaint draft → "You're not alone" → Genie → architecture, with fallbacks.
 
 ---
 FixIt is not a lawyer and this is not legal advice. For help, contact the Tenant Resource Center (608-257-0006) or City
