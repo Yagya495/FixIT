@@ -1,0 +1,292 @@
+{
+ "created_by": "deployed-app tests on 2026-11-15 between 07:25 and 07:34 UTC (disposable synthetic building 1770 Fair Oaks Ave, P-00542)",
+ "manifest_sha256": "7d71403caf8a93da1c6c9970d4e8b855ab0f07bdb73a0dee589f921375360d2b",
+ "purpose": "Disposable test records created while verifying the 2026-11-15 video deployment. Delete ONLY these, ONLY after the user authorizes this exact manifest.",
+ "scans_detail": [
+  {
+   "created_at": "2026-11-15T07:25:08",
+   "mode": "walkthrough",
+   "property_id": "P-00542",
+   "scan_id": "S-5627707e19",
+   "unit": "QA-1"
+  },
+  {
+   "created_at": "2026-11-15T07:26:19",
+   "mode": "walkthrough",
+   "property_id": "P-00542",
+   "scan_id": "S-e086f1cb0b",
+   "unit": "QA-2"
+  },
+  {
+   "created_at": "2026-11-15T07:27:12",
+   "mode": "walkthrough",
+   "property_id": "P-00542",
+   "scan_id": "S-4abfa46677",
+   "unit": "QA-3"
+  },
+  {
+   "created_at": "2026-11-15T07:28:57",
+   "mode": "walkthrough",
+   "property_id": "P-00542",
+   "scan_id": "S-50b1a5a60b",
+   "unit": "QA-4"
+  },
+  {
+   "created_at": "2026-11-15T07:30:15",
+   "mode": "walkthrough",
+   "property_id": "P-00542",
+   "scan_id": "S-a017de26a3",
+   "unit": "QA-5"
+  },
+  {
+   "created_at": "2026-11-15T07:30:56",
+   "mode": "walkthrough",
+   "property_id": "P-00542",
+   "scan_id": "S-516dd3cfb9",
+   "unit": "QA-6"
+  },
+  {
+   "created_at": "2026-11-15T07:31:37",
+   "mode": "walkthrough",
+   "property_id": "P-00542",
+   "scan_id": "S-d0eab98c5d",
+   "unit": "QA-7"
+  },
+  {
+   "created_at": "2026-11-15T07:32:58",
+   "mode": "listing",
+   "property_id": "P-00542",
+   "scan_id": "S-ef953c6211",
+   "unit": null
+  },
+  {
+   "created_at": "2026-11-15T07:33:08",
+   "mode": "walkthrough",
+   "property_id": "P-00542",
+   "scan_id": "S-6ef4f904bb",
+   "unit": "QA-SMOKE"
+  }
+ ],
+ "tables": {
+  "gold.reports": {
+   "ids": [
+    "R-FX-a1f14979d7-0"
+   ],
+   "key": "report_id"
+  },
+  "gold.violations": {
+   "ids": [
+    "V-4abfa46677-EXPOSED_WIRI",
+    "V-50b1a5a60b-EXPOSED_WIRI",
+    "V-516dd3cfb9-NO_HEAT",
+    "V-5627707e19-EXPOSED_WIRI",
+    "V-6ef4f904bb-NO_HEAT",
+    "V-a017de26a3-EXPOSED_WIRI",
+    "V-d0eab98c5d-DAMAGED_SURF",
+    "V-d0eab98c5d-EXPOSED_WIRI",
+    "V-d0eab98c5d-LEAK_PLUMBIN",
+    "V-d0eab98c5d-NO_HEAT",
+    "V-e086f1cb0b-EXPOSED_WIRI"
+   ],
+   "key": "violation_id"
+  },
+  "silver.calls": {
+   "ids": [
+    "C-39be884a24"
+   ],
+   "key": "call_id"
+  },
+  "silver.complaints": {
+   "ids": [
+    "CP-01e4559cf2",
+    "CP-6c160d88f6"
+   ],
+   "key": "complaint_id"
+  },
+  "silver.deadlines": {
+   "ids": [
+    "RR-a1f14979d7"
+   ],
+   "key": "request_id"
+  },
+  "silver.detections": {
+   "expected_rows": 26,
+   "ids": [
+    "S-4abfa46677",
+    "S-50b1a5a60b",
+    "S-516dd3cfb9",
+    "S-5627707e19",
+    "S-6ef4f904bb",
+    "S-a017de26a3",
+    "S-d0eab98c5d",
+    "S-e086f1cb0b",
+    "S-ef953c6211"
+   ],
+   "key": "scan_id"
+  },
+  "silver.evidence": {
+   "ids": [
+    "E-00c2a4a7bdff59ca-f1cb0b",
+    "E-041ffb7e2fd79eb3-f1cb0b",
+    "E-0a08188acd2ff442-707e19",
+    "E-0a08188acd2ff442-a5a60b",
+    "E-0a08188acd2ff442-de26a3",
+    "E-0d5f018333623294-a46677",
+    "E-176840effc2e449f-a46677",
+    "E-1888c74482004a66-a46677",
+    "E-1ae55d0ac40020a1-707e19",
+    "E-1ae55d0ac40020a1-a5a60b",
+    "E-1ae55d0ac40020a1-de26a3",
+    "E-23a728af217fe8be-f1cb0b",
+    "E-2bb478f834939829-a46677",
+    "E-3ba4cb2aad9ad479-a46677",
+    "E-3d2aad3e9d263208-a46677",
+    "E-3f593ba96f142dc9-a46677",
+    "E-3f635cec40ecf9d3-707e19",
+    "E-3f635cec40ecf9d3-a5a60b",
+    "E-3f635cec40ecf9d3-de26a3",
+    "E-3f99f1973f8d4f4c-a46677",
+    "E-5596764acdac3a7e-a46677",
+    "E-561418a8ba1ec3da-3c6211",
+    "E-63ad8ef7a722ea0a-707e19",
+    "E-63ad8ef7a722ea0a-a5a60b",
+    "E-63ad8ef7a722ea0a-de26a3",
+    "E-64689f9f7a4373de-a46677",
+    "E-65bc7eab0ba244ed-a46677",
+    "E-65e2a9c4cbfcfb69-a46677",
+    "E-663895ccd1507b6a-707e19",
+    "E-663895ccd1507b6a-a5a60b",
+    "E-663895ccd1507b6a-de26a3",
+    "E-68de4f601ce8870d-f1cb0b",
+    "E-6c91fdc7ab7bd766-a46677",
+    "E-6e428d0f98b89266-f1cb0b",
+    "E-70c89ebe60415acc-a46677",
+    "E-75a032d3f52955f4-a46677",
+    "E-75a032d3f52955f4-f1cb0b",
+    "E-75b9da10cee6aaa4-707e19",
+    "E-75b9da10cee6aaa4-a5a60b",
+    "E-75b9da10cee6aaa4-de26a3",
+    "E-791d13c501c4f2f9-f1cb0b",
+    "E-8542bc96b131264e-f1cb0b",
+    "E-876545341cd43e8a-a46677",
+    "E-8a1ba9bf1614a948-707e19",
+    "E-8a1ba9bf1614a948-a5a60b",
+    "E-8a1ba9bf1614a948-de26a3",
+    "E-8c9a40f81f071ac3-a46677",
+    "E-9232ecde7dfbba1f-a46677",
+    "E-94ef706ede4b627a-a46677",
+    "E-9589894d39f0aa71-f904bb",
+    "E-975016b1aad4f9a5-707e19",
+    "E-975016b1aad4f9a5-a5a60b",
+    "E-975016b1aad4f9a5-de26a3",
+    "E-a3379a4359d2f1b7-3c6211",
+    "E-a44ab8fb50fbc014-f1cb0b",
+    "E-a54b10776f8a973b-3c6211",
+    "E-a565d279190ab3b1-f1cb0b",
+    "E-adcddf918ae067af-a46677",
+    "E-b96e7e49dfe17ec6-a46677",
+    "E-c2f61fac9e60a133-707e19",
+    "E-c2f61fac9e60a133-a5a60b",
+    "E-c2f61fac9e60a133-de26a3",
+    "E-c4a0007c35c19e72-a46677",
+    "E-c52f164da59305ba-a46677",
+    "E-c6e275de1bf758e5-a46677",
+    "E-caaa6101add7c20e-a46677",
+    "E-cacd9f013c49e225-a46677",
+    "E-cefddd76dae95c81-a46677",
+    "E-d0481600f858da29-707e19",
+    "E-d0481600f858da29-a5a60b",
+    "E-d0481600f858da29-de26a3",
+    "E-d3bc2074e2093f59-a46677",
+    "E-d68a6ed089ac8cae-707e19",
+    "E-d68a6ed089ac8cae-a5a60b",
+    "E-d68a6ed089ac8cae-de26a3",
+    "E-d95f184b5f447380-a46677",
+    "E-df9038d964b350f6-a46677",
+    "E-eccea7169f7bb864-707e19",
+    "E-eccea7169f7bb864-a5a60b",
+    "E-eccea7169f7bb864-de26a3",
+    "E-fab0832c14e85eac-f1cb0b"
+   ],
+   "key": "evidence_id"
+  },
+  "silver.repair_requests": {
+   "ids": [
+    "RR-a1f14979d7"
+   ],
+   "key": "request_id"
+  },
+  "silver.scans": {
+   "ids": [
+    "S-4abfa46677",
+    "S-50b1a5a60b",
+    "S-516dd3cfb9",
+    "S-5627707e19",
+    "S-6ef4f904bb",
+    "S-a017de26a3",
+    "S-d0eab98c5d",
+    "S-e086f1cb0b",
+    "S-ef953c6211"
+   ],
+   "key": "scan_id"
+  }
+ },
+ "volume_files": [
+  "/Volumes/fixit/raw/evidence/00/00c2a4a7bdff59cafca945f242cbb93b3d2ef1eb204fb68f58267396c2f37cd6.jpg",
+  "/Volumes/fixit/raw/evidence/04/041ffb7e2fd79eb3fb9a2156cf71c80a0328a44443a024be9653b30487f741b4.jpg",
+  "/Volumes/fixit/raw/evidence/0a/0a08188acd2ff442a81af5d8d9fedc6f23a6c75d3fa6ab316d6ae41324957dfd.jpg",
+  "/Volumes/fixit/raw/evidence/0d/0d5f018333623294fd977fe8e95722f7b60d366f8509e262612225064312fda8.jpg",
+  "/Volumes/fixit/raw/evidence/17/176840effc2e449f0bf1615be7ab303c4270328d5ed31d0e4b056f9ff8a1555b.jpg",
+  "/Volumes/fixit/raw/evidence/18/1888c74482004a66d3212946af17a03e89da69cad2eb28428951e8922826f21b.jpg",
+  "/Volumes/fixit/raw/evidence/1a/1ae55d0ac40020a100288f7608e5051cf7790a057ebd4855f5ff8153c51b64e5.jpg",
+  "/Volumes/fixit/raw/evidence/23/23a728af217fe8beaa9e990a0fb6158d139d04610b6f07c1bab920a1baf9c529.jpg",
+  "/Volumes/fixit/raw/evidence/2b/2bb478f834939829ce1ab85d36923b2cd8a339ca9e0811c18626c0a8f4e12cdf.jpg",
+  "/Volumes/fixit/raw/evidence/3b/3ba4cb2aad9ad47966f782ce4d6dbd17155555dc9bc46139ae9b68210741d52c.jpg",
+  "/Volumes/fixit/raw/evidence/3d/3d2aad3e9d2632085bf34b976739ea64d27669444ced85af1273839b9978c276.jpg",
+  "/Volumes/fixit/raw/evidence/3f/3f593ba96f142dc9c64af5801b47d9522cafb10f08bffc42f75a95dab8b196bb.jpg",
+  "/Volumes/fixit/raw/evidence/3f/3f635cec40ecf9d39aa56946213c9dee31c6e93c82cde8ac23a08e280935f429.jpg",
+  "/Volumes/fixit/raw/evidence/3f/3f99f1973f8d4f4ce6f26c8ada07de2f4ca06b8a102603fd946ebe13e22104cd.jpg",
+  "/Volumes/fixit/raw/evidence/55/5596764acdac3a7e603e0dce20e3af911753c365012e531236eeab50655cbfed.jpg",
+  "/Volumes/fixit/raw/evidence/56/561418a8ba1ec3dac9afadff8ecf2310452274013be8691cc018d5b58b5854de.png",
+  "/Volumes/fixit/raw/evidence/63/63ad8ef7a722ea0acef2e3a898c00e1508545fb0c4891a5f2749213471b03e25.jpg",
+  "/Volumes/fixit/raw/evidence/64/64689f9f7a4373de87c1b5a34f67a4e96fb25e959314abb136087923719e5af6.jpg",
+  "/Volumes/fixit/raw/evidence/65/65bc7eab0ba244ed86c15b9693729ae7516add1e04d0e430223a3cd6863fb18e.jpg",
+  "/Volumes/fixit/raw/evidence/65/65e2a9c4cbfcfb69cdbe1635b5144e0668134c188ee8e14ab3c9a5bb9d599fea.jpg",
+  "/Volumes/fixit/raw/evidence/66/663895ccd1507b6a6ae637ad734b0f775eb9ca6ef3aaa2f4135b702ad9d07ccc.jpg",
+  "/Volumes/fixit/raw/evidence/68/68de4f601ce8870d3cf40d37bfee214f07cb7401600678ec9989531b3b476ff7.jpg",
+  "/Volumes/fixit/raw/evidence/6c/6c91fdc7ab7bd766e7ea965567e095ce314d8c244fd89159d27f53f61ebe194c.jpg",
+  "/Volumes/fixit/raw/evidence/6e/6e428d0f98b892664784efef664f80ec4856b0bb3258d5d96d8dd25def73b6f0.jpg",
+  "/Volumes/fixit/raw/evidence/70/70c89ebe60415accbafd8d53360a6ba56242808ab6b8729c187b1ea6343d5c7a.jpg",
+  "/Volumes/fixit/raw/evidence/75/75a032d3f52955f4a065984ec0ffe81abf8669b5b0a5d0e0b711e581c2ff5d87.jpg",
+  "/Volumes/fixit/raw/evidence/75/75b9da10cee6aaa4121d9ccbadb1fe8d82c9a27ac18e170faa4433fde7336f9e.jpg",
+  "/Volumes/fixit/raw/evidence/79/791d13c501c4f2f99caac225e9b8f45236d46c3d094c3fbf2d6c886f4e3d7b25.jpg",
+  "/Volumes/fixit/raw/evidence/85/8542bc96b131264effa5e002e7957f01407ecd18aa925eee9662d5f39ff58b5a.jpg",
+  "/Volumes/fixit/raw/evidence/87/876545341cd43e8a50539b9c0bf025859943ed8aea5f0f5ffec7c58740fdc3d5.jpg",
+  "/Volumes/fixit/raw/evidence/8a/8a1ba9bf1614a9486b42738058c8d96317a653b57aaecb81c74b2709238f4099.jpg",
+  "/Volumes/fixit/raw/evidence/8c/8c9a40f81f071ac36988ff0c879b3285fa1578f5a0bdd0e46d8ac21a79b014b7.jpg",
+  "/Volumes/fixit/raw/evidence/92/9232ecde7dfbba1fad7b694402ff878adcb1be83715e3928bedf5a2d4b54b266.jpg",
+  "/Volumes/fixit/raw/evidence/94/94ef706ede4b627afa754075357d871aa9285d4e91cb9711299d029ba3400df7.jpg",
+  "/Volumes/fixit/raw/evidence/95/9589894d39f0aa714ef6bd8adcfdebc69a154659a34e86852c88003f4ca396dc.png",
+  "/Volumes/fixit/raw/evidence/97/975016b1aad4f9a55dcee52ca83b60437bdd0b5335523b14c884b08225ed9e86.jpg",
+  "/Volumes/fixit/raw/evidence/a3/a3379a4359d2f1b7202eb46b77d34958707dd829b614eb36ac2e192e670d6130.png",
+  "/Volumes/fixit/raw/evidence/a4/a44ab8fb50fbc0145fee6538be5e73f201659c531c85ddb75cf2c862a2336921.jpg",
+  "/Volumes/fixit/raw/evidence/a5/a54b10776f8a973bbd2a5307fb05c852257dacbb5ee907ffd3e5225dc44f4c8b.png",
+  "/Volumes/fixit/raw/evidence/a5/a565d279190ab3b19910737c0e1250a89ec5ca7d2c109e7d0c8fef7450fac193.jpg",
+  "/Volumes/fixit/raw/evidence/ad/adcddf918ae067afca66efab9b8c034c0cd73315f2b7053a4caa22ea03a464ea.jpg",
+  "/Volumes/fixit/raw/evidence/b9/b96e7e49dfe17ec60033d753c8329ab82d26ccba005e0545c5bdd036ff61f653.jpg",
+  "/Volumes/fixit/raw/evidence/c2/c2f61fac9e60a1337ba1c13c82db6a3190bd02fad2c862f48b444979466438bb.jpg",
+  "/Volumes/fixit/raw/evidence/c4/c4a0007c35c19e7244c4dc5e75f7fa888f81dc9399a88ea782f59ba79ae11ed4.jpg",
+  "/Volumes/fixit/raw/evidence/c5/c52f164da59305baf5288b66564874020cc847f1134e8f906aecd5f54cc699b4.jpg",
+  "/Volumes/fixit/raw/evidence/c6/c6e275de1bf758e563ed05b9e0ac1bff6e94fd11bb70362651a4c1993d18a97b.jpg",
+  "/Volumes/fixit/raw/evidence/ca/caaa6101add7c20e97066e1626304c498e15307b1ce94a55cc62f74ba5f386ed.jpg",
+  "/Volumes/fixit/raw/evidence/ca/cacd9f013c49e225aa2a2763b21943e577d6a7874d496aee0a43daf8288f88ed.jpg",
+  "/Volumes/fixit/raw/evidence/ce/cefddd76dae95c813ce05016f0aa346650e40b8f523905ecc4b21097df404643.jpg",
+  "/Volumes/fixit/raw/evidence/d0/d0481600f858da2968f682bc8a72d29c3164da3a1afae495cbe8d50f5ac7e8a1.jpg",
+  "/Volumes/fixit/raw/evidence/d3/d3bc2074e2093f59339eac2a529d76363b8eacbb2f218b5bedf8ee4c8b20eb98.jpg",
+  "/Volumes/fixit/raw/evidence/d6/d68a6ed089ac8cae9e6cd2a45356f3fa663d187e06f9f051481ec6d2e515b61e.jpg",
+  "/Volumes/fixit/raw/evidence/d9/d95f184b5f447380a619d5f887982629448ee5126efb11c6eecad6a02651f2c6.jpg",
+  "/Volumes/fixit/raw/evidence/df/df9038d964b350f664546863d1b4189c308981a6ac6399ed70f93578bed62f27.jpg",
+  "/Volumes/fixit/raw/evidence/ec/eccea7169f7bb864894238a9f31f3ebf0d87e2f9ddb0f29ea1488f05308901ad.jpg",
+  "/Volumes/fixit/raw/evidence/fa/fab0832c14e85eaca4ae527f093ab3ae552435097603f12b309467a79979a358.jpg"
+ ]
+}
