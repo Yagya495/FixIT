@@ -1,9 +1,9 @@
-# Databricks setup runbook (Milestone 1)
+﻿# Databricks setup runbook (Milestone 1)
 
-Order matters. Steps marked 🧑 need you; steps marked 💸 create resources (ask first on a shared/paid workspace).
+Order matters. Steps marked ðŸ§‘ need you; steps marked ðŸ’¸ create resources (ask first on a shared/paid workspace).
 Never use the `sleepsafe` profile for this project (`scripts/dbx_check.py` refuses it).
 
-## 0. 🧑 Install the CLI and log in (Windows)
+## 0. ðŸ§‘ Install the CLI and log in (Windows)
 ```powershell
 winget install Databricks.DatabricksCLI          # official package; restart the terminal afterwards
 databricks -v                                     # winget listed 1.26.0 on 2026-11-14
@@ -28,7 +28,7 @@ Pick candidates from step 1's list (chat, image-capable, embedding), then:
 A name is not proof: chat must echo a random nonce, vision must name a **random** color, embeddings must return a
 vector. Run the vision test twice (a text-only model can guess 1 in 4). Record the winners in `.env` and `app/app.yaml`.
 
-## 3. 💸 Catalog, schemas, volumes, tables, synthetic data
+## 3. ðŸ’¸ Catalog, schemas, volumes, tables, synthetic data
 **Recommended (from the laptop, no Git folder needed):** `scripts/dbx_setup.py` runs the same SQL as notebooks 01 + 30
 (catalog substituted) and loads data from the same generator as the local demo. Dry run by default:
 ```powershell
@@ -46,9 +46,9 @@ It ends with the story check (6 / D / 11 / 0 non-synthetic rows).
 4. `notebooks/20_violation_taxonomy.py`: taxonomy + **unverified** seed sections
 5. `notebooks/05_generate_synthetic.py`: owners/properties/reports + scores (same generator as the app)
 6. Verify the story from your laptop:
-   `scripts/dbx_check.py --profile fixit --test-sql <WAREHOUSE_ID>` → "open HEAT reports at 1234 Demo St (30d): 6"
+   `scripts/dbx_check.py --profile fixit --test-sql <WAREHOUSE_ID>` â†’ "open HEAT reports at 1234 Demo St (30d): 6"
 
-## 4. 💸 Genie
+## 4. ðŸ’¸ Genie
 `notebooks/70_genie_space.py` (API), or create the space in the UI with the same tables, instructions and 8 sample
 questions. Put the ID in `GENIE_SPACE_ID`. Then the City page caption should read "Answered live by Databricks Genie".
 
@@ -72,18 +72,21 @@ Upload a photo that is NOT in the cache: API `source` must be `live`. Then set `
 `fixit.silver.deadlines`). Run the demo flow; check that new rows appear in `fixit.silver.*`.
 Switch back to `DATA_BACKEND=local` at any time: the SQLite fallback is unchanged.
 
-## 7. 💸 Deploy the App
+## 7. ðŸ’¸ Deploy the App
 ```powershell
 cd app\frontend; npm run build; cd ..\..
 .venv\Scripts\python scripts\bundle.py                                  # stages build\app
-databricks apps create fixit-madison -p fixit                           # once
-databricks sync build\app /Workspace/Users/<you>/fixit-madison-app --full -p fixit
+databricks apps create --json "@app/app_create.json" -p fixit       # once (resources: warehouse, llm, genie)
+# NOTE: `databricks sync` respects .gitignore and build/ is ignored, so it uploads NOTHING. Use import-dir:
+databricks workspace import-dir build/app /Workspace/Users/<you>/fixit-madison-app --overwrite -p fixit
 databricks apps deploy fixit-madison --source-code-path /Workspace/Users/<you>/fixit-madison-app -p fixit
+.venv\Scripts\python scripts\app_smoke.py --profile fixit --url <app-url>  # end-to-end check (creates test rows)
+.venv\Scripts\python scripts\dbx_setup.py --profile fixit --warehouse <id> --catalog fixit --only reset --apply
 ```
-In the App UI: add the SQL warehouse as a resource with key **`sql-warehouse`** (app.yaml reads it) and the
-serving endpoints as resources (Can Query).
+`app/app_create.json` declares the resources: `sql-warehouse` (CAN_USE; app.yaml
+reads it), `llm` = databricks-llama-4-maverick (CAN_QUERY), `genie` = the FixIt space (CAN_RUN).
 
-## 8. 💸 Grant the App's service principal (the #1 cause of silent failures)
+## 8. ðŸ’¸ Grant the App's service principal (the #1 cause of silent failures)
 Find the SP in the App's "Authorization" tab, then run the GRANTs at the bottom of `01_setup_catalog.sql`
 (USE CATALOG; USE SCHEMA + SELECT/MODIFY on silver/gold; SELECT on ref; READ/WRITE VOLUME on raw.evidence and
 raw.uploads) and give it **CAN USE** on the warehouse. Verify: create a case in the deployed App and see the row in

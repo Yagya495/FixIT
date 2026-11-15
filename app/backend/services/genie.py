@@ -143,9 +143,11 @@ def _genie(question: str, timeout_s: float = 45) -> dict:
     if m.get("status") != "COMPLETED":
         raise RuntimeError(f"Genie status {m.get('status')}")
     text, sql, rows, cols = "", None, [], []
+    texts = [a["text"].get("content", "").strip() for a in m.get("attachments", []) if a.get("text")]
+    # Genie may add a follow-up suggestion ("Would you prefer…?") next to the answer: show the answer.
+    answers = [t for t in texts if t and not t.endswith("?")]
+    text = (answers or texts or [""])[-1].replace("**", "")  # UI renders plain text
     for a in m.get("attachments", []):
-        if a.get("text"):
-            text += a["text"].get("content", "")
         if a.get("query"):
             sql = a["query"].get("query")
             text = text or a["query"].get("description", "")
@@ -157,9 +159,24 @@ def _genie(question: str, timeout_s: float = 45) -> dict:
     return {"question": question, "text": text, "sql": sql, "rows": rows[:25], "columns": cols, "source": "genie"}
 
 
+def warm() -> list[dict]:
+    """Ask Genie every sample question live and save the answers (run before going on stage)."""
+    out = []
+    for q in SAMPLE_QUESTIONS:
+        try:
+            demo_cache.put("genie", q, _genie(q))
+            out.append({"question": q, "ok": True})
+        except Exception as e:
+            out.append({"question": q, "ok": False, "error": str(e)[:200]})
+    return out
+
+
 def ask(question: str) -> dict:
     if config.GENIE_SPACE_ID and llm.available():
         cached = demo_cache.get("genie", question) if config.DEMO_MODE else None
+        if cached:
+            # Live Genie takes ~20 s; on stage serve the saved Genie answer instantly (labeled "cache" in the UI).
+            return cached | {"source": "cache"}
         try:
             ans = _genie(question)
             if config.DEMO_MODE:

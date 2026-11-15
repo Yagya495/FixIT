@@ -1,0 +1,56 @@
+{
+  "question": "Show violation counts by type for the last 6 months.",
+  "text": "Over the past 6 months, the most common violation types reported were PEST_EVIDENCE (375 reports), WATER_DAMAGE_MOLD (323), and DAMAGED_SURFACES (311). Less frequent violations included NO_HEAT (59 reports) and BLOCKED_EGRESS (64). The data shows that pest evidence and water damage/mold issues are the most prevalent concerns in recent reports.",
+  "sql": "SELECT reports.violation_type, COUNT(*) AS violation_count\nFROM fixit.gold.reports\nWHERE reports.reported_at >= date_add(MONTH, -6, CURRENT_DATE)\n  AND reports.violation_type IS NOT NULL\nGROUP BY reports.violation_type\nORDER BY violation_count DESC",
+  "rows": [
+    {
+      "violation_type": "PEST_EVIDENCE",
+      "violation_count": "375"
+    },
+    {
+      "violation_type": "WATER_DAMAGE_MOLD",
+      "violation_count": "323"
+    },
+    {
+      "violation_type": "DAMAGED_SURFACES",
+      "violation_count": "311"
+    },
+    {
+      "violation_type": "LEAK_PLUMBING",
+      "violation_count": "251"
+    },
+    {
+      "violation_type": "SMOKE_DETECTOR_MISSING",
+      "violation_count": "176"
+    },
+    {
+      "violation_type": "BROKEN_WINDOW",
+      "violation_count": "153"
+    },
+    {
+      "violation_type": "BROKEN_LOCK",
+      "violation_count": "138"
+    },
+    {
+      "violation_type": "EXPOSED_WIRING",
+      "violation_count": "113"
+    },
+    {
+      "violation_type": "CO_DETECTOR_MISSING",
+      "violation_count": "66"
+    },
+    {
+      "violation_type": "BLOCKED_EGRESS",
+      "violation_count": "64"
+    },
+    {
+      "violation_type": "NO_HEAT",
+      "violation_count": "59"
+    }
+  ],
+  "columns": [
+    "violation_type",
+    "violation_count"
+  ],
+  "source": "genie"
+}

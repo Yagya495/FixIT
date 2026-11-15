@@ -35,5 +35,5 @@ bundle: build     ## stage a deployable copy in build/app (static + demo cache i
 	rm -rf build/app/backend/tests
 
 deploy: bundle    ## sync + deploy to Databricks Apps (needs CLI auth; app created once via `databricks apps create $(APP_NAME)`)
-	databricks sync build/app $(WS_PATH) --full
+	databricks workspace import-dir build/app $(WS_PATH) --overwrite   # not `sync`: it skips gitignored build/
 	databricks apps deploy $(APP_NAME) --source-code-path $(WS_PATH)

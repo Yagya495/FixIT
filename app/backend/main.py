@@ -358,7 +358,8 @@ def demo_warm():
                 out.append({"file": p.name, "mode": mode, "detections": len(res.detections), "ok": True})
             except Exception as e:
                 out.append({"file": p.name, "mode": mode, "ok": False, "error": str(e)[:200]})
-    return {"warmed": out}
+    gen = genie.warm() if config.GENIE_SPACE_ID else []
+    return {"warmed": out, "genie": gen}
 
 
 # ---------------------------------------------------------------- frontend

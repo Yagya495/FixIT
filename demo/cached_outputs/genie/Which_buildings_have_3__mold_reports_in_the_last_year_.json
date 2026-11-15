@@ -1,0 +1,112 @@
+{
+  "question": "Which buildings have 3+ mold reports in the last year?",
+  "text": "There are 38 buildings that have received 3 or more mold reports in the past year. The highest number of mold reports for a single building is 6. Some notable examples include:\n- P-00932: 6 mold reports\n- P-01232: 5 mold reports\n- P-01219: 4 mold reports\n- P-01180: 4 mold reports\n- P-01273: 4 mold reports\n\nMost buildings on the list had exactly 3 mold reports in the last year.",
+  "sql": "SELECT reports.property_id, COUNT(*) AS mold_reports_last_year\nFROM fixit.gold.reports\nWHERE reports.violation_category = 'MOLD_MOISTURE'\n  AND reports.reported_at BETWEEN date_add(YEAR, -1, CURRENT_DATE) AND CURRENT_DATE\n  AND reports.property_id IS NOT NULL\nGROUP BY reports.property_id\nHAVING COUNT(*) >= 3\nORDER BY mold_reports_last_year DESC",
+  "rows": [
+    {
+      "property_id": "P-00932",
+      "mold_reports_last_year": "6"
+    },
+    {
+      "property_id": "P-01232",
+      "mold_reports_last_year": "5"
+    },
+    {
+      "property_id": "P-01219",
+      "mold_reports_last_year": "4"
+    },
+    {
+      "property_id": "P-01180",
+      "mold_reports_last_year": "4"
+    },
+    {
+      "property_id": "P-01273",
+      "mold_reports_last_year": "4"
+    },
+    {
+      "property_id": "P-01890",
+      "mold_reports_last_year": "4"
+    },
+    {
+      "property_id": "P-00847",
+      "mold_reports_last_year": "4"
+    },
+    {
+      "property_id": "P-00033",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-01767",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-01332",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-00608",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-00232",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-01225",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-01366",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-01909",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-01068",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-01705",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-01914",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-00224",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-00505",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-00259",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-00520",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-00251",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-00718",
+      "mold_reports_last_year": "3"
+    },
+    {
+      "property_id": "P-00537",
+      "mold_reports_last_year": "3"
+    }
+  ],
+  "columns": [
+    "property_id",
+    "mold_reports_last_year"
+  ],
+  "source": "genie"
+}

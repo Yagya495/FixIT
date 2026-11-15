@@ -3,7 +3,8 @@
   python scripts/bundle.py              # expects app/frontend/dist (run `npm run build` in app/frontend first)
 
 Then:
-  databricks sync build/app /Workspace/Users/<you>/fixit-madison-app --full -p fixit
+  databricks workspace import-dir build/app /Workspace/Users/<you>/fixit-madison-app --overwrite -p fixit
+  (not `databricks sync`: it respects .gitignore, build/ is ignored, and it silently uploads nothing)
   databricks apps deploy fixit-madison --source-code-path /Workspace/Users/<you>/fixit-madison-app -p fixit
 """
 from __future__ import annotations

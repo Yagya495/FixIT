@@ -1,0 +1,164 @@
+{
+  "question": "Which management companies improved their fix times the most?",
+  "text": "Northstar Property Management showed the greatest improvement in fix times, reducing their median days to fix by 3.5 days (from 13.6 to 10.1 days). Bluff Property Management also improved, with a reduction of 1.2 days (from 13.4 to 12.2 days). All other management companies in the sample had no change in their fix times.",
+  "sql": "WITH fix_times AS (\n  SELECT \n    o.management_company,\n    ls.owner_id,\n    ls.median_days_to_fix,\n    ls.grade,\n    ls.score\n  FROM `fixit`.`gold`.`landlord_scores` ls\n  JOIN `fixit`.`gold`.`owners` o ON ls.owner_id = o.owner_id\n  WHERE ls.median_days_to_fix IS NOT NULL AND o.management_company IS NOT NULL\n)\n, ranked_scores AS (\n  SELECT \n    management_company,\n    median_days_to_fix,\n    grade,\n    score,\n    ROW_NUMBER() OVER (PARTITION BY management_company ORDER BY score ASC) AS rn_old,\n    ROW_NUMBER() OVER (PARTITION BY management_company ORDER BY score DESC) AS rn_new\n  FROM fix_times\n)\n, old_new_fix_times AS (\n  SELECT \n    management_company,\n    MAX(CASE WHEN rn_old = 1 THEN median_days_to_fix END) AS old_fix_time,\n    MAX(CASE WHEN rn_new = 1 THEN median_days_to_fix END) AS new_fix_time\n  FROM ranked_scores\n  GROUP BY management_company\n)\nSELECT \n  management_company,\n  old_fix_time,\n  new_fix_time,\n  old_fix_time - new_fix_time AS improvement\nFROM old_new_fix_times\nWHERE old_fix_time IS NOT NULL AND new_fix_time IS NOT NULL\nORDER BY improvement DESC",
+  "rows": [
+    {
+      "management_company": "Northstar Property Management",
+      "old_fix_time": "13.6",
+      "new_fix_time": "10.1",
+      "improvement": "3.5"
+    },
+    {
+      "management_company": "Bluff Property Management",
+      "old_fix_time": "13.4",
+      "new_fix_time": "12.2",
+      "improvement": "1.200000000000001"
+    },
+    {
+      "management_company": "Atwood Apartments",
+      "old_fix_time": "9.5",
+      "new_fix_time": "9.5",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Atwood Group",
+      "old_fix_time": "13.4",
+      "new_fix_time": "13.4",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Atwood Homes 83",
+      "old_fix_time": "14.9",
+      "new_fix_time": "14.9",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Atwood Living 93",
+      "old_fix_time": "11.9",
+      "new_fix_time": "11.9",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Atwood Properties",
+      "old_fix_time": "9.3",
+      "new_fix_time": "9.3",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Atwood Properties 47",
+      "old_fix_time": "31.1",
+      "new_fix_time": "31.1",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Atwood Property Management",
+      "old_fix_time": "10.5",
+      "new_fix_time": "10.5",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Atwood Realty",
+      "old_fix_time": "28.9",
+      "new_fix_time": "28.9",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Badger Group",
+      "old_fix_time": "10.3",
+      "new_fix_time": "10.3",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Badger Housing 3",
+      "old_fix_time": "9.0",
+      "new_fix_time": "9.0",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Badger LLC",
+      "old_fix_time": "8.0",
+      "new_fix_time": "8.0",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Badger Living",
+      "old_fix_time": "11.4",
+      "new_fix_time": "11.4",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Badger Properties",
+      "old_fix_time": "14.5",
+      "new_fix_time": "14.5",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Bluff Housing",
+      "old_fix_time": "19.4",
+      "new_fix_time": "19.4",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Bluff LLC",
+      "old_fix_time": "12.0",
+      "new_fix_time": "12.0",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Bluff Living",
+      "old_fix_time": "11.0",
+      "new_fix_time": "11.0",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Bluff Rentals 14",
+      "old_fix_time": "8.7",
+      "new_fix_time": "8.7",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Capitol Housing",
+      "old_fix_time": "7.5",
+      "new_fix_time": "7.5",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Capitol Living",
+      "old_fix_time": "26.4",
+      "new_fix_time": "26.4",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Capitol Property Management",
+      "old_fix_time": "31.1",
+      "new_fix_time": "31.1",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Capitol Realty",
+      "old_fix_time": "66.4",
+      "new_fix_time": "66.4",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Capitol Rentals 24",
+      "old_fix_time": "9.3",
+      "new_fix_time": "9.3",
+      "improvement": "0.0"
+    },
+    {
+      "management_company": "Cardinal Apartments",
+      "old_fix_time": "6.1",
+      "new_fix_time": "6.1",
+      "improvement": "0.0"
+    }
+  ],
+  "columns": [
+    "management_company",
+    "old_fix_time",
+    "new_fix_time",
+    "improvement"
+  ],
+  "source": "genie"
+}

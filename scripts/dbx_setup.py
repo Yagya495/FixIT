@@ -51,6 +51,9 @@ def seed_rows(now: datetime) -> dict[str, list[dict]]:
     }
 
 
+APP_TABLES = ["silver.scans", "silver.evidence", "silver.detections", "silver.repair_requests", "silver.calls",
+              "silver.deadlines", "silver.complaints", "gold.violations"]
+
 STORY_CHECKS = {
     "open HEAT at 1234 Demo St, last 7d (expect 6)":
         "SELECT COUNT(*) FROM {c}.gold.reports WHERE property_id='P-DEMO-1234' AND violation_category='HEAT' "
@@ -71,7 +74,8 @@ def main() -> int:
     ap.add_argument("--profile", required=True)
     ap.add_argument("--warehouse", required=True)
     ap.add_argument("--catalog", default="fixit")
-    ap.add_argument("--only", choices=["ddl", "data", "check"])
+    ap.add_argument("--only", choices=["ddl", "data", "check", "reset"],
+                    help="reset = delete app-written rows (cases, scans, calls, ...) and reload the seed data")
     ap.add_argument("--apply", action="store_true", help="actually create/modify resources")
     a = ap.parse_args()
     if a.profile in REFUSED:
@@ -88,7 +92,9 @@ def main() -> int:
         print(f"\n-- {len(plan_ddl)} DDL statements (from notebooks 01 + 30):")
         for s in plan_ddl:
             print("   " + " ".join(s.split())[:150])
-    if a.only in (None, "data"):
+    if a.only == "reset":
+        print(f"\n-- Reset: DELETE all rows from {', '.join(APP_TABLES)}")
+    if a.only in (None, "data", "reset"):
         print(f"\n-- Data load (generator now={now.isoformat()}): upload JSONL to /Volumes/{c}/{SEED_DIR}/ then INSERT OVERWRITE")
         for t, r in rows.items():
             print(f"   {c}.{t}: {len(r)} rows")
@@ -124,7 +130,12 @@ def main() -> int:
                 if "PERMISSION" in msg.upper() or "DENIED" in msg.upper():
                     return 1
 
-    if a.only in (None, "data"):
+    if a.only == "reset":  # the Databricks twin of POST /api/demo/reset (evidence files in the Volume are kept)
+        print("\n== Reset app-written rows")
+        for t in APP_TABLES:
+            cur.execute(f"DELETE FROM {c}.{t}")
+            print(f"   cleared {c}.{t}")
+    if a.only in (None, "data", "reset"):
         print("\n== Data")
         for t, r in rows.items():
             path = f"/Volumes/{c}/{SEED_DIR}/{t.replace('.', '__')}.jsonl"
@@ -137,10 +148,12 @@ def main() -> int:
             cur.execute(f"SELECT COUNT(*) FROM {c}.{t}")
             print(f"   {c}.{t}: {cur.fetchone()[0]} rows (expected {len(r)})")
 
-    print("\n== Story check")
-    for name, q in STORY_CHECKS.items():
-        cur.execute(q.format(c=c))
-        print(f"   {name}: {cur.fetchone()[0]}")
+    if a.only != "ddl":  # tables are empty right after DDL
+        print("\n== Story check")
+        for name, q in STORY_CHECKS.items():
+            cur.execute(q.format(c=c))
+            row = cur.fetchone()
+            print(f"   {name}: {row[0] if row else None}")
     conn.close()
     return 0
 

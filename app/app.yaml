@@ -17,5 +17,5 @@ env:
     value: "databricks-llama-4-maverick"
   - name: EMBEDDING_ENDPOINT
     value: "databricks-gte-large-en"
-  - name: GENIE_SPACE_ID
-    value: ""
+  - name: GENIE_SPACE_ID            # "FixIt Madison — Ask the data" (created 2026-11-14 by scripts/genie_setup.py)
+    value: "01f1e089ff07126aac09984f839aaef1"

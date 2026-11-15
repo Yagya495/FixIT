@@ -52,9 +52,41 @@ env vars exist on this laptop.
 | Silent failures / blocking `alert()` on call, deadline, joint, scan actions | Inline error messages |
 | Windows: evidence paths with backslashes (1 test failed) | POSIX paths |
 
-## Databricks features confirmed working (read-only checks, 2026-11-14, profile `fixit`)
+## Milestone 1 on Databricks: DONE (2026-11-14, approved by the user, profile `fixit` only)
+**Deployed App:** https://fixit-madison-7474647207905142.aws.databricksapps.com (workspace sign-in required)
+
+| Step | Result | Evidence |
+|---|---|---|
+| Catalog | ✅ dedicated `fixit` catalog created (no fallback needed) | `scripts/dbx_setup.py --apply` |
+| Schemas / volumes / tables / views | ✅ 6 schemas, 6 volumes, 14 tables, 2 views; DQ checks all 0 on loaded data | same |
+| Synthetic data | ✅ 251 owners, 2,004 properties, 11,941 reports, 139 scores, 11 types, 10 seed sections | row counts = generator output |
+| Demo story on Databricks | ✅ 6 open HEAT (7 d) · grade D · 11 open in 3 other buildings · 0 non-synthetic rows | story check |
+| Warehouse write test | ✅ insert → read back → delete in `fixit.silver.deadlines` | `dbx_check.py --write-test` |
+| App flow with `DATA_BACKEND=databricks` (laptop) | ✅ listing (vision live) → scan → evidence in `/Volumes/fixit/raw/evidence/` (hash verified) → case → live call extraction (Thu Nov 19) → escalate → joint (7) | rows in all silver tables, TIMESTAMP-typed |
+| Genie space | ✅ "FixIt Madison — Ask the data" `01f1e089ff07126aac09984f839aaef1`, 6 tables, instructions, 8 sample questions | live answers for all 8 cached in `demo/cached_outputs/genie/`; 66 open emergencies = local SQL |
+| App `fixit-madison` | ✅ deployed, "App started successfully"; compute MEDIUM (default, Free Edition quota) | `apps deploy` |
+| App resources | sql-warehouse CAN_USE · databricks-llama-4-maverick CAN_QUERY · Genie space CAN_RUN | `app/app_create.json` |
+| SP grants (minimum) | USE CATALOG fixit · USE SCHEMA+SELECT+MODIFY on silver, gold · USE SCHEMA+SELECT on ref · USE SCHEMA on raw · READ/WRITE VOLUME on raw.evidence only | `scripts/grant_app_sp.py`, verified with SHOW GRANTS |
+| Deployed end-to-end (as the SP) | ✅ all 11 steps pass: health, UI, listing (vision **live**), scan, evidence in UC Volume, case + collective, call (extraction **live**), escalate, joint, PDF, Genie | `scripts/app_smoke.py` |
+| Live Genie via the App SP | ✅ free-form question answered by Genie (`source=genie`, 17 s) | |
+| Reset | ✅ `dbx_setup.py --only reset --apply` clears app rows and reloads the story | run after the smoke test |
+
+Latency (warm warehouse): case page 1.7–2 s, owner 1.5 s, map 0.6 s. Cold warehouse adds ~10 s to the first calls:
+open the App a few minutes before presenting. Live Genie takes 17–24 s, so Demo Mode serves the saved Genie answer
+instantly (caption says "Saved answer from Databricks Genie").
+
+**Not available / skipped on Free Edition:** Claude endpoints (not offered here; using Llama 4 Maverick); Vector Search
+endpoint not created (skipped by decision until the Ch. 27 PDF is verified; BM25 fallback in use). No paid features
+were enabled; no upgrade prompts were encountered.
+
+**Deploy gotcha:** `databricks sync` respects `.gitignore`; `build/` is ignored, so it silently uploaded nothing and the first
+deploy failed ("no files found"). Fixed by `databricks workspace import-dir` (docs + Makefile updated).
+
+**Browser:** opening the App shows a Databricks "Authorize as…" OAuth prompt the first time; the agent stopped its
+auto-continue and did not authorize it. The user should open the URL and click Continue.
+
+## Model/endpoint checks (read-only, 2026-11-14)
 Workspace `https://dbc-bae64bde-0c7f.cloud.databricks.com`, **Free Edition** (per the user). Databricks CLI v1.26.0.
-No resources have been created yet.
 
 | Feature | Result | How verified |
 |---|---|---|
@@ -76,8 +108,8 @@ No resources have been created yet.
 over FixIt tables, App deployment, service-principal permissions.
 
 ## Next
-1. 🧑 Install CLI + `databricks auth login --profile fixit` (docs/DATABRICKS_SETUP.md §0). Then: discovery → model tests
-   → (approval) catalog/tables/synthetic → Genie → warehouse write test → `DATA_BACKEND=databricks` → App deploy + SP grants.
+1. 🧑 Open the App URL, click Continue on the OAuth prompt, and walk the demo in the browser (docs/DEMO_CHECKLIST.md).
+   Apps auto-stop ~24 h after deploy: redeploy (`databricks apps deploy …`) the day of judging.
 2. 🧑 Chapter 27 PDF (export from Municode) → upload to `/Volumes/fixit/raw/code_docs/` → `10_parse_code.sql` →
    human-review the remap in `20_violation_taxonomy.py`. Until then keep the "pending verification" labels.
 3. 🧑 Real demo photos into `demo/demo_inputs/{listing,walkthrough}/` → `/api/demo/warm` with live models → commit cache.

@@ -1,0 +1,138 @@
+{
+  "question": "Which buildings near campus have the most open issues?",
+  "text": "Buildings near campus with the most open issues include:\n- 681 N HENRY ST with 8 open issues\n- 2432 LANGDON ST with 6 open issues\n- 1234 DEMO ST with 6 open issues\n- 1207 VAN BUREN ST with 6 open issues\n- 763 BROOKS ST with 5 open issues",
+  "sql": "WITH campus_buildings AS (\n  SELECT \n    p.address_norm,\n    COUNT(r.report_id) AS open_issues\n  FROM `fixit`.`gold`.`properties` p\n  JOIN `fixit`.`gold`.`reports` r ON p.property_id = r.property_id\n  WHERE p.neighborhood IN ('Langdon', 'Mifflin', 'Regent', 'Greenbush')\n    AND r.status IN ('open','escalated')\n    AND p.address_norm IS NOT NULL\n  GROUP BY p.address_norm\n)\nSELECT address_norm, open_issues, RANK() OVER (ORDER BY open_issues DESC) AS rank\nFROM campus_buildings\nWHERE open_issues IS NOT NULL\nORDER BY rank;",
+  "rows": [
+    {
+      "address_norm": "681 N HENRY ST",
+      "open_issues": "8",
+      "rank": "1"
+    },
+    {
+      "address_norm": "2432 LANGDON ST",
+      "open_issues": "6",
+      "rank": "2"
+    },
+    {
+      "address_norm": "1234 DEMO ST",
+      "open_issues": "6",
+      "rank": "2"
+    },
+    {
+      "address_norm": "1207 VAN BUREN ST",
+      "open_issues": "6",
+      "rank": "2"
+    },
+    {
+      "address_norm": "763 BROOKS ST",
+      "open_issues": "5",
+      "rank": "5"
+    },
+    {
+      "address_norm": "784 N BASSETT ST",
+      "open_issues": "5",
+      "rank": "5"
+    },
+    {
+      "address_norm": "1613 N HENRY ST",
+      "open_issues": "5",
+      "rank": "5"
+    },
+    {
+      "address_norm": "2190 N BROOM ST",
+      "open_issues": "5",
+      "rank": "5"
+    },
+    {
+      "address_norm": "1813 ORCHARD ST",
+      "open_issues": "5",
+      "rank": "5"
+    },
+    {
+      "address_norm": "1617 W MIFFLIN ST",
+      "open_issues": "4",
+      "rank": "10"
+    },
+    {
+      "address_norm": "415 W MIFFLIN ST",
+      "open_issues": "4",
+      "rank": "10"
+    },
+    {
+      "address_norm": "1020 REGENT ST",
+      "open_issues": "4",
+      "rank": "10"
+    },
+    {
+      "address_norm": "1961 ST JAMES CT",
+      "open_issues": "4",
+      "rank": "10"
+    },
+    {
+      "address_norm": "974 N BASSETT ST",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "address_norm": "1078 N HENRY ST",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "address_norm": "658 N BASSETT ST",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "address_norm": "222 N BASSETT ST",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "address_norm": "2065 VAN BUREN ST",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "address_norm": "1085 N HENRY ST",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "address_norm": "165 WISCONSIN AVE",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "address_norm": "305 MILTON ST",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "address_norm": "601 WISCONSIN AVE",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "address_norm": "938 W MIFFLIN ST",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "address_norm": "2492 N CARROLL ST",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "address_norm": "533 LANGDON ST",
+      "open_issues": "3",
+      "rank": "14"
+    }
+  ],
+  "columns": [
+    "address_norm",
+    "open_issues",
+    "rank"
+  ],
+  "source": "genie"
+}

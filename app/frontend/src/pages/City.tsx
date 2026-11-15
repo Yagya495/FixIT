@@ -51,7 +51,7 @@ export default function City() {
 // Say truthfully what produced each answer: never imply live Genie when it was a saved or prepared answer.
 const SOURCE_NOTE: Record<string, string> = {
   genie: "Answered live by Databricks Genie.",
-  cache: "Saved Databricks Genie answer (Genie didn't respond just now).",
+  cache: "Saved answer from Databricks Genie (cached for the demo).",
   local: "Answered by FixIt's prepared SQL for this sample question (Genie not connected).",
 };
 
