@@ -30,8 +30,10 @@ Renter (primary) · tenant organizer · city inspector/council staff (demo perso
 ---
 
 ## 2. Priority tiers (law)
-- **Current priorities (user, 2026-11-14):** 1) complete the Chapter 27 citation review, 2) improve real-photo analysis
-  reliability, 3) finish frontend and mobile testing, 4) prepare the three-minute demo. No P1 work.
+- **Current priority (user, 2026-11-15): final demo stabilization.** 1) reliable video detection (real-phone test,
+  `docs/PHONE_TEST_CHECKLIST.md`; speed, `docs/DEMO_PERFORMANCE.md`), 2) a polished three-minute demo. **Paused:** further
+  legal approvals/research (the three verified citations stay as they are), YOLO, real-data ingestion, Twilio and all P1
+  work. No production change or redeploy without the user's approval.
 - **P0** (demo): code KB, taxonomy, scan, listing X-Ray, evidence locker + packet PDF, repair letter, simulated call,
   deadlines + escalation, collective match, landlord report card, Genie, synthetic dataset, Demo Mode.
 - **P1**: real phone call, Lease X-Ray, risk model (MLflow), AI/BI dashboard, Ask FixIt RAG, eval panel, Chicago
@@ -278,11 +280,11 @@ scripts/  dbx_setup · app_smoke · genie_verify · code_parse · ch27_review_sh
 - Quick start: `make setup && make build && make api` → http://localhost:8000 (Windows commands in README).
 
 ## 11. Inputs still needed from the human
-- Ch. 27: fill in `docs/legal/HUMAN_REVIEW_CHECKLIST.md` (Part A: five provisional mappings; Part B: three conditional
-  citations; Part C: state law for smoke/CO). Whether to send `docs/legal/CITY_INQUIRY_DRAFT.md` (§27.06(4),
-  "SPS 321.04(2)", "SPS 328.02", "single-family dwelling", CO).
-- Authorize (separately) deploying the local `ch27-review` commits; no citation changes ride along.
-- Smoke/CO: verify the sources and written-notice requirements before the (disabled) legal deadline can be enabled.
+- **Now:** authorize (or not) the targeted cleanup of the deployment test records (`docs/ops/TEST_RECORD_CLEANUP_PLAN.md`,
+  manifest `docs/ops/test_records_2026-11-15.json`); run the real-phone checklist; approve (or not) the speed changes
+  A+B+C in `docs/DEMO_PERFORMANCE.md` (local first, then one reviewed redeploy).
+- **Paused until after the demo (no action now):** `docs/legal/HUMAN_REVIEW_CHECKLIST.md`, the City inquiry draft, the
+  smoke/CO deadline and state-law display (both stay off).
 - Decide whether to merge `ch27-review` into `main`, and whether to update the local fallback.
 - Manual checklist on the App + phone (`docs/DEMO_SCRIPT.md`); staged photos for `scripts/eval_vision.py` and the stage cache.
 - 19 photos from the user's manual test remain in `/Volumes/fixit/raw/evidence/` (resets never delete files).

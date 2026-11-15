@@ -292,12 +292,25 @@ over FixIt tables, App deployment, service-principal permissions.
   - Scans (not shown anywhere without a case): 2 smoke scans + 7 test scans (QA-1..QA-7) with ~80 frame images in the
     UC Volume `raw/evidence` and their detections/violations.
 
-## Next (priorities set by the user, 2026-11-14)
-1. **Complete the Chapter 27 citation review**: plumbing, heat and surfaces are verified and deployed. Next: the
-   reviewer fills `docs/legal/HUMAN_REVIEW_CHECKLIST.md`; exits wait on Building Inspection (draft inquiry ready, not sent).
-2. **Improve real-photo analysis reliability**: staged/real photos → `scripts/eval_vision.py`; warm the stage cache.
-3. **Finish frontend and mobile testing**: open the App URL (OAuth Continue), walk `docs/DEMO_SCRIPT.md` on laptop + phone.
-4. **Prepare the three-minute demo**: dry run ×3, Demo Mode on and off. Redeploy on judging day (Apps auto-stop ~24 h).
+## Demo stabilization (user, 2026-11-15): current plan
+- **Test-record cleanup, prepared, NOT executed:** read-only inventory found exactly 9 scans, 81 evidence rows, 26
+  detections, 11 findings, 1 repair request (+1 building report, 1 call, 1 deadline, 2 complaints) and 56 Volume files,
+  all on the disposable building; nothing else written since the deploy. Plan `docs/ops/TEST_RECORD_CLEANUP_PLAN.md`,
+  manifest `docs/ops/test_records_2026-11-15.json`, script `scripts/cleanup_test_records.py` (dry run matched; deletes
+  only listed keys, records Delta versions, refuses on any mismatch or demo-building record). Awaiting authorization.
+- **Real-phone checklist:** `docs/PHONE_TEST_CHECKLIST.md` (Android + iPhone, recording/upload, live source line, frame
+  accuracy, HEVC/MOV, failures).
+- **Performance:** `docs/DEMO_PERFORMANCE.md`. Deployed 12 frames ≈ 44–53 s, 30 frames ≈ 98 s (local 24 s / 56 s); the gap
+  is sequential warehouse/Volume writes before the model calls. Proposed A+B+C (parallel storage, batched inserts, one
+  duplicate check per batch): needs approval. Stage advice: 8–10 s clip, warm-up 5–10 min before, backup clip + photos.
+
+## Next (user priority, 2026-11-15: reliable video detection + polished demo)
+1. **Real-phone test** on Android and iPhone with the checklist; fix only what it finds.
+2. **Speed for the demo:** if approved, A+B+C locally → live-endpoint measurement → one reviewed redeploy.
+3. **Clean the deployed test records** once the exact manifest is authorized.
+4. **Three-minute demo:** stage clip recorded and tested on the demo device; dry run ×3 with Demo Mode on; warm-up
+   routine; redeploy on judging day only if the App stopped (Apps auto-stop ~24 h).
+- Paused: legal approvals/research, YOLO, real-data ingestion, Twilio, P1.
 
 ## Data decision (user, 2026-11-14): synthetic dataset for the demo
 - The demo keeps the existing **synthetic Madison dataset**: 2,004 buildings, 251 owners, 11,941 reports. Every owner,
