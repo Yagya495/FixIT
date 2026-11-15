@@ -19,3 +19,17 @@ env:
     value: "databricks-gte-large-en"
   - name: GENIE_SPACE_ID            # "FixIt Madison — Ask the data" (created 2026-11-14 by scripts/genie_setup.py)
     value: "01f1e089ff07126aac09984f839aaef1"
+  # Retell AI phone calls (real test calls to consenting, allowlisted numbers only). Values come from
+  # App secret resources (scope `fixit-retell`); no secret values in this file. See docs/RETELL_SETUP.md.
+  - name: CALLS_ENABLED
+    value: "true"
+  - name: RETELL_API_KEY
+    valueFrom: retell-api-key
+  - name: RETELL_OPERATOR_TOKEN
+    valueFrom: retell-operator-token
+  - name: RETELL_AGENT_ID
+    valueFrom: retell-agent-id
+  - name: RETELL_FROM_NUMBER
+    valueFrom: retell-from-number
+  - name: CALL_ALLOWLIST
+    valueFrom: call-allowlist

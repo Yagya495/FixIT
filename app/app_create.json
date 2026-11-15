@@ -4,6 +4,11 @@
   "resources": [
     {"name": "sql-warehouse", "sql_warehouse": {"id": "6361516ab33ba2d2", "permission": "CAN_USE"}},
     {"name": "llm", "serving_endpoint": {"name": "databricks-llama-4-maverick", "permission": "CAN_QUERY"}},
-    {"name": "genie", "genie_space": {"name": "FixIt Madison — Ask the data", "space_id": "01f1e089ff07126aac09984f839aaef1", "permission": "CAN_RUN"}}
+    {"name": "genie", "genie_space": {"name": "FixIt Madison — Ask the data", "space_id": "01f1e089ff07126aac09984f839aaef1", "permission": "CAN_RUN"}},
+    {"name": "retell-api-key", "secret": {"scope": "fixit-retell", "key": "retell-api-key", "permission": "READ"}},
+    {"name": "retell-operator-token", "secret": {"scope": "fixit-retell", "key": "retell-operator-token", "permission": "READ"}},
+    {"name": "retell-agent-id", "secret": {"scope": "fixit-retell", "key": "retell-agent-id", "permission": "READ"}},
+    {"name": "retell-from-number", "secret": {"scope": "fixit-retell", "key": "retell-from-number", "permission": "READ"}},
+    {"name": "call-allowlist", "secret": {"scope": "fixit-retell", "key": "call-allowlist", "permission": "READ"}}
   ]
 }
