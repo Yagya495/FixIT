@@ -42,13 +42,24 @@ different photos).
   require publishing the App's source under AGPL or an Ultralytics Enterprise license.
 - Installed only in `experiments/yolo_ceiling/.venv` (not in the App's environment or requirements).
 
-## Where training can run
-- Local PC: no NVIDIA GPU. A 1-epoch smoke run (30 images, 320 px) took ~15 s of training on CPU, so the real run
-  (150 images, 640 px, up to 50 epochs) would take roughly 4 h on CPU: not started, as instructed.
-- Databricks (`fixit` profile, read-only checks): no clusters exist; GPU instance types are listed (g4dn, g5), but any
-  GPU cluster is **new paid compute**, which needs the owner's approval. No serverless/free GPU option found.
-- **Fallback prepared:** `yolo_ceiling_colab.ipynb` + `yolo_ceiling_bundle.zip` (8.4 MB, built by
-  `make_colab_bundle.py`) for a free Colab T4.
+## Where training runs
+- Local PC: no NVIDIA GPU; a real run on CPU (~4 h) was not started.
+- **Databricks Free Edition, Serverless GPU (AI Runtime v6, NVIDIA A10G, PyTorch 2.11.0+cu130, Python 3.12)**, verified
+  by the owner in an existing notebook. No compute is created.
+- Package in the owner's workspace home, folder `fixit-yolo-ceiling/` (no tables, Volumes or App resources):
+  `yolo_ceiling_train` (notebook, source `databricks/yolo_ceiling_train.py`) and `bundle/` (the 33.9 MB bundle split
+  into 9 MB parts because the workspace import API limits files to 10 MB, plus its SHA-256). The bundle holds the
+  verified dataset, scripts, manifest, Llama baseline, the official `yolo26n-obb.pt` / `yolo26s-obb.pt` (SHA-256
+  checked) and the plotting font, so only PyPI is needed.
+- Notebook safeguards: torch/torchvision pinned to the runtime's versions via a pip constraints file and re-checked
+  after install; manifest re-verification (counts, SHA-256, original partitions, no duplicate group across splits);
+  a 2-epoch timing probe on train/valid with a 30-minute cap for the full run; weights/curves copied to
+  `fixit-yolo-ceiling/outputs/` before evaluation; the test evaluation refuses to run twice; MLflow experiment
+  `fixit-yolo-ceiling/yolo_ceiling_mlflow` (Ultralytics training callback + a separate test-eval run).
+- Free Edition GPU quota is shown in the workspace UI only (no API): check it before the full run.
+- Colab notebook kept as a fallback (`yolo_ceiling_colab.ipynb`).
+- The notebook's logic was simulated locally against the exact bundle (unpack, manifest checks, weight hashes,
+  in-process smoke training, evaluation on valid): OK.
 
 ## Training configuration (`train_yolo.py`)
 OBB, 640 px, seed 42 (deterministic), max 50 epochs, patience 10, pretrained, batch 16 on GPUs with >= 8 GB (keeps ~10
@@ -84,5 +95,5 @@ crack/hole -> DAMAGED_SURFACES, damp/mold-like/stain -> WATER_DAMAGE_MOLD or LEA
 Weak spots: holes, cracks and a third of stains. The YOLO result will be compared on exactly these images.
 
 ## Next step
-Run the Colab notebook (free T4, ~10-15 min for yolo26n) or approve a paid Databricks GPU run; then
-`evaluate.py --weights runs/yolo26n-obb/weights/best.pt` once and fill in the results here.
+Run `fixit-yolo-ceiling/yolo_ceiling_train` on the existing Serverless GPU notebook (cells 1-6, check the projection
+and quota, then 7-9), then copy `outputs/` back here and fill in the measured results.

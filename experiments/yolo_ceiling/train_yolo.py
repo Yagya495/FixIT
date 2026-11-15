@@ -41,7 +41,7 @@ def pick_batch(device: str) -> int:
     return 16 if mem_gb >= 8 else 8
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="yolo26n-obb.pt")
     ap.add_argument("--epochs", type=int, default=50)
@@ -50,7 +50,9 @@ def main():
     ap.add_argument("--batch", type=int, default=0, help="0 = choose from GPU memory")
     ap.add_argument("--smoke", action="store_true")
     ap.add_argument("--allow-cpu", action="store_true")
-    a = ap.parse_args()
+    ap.add_argument("--name", default="", help="run folder name (default: model name)")
+    ap.add_argument("--workers", type=int, default=-1, help="dataloader workers (-1 = 2 on CPU, 4 on GPU)")
+    a = ap.parse_args(argv)
 
     import torch
     import ultralytics
@@ -67,12 +69,12 @@ def main():
     except ImportError:
         settings.update({"mlflow": False})
 
-    name = Path(a.model).stem + ("_smoke" if a.smoke else "")
+    name = a.name or (Path(a.model).stem + ("_smoke" if a.smoke else ""))
     args = dict(
         data=str(runtime_yaml()), task="obb", imgsz=320 if a.smoke else a.imgsz,
         epochs=1 if a.smoke else a.epochs, patience=a.patience, batch=a.batch or pick_batch(device),
         device=device, seed=42, deterministic=True, pretrained=True, project=str(HERE / "runs"), name=name,
-        exist_ok=True, fraction=0.2 if a.smoke else 1.0, workers=2 if device == "cpu" else 4, plots=True,
+        exist_ok=True, fraction=0.2 if a.smoke else 1.0, workers=a.workers if a.workers >= 0 else (2 if device == "cpu" else 4), plots=True,
         # augmentation (see docstring)
         hsv_h=0.0, hsv_s=0.3, hsv_v=0.3, degrees=10.0, translate=0.1, scale=0.3, shear=0.0, perspective=0.0,
         flipud=0.5, fliplr=0.5, mosaic=0.5, close_mosaic=10, mixup=0.0, copy_paste=0.0,
@@ -84,8 +86,11 @@ def main():
             "host": "colab" if "COLAB_RELEASE_TAG" in os.environ else ("databricks" if "DATABRICKS_RUNTIME_VERSION" in os.environ else "local"),
             "args": args, "smoke": a.smoke}
     print(json.dumps({k: info[k] for k in ("model", "ultralytics", "torch", "device", "gpu", "host")}))
+    if Path(a.model).exists():
+        import hashlib
+        info["weights_sha256"] = hashlib.sha256(Path(a.model).read_bytes()).hexdigest()
     t = time.time()
-    model = YOLO(a.model)                                  # downloads the official pretrained checkpoint
+    model = YOLO(a.model)                                  # local official checkpoint, or downloaded by name
     model.train(**args)
     info["train_minutes"] = round((time.time() - t) / 60, 1)
     run_dir = HERE / "runs" / name

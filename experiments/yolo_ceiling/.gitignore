@@ -10,3 +10,5 @@ results/*/predictions/
 results/*/val_test/
 results/*/clean/
 results/*_pipelinecheck/
+databricks/*.zip
+databricks/parts/

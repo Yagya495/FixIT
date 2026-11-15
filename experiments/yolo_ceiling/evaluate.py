@@ -78,13 +78,13 @@ def side_by_side(img_path: Path, result, gts, out: Path):
     cv2.imwrite(str(out), np.hstack([left, right]))
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--weights", required=True)
     ap.add_argument("--conf", type=float, default=0.25, help="operating threshold for FP/FN lists (fixed, not tuned)")
     ap.add_argument("--split", default="test", choices=["test", "valid"],
                     help="'valid' only for pipeline checks; the reported result is the single test evaluation")
-    a = ap.parse_args()
+    a = ap.parse_args(argv)
     from ultralytics import YOLO
     w = Path(a.weights).resolve()
     run = w.parent.parent.name
@@ -198,6 +198,7 @@ def main():
         md += ["\n## vs Llama 4 Maverick (image level)\n```json", json.dumps(metrics["vs_llama"], indent=1), "```"]
     (out / "metrics.md").write_text("\n".join(md), encoding="utf-8")
     print("\n".join(md))
+    return metrics
 
 
 if __name__ == "__main__":
