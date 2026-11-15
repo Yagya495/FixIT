@@ -139,3 +139,15 @@ def test_endpoint_is_nonpersistent_and_ignores_extra_fields(tmp_path, monkeypatc
         db._local.sqlite and db._local.sqlite.close()
     except Exception:
         pass
+
+
+def test_public_building_definition_reported_not_evaluated():
+    evaluate, NOT_EVALUATED, MAY_APPLY = ar.evaluate, ar.NOT_EVALUATED, ar.MAY_APPLY
+    """Wis. Stat. 101.01(12) ('3 or more tenants') is surfaced, but units != tenants, so nothing is concluded."""
+    for units in ("1", "2"):
+        r = evaluate({"units": units})
+        s145 = next(s for s in r["alarms"]["smoke"] if s["source_id"] == "Wis. Stat. 101.145")
+        assert s145["status"] == NOT_EVALUATED and "101.01(12)" in " ".join(s145["reasons"] + s145["unresolved"])
+    r = evaluate({"units": "3+"})
+    s145 = next(s for s in r["alarms"]["smoke"] if s["source_id"] == "Wis. Stat. 101.145")
+    assert s145["status"] == MAY_APPLY and any("101.01(12)" in u for u in s145["unresolved"])

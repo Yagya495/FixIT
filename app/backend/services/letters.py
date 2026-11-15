@@ -68,7 +68,7 @@ def tour_questions(violations: list[dict], history: dict | None) -> list[str]:
     if "WATER_DAMAGE_MOLD" in types:
         qs.append("I noticed what looks like a water stain in one of the photos. What caused it, and was the leak fixed and the area tested for mold?")
     if "SMOKE_DETECTOR_MISSING" in types or "CO_DETECTOR_MISSING" in types:
-        qs.append("Can you show me the working smoke detector in each bedroom and hallway, and the CO alarm? When were they last tested?")
+        qs.append("Where are the smoke alarms and any carbon monoxide alarms, and when were they last tested? Does the building have fuel-burning appliances, a fireplace or an attached garage?")
     if "EXPOSED_WIRING" in types:
         qs.append("Will the missing outlet/switch covers and any exposed wiring be fixed by a licensed electrician before move-in?")
     if "PEST_EVIDENCE" in types:

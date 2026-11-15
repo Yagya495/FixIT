@@ -40,6 +40,12 @@ STATUS_TEXT = {
 }
 
 
+# Wis. Stat. 101.01(12) (read 2026-11-14): "public building" includes a structure used "by 3 or more tenants".
+# FixIt asks about units, not tenants, so this is reported, never evaluated.
+PUBLIC_BUILDING_NOTE = ("Wis. Stat. 101.01(12) counts a building used by 3 or more tenants as a 'public building'; "
+                        "FixIt asks about units, not tenants, so this is not evaluated.")
+
+
 def normalize(profile: dict | None) -> dict:
     """Every field defaults to 'unknown'; anything not in the allowed values also becomes 'unknown'."""
     p = profile or {}
@@ -89,14 +95,14 @@ def smoke_sources(p: dict) -> list[dict]:
                         ["Covers buildings with 1 or 2 dwelling units."], ["units"]))
 
     # Wis. Stat. 101.145: "residential building" = public building used for sleeping or lodging (scope unresolved).
-    pub = ["Where 'public building' (Wis. Stat. 101.01) ends is not reviewed."]
+    pub = [PUBLIC_BUILDING_NOTE]
     if u == "3+" or u == "unknown":
         out.append(_src("Wis. Stat. 101.145", "State smoke detectors: residential buildings", "Wisconsin statute",
                         MAY_APPLY, ["Covers public buildings used for sleeping or lodging, incl. apartment houses."],
                         ["units"] if u == "unknown" else [], pub))
     else:
         out.append(_src("Wis. Stat. 101.145", "State smoke detectors: residential buildings", "Wisconsin statute",
-                        NOT_EVALUATED, ["Whether a 1-2 unit building is a 'public building' is not reviewed."],
+                        NOT_EVALUATED, ["A 1-2 unit building may still be a 'public building' if 3 or more tenants use it (Wis. Stat. 101.01(12)); FixIt does not evaluate this."],
                         unresolved=pub))
 
     out.append(_sps328(p, "smoke"))
@@ -128,7 +134,7 @@ def co_sources(p: dict) -> list[dict]:
     # Wis. Stat. 101.149: residential buildings; triggers each have exemptions that FixIt doesn't evaluate.
     exempt = ["Trigger-specific exemptions in 101.149(2) and the sealed-combustion exception in 101.149(5) are not evaluated.",
               "The 'fuel-burning appliances outside the unit' trigger is not asked.",
-              "Where 'public building' (Wis. Stat. 101.01) ends is not reviewed."]
+              PUBLIC_BUILDING_NOTE]
     if u in ("3+", "unknown"):
         missing = (["units"] if u == "unknown" else []) + [m for m, v in (("fuel_burning_appliance", a),
                                                                            ("fuel_forced_air_furnace", fa),
@@ -138,7 +144,7 @@ def co_sources(p: dict) -> list[dict]:
                                     "fuel-burning appliances outside the unit, or an attached garage."], missing, exempt))
     else:
         out.append(_src("Wis. Stat. 101.149", "State CO detectors: residential buildings", "Wisconsin statute",
-                        NOT_EVALUATED, ["Whether a 1-2 unit building is a 'public building' is not reviewed."],
+                        NOT_EVALUATED, ["A 1-2 unit building may still be a 'public building' if 3 or more tenants use it (Wis. Stat. 101.01(12)); FixIt does not evaluate this."],
                         unresolved=exempt[2:]))
 
     out.append(_sps328(p, "co"))

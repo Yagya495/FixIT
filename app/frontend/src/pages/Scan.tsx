@@ -138,7 +138,7 @@ export default function Scan() {
             </div>
           )}
           <button className="btn-ghost w-full" onClick={reportNoHeat}><Flame className="w-5 h-5 text-badger" /> Report no heat (can't be photographed)</button>
-          {busy && <div className="card p-4"><Progress steps={["Saving evidence + SHA-256 hash…", "Looking for violations…", "Matching to MGO Chapter 27…"]} done={false} intervalMs={700} /></div>}
+          {busy && <div className="card p-4"><Progress steps={["Saving evidence + SHA-256 hash…", "Looking for possible issues…", "Matching to MGO Chapter 27…"]} done={false} intervalMs={700} /></div>}
           <ErrorBox error={error} />
           {frames > 0 && <p className="text-sm text-neutral-500">{frames} frame{frames > 1 ? "s" : ""} analyzed and saved to the evidence locker.</p>}
         </div>

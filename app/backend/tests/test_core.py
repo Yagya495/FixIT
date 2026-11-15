@@ -402,3 +402,45 @@ def test_second_batch_wording_decisions():
     assert "rented units" in lock and "alternative" in lock
     win = BY_ID["BROKEN_WINDOW"]["plain_explanation"]
     assert "June 1" in win and "October 15" in win and "does not specifically mention cracked glass" in win
+
+
+def test_final_review_wording_for_unresolved_categories():
+    """docs/legal/FINAL_LEGAL_REVIEW.md: no unverified rule is stated as settled law."""
+    from app.backend.services.taxonomy import BY_ID
+    smoke = BY_ID["SMOKE_DETECTOR_MISSING"]
+    assert "required in rental units" not in smoke["plain_explanation"]          # depends on the building
+    assert "bedrooms and hallways" not in smoke["remedy_request"]                 # matches no source read
+    assert "not verified which rule applies" in smoke["plain_explanation"]
+    assert "in writing" in smoke["plain_explanation"]
+    co = BY_ID["CO_DETECTOR_MISSING"]
+    assert "does not address carbon monoxide" in co["plain_explanation"]
+    assert "attached garage" in co["plain_explanation"] and "near each sleeping area" not in co["remedy_request"]
+    assert co["code_sections"] == ["PENDING-CO"]
+    assert "is set by the electrical code" not in BY_ID["EXPOSED_WIRING"]["plain_explanation"]
+    assert "does not test for mold" in BY_ID["WATER_DAMAGE_MOLD"]["plain_explanation"]
+    assert "cannot accept photos" in BY_ID["PEST_EVIDENCE"]["plain_explanation"]
+    assert "exception" in BY_ID["BLOCKED_EGRESS"]["plain_explanation"]
+
+
+def test_final_review_activates_no_new_citation():
+    """The consolidated review is preparation only: still exactly three approved categories, one reviewer each."""
+    import json
+    from pathlib import Path
+    data = json.loads((Path(__file__).resolve().parents[1] / "code_sections_verified.json").read_text(encoding="utf-8"))
+    approved = {"LEAK_PLUMBING", "NO_HEAT", "DAMAGED_SURFACES"}
+    assert set(data["mapping"]) == approved and set(data["reviewers"]) == approved
+    assert {s["section_id"] for s in data["sections"]} == {"27.05(2)(j)", "27.04(2)(h)", "27.05(2)(g)1."}
+
+
+def test_review_csv_reviewer_blank_for_unapproved_categories():
+    import csv
+    from pathlib import Path
+    rows = list(csv.DictReader((Path(__file__).resolve().parents[3] / "eval" / "code_review.csv").open(encoding="utf-8")))
+    filled = {r["type_id"] for r in rows if r["reviewer"].strip() or r["approved_section_ids"].strip()}
+    assert filled == {"LEAK_PLUMBING", "NO_HEAT", "DAMAGED_SURFACES"}
+
+
+def test_tour_question_does_not_assert_alarm_locations():
+    from app.backend.services import letters
+    q = " ".join(letters.tour_questions([{"violation_type": "CO_DETECTOR_MISSING"}], None))
+    assert "each bedroom and hallway" not in q and "attached garage" in q
