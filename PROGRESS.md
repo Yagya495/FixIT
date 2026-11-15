@@ -267,6 +267,31 @@ over FixIt tables, App deployment, service-principal permissions.
 - Not verified: a real iPhone/Android device (Safari/WebKit not tested; HEVC .mov may not decode in desktop Chrome);
   real apartment footage accuracy. Local live mode needs the Databricks CLI on PATH (winget install isn't on PATH here).
 
+## Video walkthrough deployed (2026-11-15; user-approved code-only deploy, profile `fixit`)
+- Pre-checks: backend 148 passed, frontend 10 passed, `tsc -b` clean. Diff vs deployed `aeb7598`: no change to
+  `code_sections_verified.json`, `app.yaml`, requirements, demo cache, `code_match.py`, `db.py`, `seed.py`; the three
+  approved categories untouched in `taxonomy.py`; `conditional_citations` / `state_law` not imported by the app;
+  `LEGAL_DEADLINE_DISPLAY_ENABLED` and `STATE_LAW_DISPLAY_ENABLED` False; no citation/disclaimer line changed in the UI.
+- Deployed `2c74f5d` → deployment `01f1e0c4e722…` ("App started successfully"). Rollback tag `deploy-pre-video-2026-11-15`
+  (`aeb7598`, deployment `01f1e0b44278…`). Gotcha: in Git Bash set `MSYS_NO_PATHCONV=1`, or `/Workspace/...` is rewritten
+  to a Windows path and `import-dir`/`apps deploy` fail. The Databricks SDK's CLI auth needs the winget CLI dir on PATH.
+- Deployed-App tests (headless Chrome; auth header added only to same-origin requests; disposable synthetic building
+  1770 Fair Oaks Ave, P-00542, units QA-1..QA-7):
+  - 12 s MP4 desktop / 12 s WebM phone-size / 40 s WebM / "Record a walkthrough video" input: 12 / 11 / 30 / 12 frames,
+    every frame `live` (Llama 4 Maverick), batches of 5 with progress ("Extracting frames…", "Analyzing frames 1–5 of
+    12…"), outlet consolidated into 1 finding citing exactly its 3 / 3 / 8 / 3 frames, no page errors, no horizontal
+    overflow. The drawn ceiling stain was not detected (model limitation on synthetic drawings).
+  - App logs: 7 × HTTP 429 from the endpoint during the runs, all retried; zero "vision live call failed".
+  - Citations: NO_HEAT → 27.04(2)(h), LEAK_PLUMBING → 27.05(2)(j), DAMAGED_SURFACES → 27.05(2)(g)1. (verified, official
+    text); EXPOSED_WIRING → unverified summary. Synthetic-data labels present on Building, Landlords, Listing, City.
+  - `scripts/app_smoke.py` (new optional `--address/--unit`): **11/11 PASS** on 1770 Fair Oaks Ave unit QA-SMOKE.
+    Demo story unchanged before/after (6 open at 1234 Demo St; owner D, 0.916, 17 open).
+- **Records the tests left in the deployed data (not cleaned up; cleanup needs the user's approval):**
+  - My cases: 1 repair request `RR-a1f14979d7` (1770 Fair Oaks Ave, QA-SMOKE) with its building report (P-00542 open
+    issues 0 → 1), simulated call, deadline (escalated) and 2 complaints (escalation + joint).
+  - Scans (not shown anywhere without a case): 2 smoke scans + 7 test scans (QA-1..QA-7) with ~80 frame images in the
+    UC Volume `raw/evidence` and their detections/violations.
+
 ## Next (priorities set by the user, 2026-11-14)
 1. **Complete the Chapter 27 citation review**: plumbing, heat and surfaces are verified and deployed. Next: the
    reviewer fills `docs/legal/HUMAN_REVIEW_CHECKLIST.md`; exits wait on Building Inspection (draft inquiry ready, not sent).

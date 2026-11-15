@@ -246,14 +246,21 @@ scripts/  dbx_setup · app_smoke · genie_verify · code_parse · ch27_review_sh
 - No secrets in code: read `.env` (gitignored) and `.env.example` is the template.
 - Commit working states often. Update `PROGRESS.md` after every milestone.
 
-## 10. Current status (2026-11-14, night)
+## 10. Current status (2026-11-15, morning: video walkthrough deployed)
 - All P0 features run end to end locally (SQLite) and on Databricks. **Deployed App:**
   https://fixit-madison-7474647207905142.aws.databricksapps.com (catalog `fixit`, warehouse `6361516ab33ba2d2`, Genie space
   `01f1e089ff07126aac09984f839aaef1`, minimal SP grants). Smoke test `scripts/app_smoke.py` 11/11; data reset to the clean
   story (6 open heat at 1234 Demo St, owner grade D (score 0.916), 11 open issues across 3 other buildings); 8/8 saved Genie
   answers match (3 refreshed live after the reset). Apps auto-stop ~24 h after deploy: redeploy on judging day.
 - **Branches:**
-  - The deployed app now runs **`ch27-review`** (deployment `01f1e0b4…`; **not merged** into `main`). It includes the
+  - **2026-11-15: deployed `ch27-review` at `2c74f5d`** (deployment `01f1e0c4e722…`, user-approved code-only deploy;
+    **not merged** into `main`). Adds everything listed below as local-only (wording, photo-detection honesty, inactive
+    legal prep) plus the video walkthrough fixes. No data reset, no citation change (3 verified, unchanged), deadline and
+    state-law display still off. Rollback: tag `deploy-pre-video-2026-11-15` (= `aeb7598`, deployment `01f1e0b44278…`).
+    Verified on the deployed App: video upload/record/frame extraction/batching/progress/live inference/consolidation/
+    evidence association (desktop + phone emulation, Chrome); 7 endpoint 429s during testing were all retried; smoke test
+    11/11 on a disposable building. Test records left in place (see PROGRESS "Video walkthrough deployed").
+  - Previously the deployed app ran **`ch27-review`** (deployment `01f1e0b4…`). It includes the
     corrected wording, explicit synthetic-data labels, the smoke/CO prototype (deadline disabled), the responsive fixes,
     and the 3 verified citations. 89 tests passed at the deployed commit `aeb7598`.
   - Local-only commits after the deployment (not deployed, not merged): `87df616` (wording for unverified categories
