@@ -5,7 +5,7 @@ Nothing here invents section numbers: ids come from headings in the official PDF
 
   # 1. Upload the PDF you exported from Municode (official MGO Ch. 27):
   python scripts/code_parse.py upload  --profile fixit --pdf "C:\\path\\MGO_Ch27.pdf" --apply
-  # 2. Parse into bronze.code_docs_parsed / bronze.code_elements and add sections (verified=0) next to the seeds:
+  # 2. Parse into bronze.code_docs_parsed / code_elements / code_sections_parsed (STAGING, verified=0; the app never reads bronze):
   python scripts/code_parse.py parse   --profile fixit --warehouse <id> --apply
   # 3. Write eval/code_review.csv: for each violation type, top-3 candidate sections + text snippets:
   python scripts/code_parse.py propose --profile fixit --warehouse <id>
@@ -43,24 +43,57 @@ def parse_sql(c: str) -> list[str]:
             FROM {c}.bronze.code_docs_parsed, LATERAL variant_explode(parsed:document:elements) AS e
             WHERE CAST(e.value:content AS STRING) IS NOT NULL
               AND coalesce(CAST(e.value:type AS STRING), '') NOT IN ('page_header', 'page_footer', 'page_number')""",
-        # Parsed sections replace earlier parsed rows only; the unverified seed summaries (source_doc 'seed%') stay.
-        f"DELETE FROM {c}.silver.code_sections WHERE source_doc NOT LIKE 'seed%'",
-        f"""INSERT INTO {c}.silver.code_sections
+        # Staging only: the app reads silver/ref, never bronze, so parsing changes nothing the app shows.
+        # Ids come only from explicit headings ("27.051 - ENERGY CODE ..."). Subsection markers ("(2)(h)") are
+        # detached list numbering in the Municode export, so they are NOT derived from element order.
+        f"""CREATE OR REPLACE TABLE {c}.bronze.code_sections_parsed AS
             WITH tagged AS (
-              SELECT *, regexp_extract(content, '^\\\\s*(27\\\\.\\\\d{{2}}(?:\\\\(\\\\d+\\\\))*(?:\\\\([a-z]\\\\))*)', 1) AS sec_start
+              SELECT *, regexp_extract(content, '^\\\\s*(27\\\\.[0-9]{{2,3}})\\\\s*-\\\\s', 1) AS sec_start
               FROM {c}.bronze.code_elements),
             grouped AS (
               SELECT *, last_value(NULLIF(sec_start, ''), true) OVER (PARTITION BY source_doc ORDER BY element_idx
                         ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS section_id
               FROM tagged)
             SELECT section_id,
-                   trim(regexp_replace(min_by(content, element_idx), '^\\\\s*27\\\\.[0-9().a-z]+\\\\s*', '')) AS title,
+                   trim(regexp_replace(min_by(content, element_idx), '^\\\\s*27\\\\.[0-9]+\\\\s*-\\\\s*', '')) AS title,
                    array_join(transform(array_sort(collect_list(struct(element_idx, content))), x -> x.content), '\\n') AS text,
                    min_by(source_doc, element_idx) AS source_doc, min(page) AS page,
                    '{OFFICIAL_URL}' AS url,
                    0 AS verified
             FROM grouped WHERE section_id IS NOT NULL GROUP BY section_id""",
     ]
+
+
+def approved_rows(ids: list[str]) -> list[dict]:
+    """Rows for approved ids, built only from the parsed official text and the excerpt-checked proposals.
+
+    A top-level id ("27.04") uses the whole parsed section. A subsection id ("27.04(2)(h)") uses the excerpts the
+    review sheet proposed for it, each of which scripts/ch27_review_sheet.py checked word for word against the parse.
+    Raises KeyError for an id that is in neither (no guessing).
+    """
+    legal = ROOT / "docs" / "legal"
+    parsed = {s["section_id"]: s for s in json.loads((legal / "ch27_parsed_sections.json").read_text(encoding="utf-8"))}
+    items = [i for p in json.loads((legal / "ch27_proposed_mappings.json").read_text(encoding="utf-8"))["proposals"]
+             for i in p["items"]]
+    out = []
+    for sid in ids:
+        if sid in parsed:
+            s = parsed[sid]
+            out.append({"section_id": sid, "title": " ".join(s["title"].split()), "text": s["text"],
+                        "source_doc": s["source_doc"], "page": s["page"], "url": OFFICIAL_URL})
+            continue
+        mine = [i for i in items if i["section_id"] == sid]
+        if not mine:
+            raise KeyError(sid)
+        base = parsed[mine[0]["section"]]
+        for i in mine:
+            if " ".join(i["excerpt"].split()) not in " ".join(base["text"].split()):
+                raise KeyError(f"{sid}: excerpt no longer matches the parse")
+        caption = next((i["caption"] for i in mine if i["caption"]), "")
+        out.append({"section_id": sid, "title": " ".join(f"{base['title']} {caption}".split()),
+                    "text": "\n".join(dict.fromkeys(i["excerpt"] for i in mine)), "source_doc": base["source_doc"],
+                    "page": min(i["page"] for i in mine), "url": OFFICIAL_URL})
+    return out
 
 
 def conn(profile: str, warehouse: str):
@@ -110,8 +143,8 @@ def main() -> int:
             cur.execute(s)
         cur.execute(f"SELECT COUNT(*), COUNT(DISTINCT source_doc) FROM {c}.bronze.code_elements")
         print("elements, docs:", cur.fetchone())
-        cur.execute(f"SELECT section_id, title, page, length(text) FROM {c}.silver.code_sections "
-                    f"WHERE source_doc NOT LIKE 'seed%' ORDER BY section_id LIMIT 200")
+        cur.execute(f"SELECT section_id, title, page, length(text) FROM {c}.bronze.code_sections_parsed "
+                    f"ORDER BY section_id LIMIT 200")
         rows = cur.fetchall()
         print(f"{len(rows)} parsed sections (all verified=0). First 15:")
         for r in rows[:15]:
@@ -124,8 +157,7 @@ def main() -> int:
     if a.step == "propose":
         _, cn = conn(a.profile, a.warehouse)
         cur = cn.cursor()
-        cur.execute(f"SELECT section_id, title, text, source_doc, page, url, verified FROM {c}.silver.code_sections "
-                    f"WHERE source_doc NOT LIKE 'seed%'")
+        cur.execute(f"SELECT section_id, title, text, source_doc, page, url, verified FROM {c}.bronze.code_sections_parsed")
         cols = [d[0] for d in cur.description]
         parsed = [dict(zip(cols, r)) for r in cur.fetchall()]
         if not parsed:
@@ -155,28 +187,33 @@ def main() -> int:
         print("Every approved row needs a reviewer name:", missing_reviewer)
         return 1
     ids = sorted({s for v in approved.values() for s in v})
+    try:
+        secs = approved_rows(ids)
+    except KeyError as e:
+        print("Approved id not in docs/legal/ch27_proposed_mappings.json or the parse (typo?):", e)
+        return 1
     print(f"{len(approved)} types approved, {len(ids)} distinct sections: {ids}")
     for t, s in approved.items():
         print(f"  {'SET ' if a.apply else 'PLAN'} {t} -> {s}")
+    for s in secs:
+        print(f"  {'ROW ' if a.apply else 'PLAN'} {s['section_id']} p.{s['page']} | {s['title'][:60]} | {s['text'][:80]}...")
     if not a.apply:
         return 0
     _, cn = conn(a.profile, a.warehouse)
     cur = cn.cursor()
-    cur.execute(f"SELECT section_id, title, text, source_doc, page, url FROM {c}.silver.code_sections "
-                f"WHERE source_doc NOT LIKE 'seed%' AND section_id IN ({', '.join(':s%d' % i for i in range(len(ids)))})",
-                {f"s{i}": s for i, s in enumerate(ids)})
-    cols = [d[0] for d in cur.description]
-    secs = [dict(zip(cols, r)) for r in cur.fetchall()]
-    found = {s["section_id"] for s in secs}
-    if set(ids) - found:
-        print("Approved ids not found in parsed sections (typo?):", sorted(set(ids) - found))
-        return 1
-    for sid in ids:
-        cur.execute(f"UPDATE {c}.silver.code_sections SET verified = 1 WHERE section_id = :s AND source_doc NOT LIKE 'seed%'", {"s": sid})
+    for s in secs:  # write only the approved rows into the table the app reads
+        cur.execute(f"DELETE FROM {c}.silver.code_sections WHERE section_id = :s AND source_doc NOT LIKE 'seed%'",
+                    {"s": s["section_id"]})
+        cur.execute(f"INSERT INTO {c}.silver.code_sections (section_id, title, text, source_doc, page, url, verified) "
+                    f"VALUES (:section_id, :title, :text, :source_doc, :page, :url, 1)", s)
     for t, s in approved.items():
         cur.execute(f"UPDATE {c}.ref.violation_types SET code_sections = :v WHERE type_id = :t", {"v": json.dumps(s), "t": t})
-    VERIFIED_JSON.write_text(json.dumps({"source": OFFICIAL_URL, "mapping": approved,
-                                         "sections": [{**s, "verified": 1} for s in secs]}, indent=2), encoding="utf-8")
+    # Merge with earlier approvals: never drop a previously approved mapping or section.
+    prev = json.loads(VERIFIED_JSON.read_text(encoding="utf-8")) if VERIFIED_JSON.exists() else {}
+    sections = {s["section_id"]: s for s in prev.get("sections", [])}
+    sections.update({s["section_id"]: {**s, "verified": 1} for s in secs})
+    VERIFIED_JSON.write_text(json.dumps({"source": OFFICIAL_URL, "mapping": {**prev.get("mapping", {}), **approved},
+                                         "sections": list(sections.values())}, indent=2), encoding="utf-8")
     print(f"Databricks updated; wrote {VERIFIED_JSON.relative_to(ROOT)} (local backend picks it up on reset).")
     return 0
 

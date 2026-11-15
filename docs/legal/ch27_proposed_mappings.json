@@ -1,0 +1,316 @@
+{
+  "status": "PROPOSED - NOT VERIFIED. Every row needs human approval before any citation is shown as verified.",
+  "prepared": "2026-11-14",
+  "source_pdf": "docs/legal/Madison_Chapter_27.pdf (Municode export, printed 11/14/26 8:55 PM; sha256 7feae63e0b8ddbd6cddf4aa873ba88271636216f7b33e8e959f71aa8e1ff4516)",
+  "source_url": "https://library.municode.com/wi/madison/codes/code_of_ordinances?nodeId=COORMAWIVOIICH20--31_CH27MIHOPRMACO",
+  "parsed_by": "Databricks ai_parse_document -> fixit.bronze.code_sections_parsed (exported to docs/legal/ch27_parsed_sections.json)",
+  "numbering_note": "Subsection ids are read from the inline markers in the parsed official text, e.g. '(2)' then '(h)' under 27.04. Where the ordinance's own history note repeats the id (e.g. '(Sec. 27.04(2)(h) Am. by ...)') that is noted in numbering_evidence.",
+  "proposals": [
+    {
+      "type_id": "SMOKE_DETECTOR_MISSING",
+      "items": [
+        {
+          "section_id": "27.05(2)(w)",
+          "section": "27.05",
+          "caption": "Smoke Alarms.",
+          "excerpt": "Smoke Alarms. Smoke alarms shall be installed and maintained in accordance with Sec. 34.907, MGO and with Wis. Admin. Code ch. SPS 362, Wis. Admin. Code § SPS 321.09 and Wis. Admin. Code § SPS 328.02 which are hereby incorporated by reference.",
+          "kind": "reference",
+          "references": [
+            "MGO Sec. 34.907",
+            "Wis. Admin. Code ch. SPS 362",
+            "Wis. Admin. Code § SPS 321.09",
+            "Wis. Admin. Code § SPS 328.02"
+          ],
+          "page": 21,
+          "numbering_evidence": "Inline markers (2) ... (w) in the parsed text."
+        }
+      ],
+      "why": "This is the only Chapter 27 provision on smoke alarms. It requires that smoke alarms be installed and maintained, but only 'in accordance with' other codes.",
+      "uncertainty": "Chapter 27 does not itself say where alarms go, how many, or what counts as 'maintained'. Those rules are in MGO 34.907 and the SPS codes, which FixIt has not obtained or reviewed. Treating a covered or disabled alarm as 'not maintained' is an interpretation for an inspector.",
+      "separate_source_required": true
+    },
+    {
+      "type_id": "CO_DETECTOR_MISSING",
+      "items": [],
+      "why": "No match. The terms 'carbon', 'monoxide' and 'CO alarm' appear nowhere in Chapter 27 (checked in both the Databricks parse and the PDF text).",
+      "uncertainty": "The current placeholder maps this type to CH27-SMOKE, whose summary says CO alarms are required. That is NOT supported by Chapter 27, and 27.05(2)(w) covers smoke alarms only. Possible sources to research (not verified by FixIt): MGO Chapter 34 (Fire Prevention Code), Wisconsin Statutes, Wis. Admin. Code SPS. Recommendation: keep this type unmapped to Chapter 27 and show 'legal source not yet verified'.",
+      "separate_source_required": true
+    },
+    {
+      "type_id": "EXPOSED_WIRING",
+      "items": [
+        {
+          "section_id": "27.04(2)(g)",
+          "section": "27.04",
+          "caption": "Electrical.",
+          "excerpt": "Every dwelling unit and all public and common areas in multiple dwellings shall be supplied with electrical service, outlets, and fixtures which shall be properly installed, shall be maintained in good and safe working condition, and shall be connected to a source of electric power in a manner prescribed by the Wisconsin Electric Code.",
+          "kind": "direct + reference",
+          "references": [
+            "Wisconsin Electric Code",
+            "MGO Chapter 19 (Electrical Code), per 27.04(2)(g)7."
+          ],
+          "page": 7,
+          "numbering_evidence": "Inline markers (2) ... (g); history note '(Sec. 27.04(2)(g) Rescinded & Substituted by Ord. 4832 ...)'."
+        },
+        {
+          "section_id": "27.04(2)(g)3.",
+          "section": "27.04",
+          "caption": "",
+          "excerpt": "All cords and temporary wiring not in compliance with NEC Article 400-A, and all exposed abandoned wiring shall be removed.",
+          "kind": "direct + reference",
+          "references": [
+            "NEC Article 400-A"
+          ],
+          "page": 8,
+          "numbering_evidence": "Inline marker '3.' under (g)."
+        }
+      ],
+      "why": "27.04(2)(g) directly requires outlets and fixtures to be properly installed and kept in good and safe working condition; (g)3. directly requires removing exposed abandoned wiring.",
+      "uncertainty": "A missing outlet or switch cover plate is not named. Calling it 'not properly installed / not in safe working condition' is an interpretation. 'Exposed abandoned wiring' is narrower than exposed live wiring. Installation details are in the Wisconsin Electric Code / NEC (not reviewed).",
+      "separate_source_required": false
+    },
+    {
+      "type_id": "WATER_DAMAGE_MOLD",
+      "items": [
+        {
+          "section_id": "27.05(2)(g)1.",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "Every interior floor, wall and ceiling including door and window assemblies shall be kept clean and in good repair, and shall be capable of affording privacy.",
+          "kind": "direct",
+          "references": [],
+          "page": 14,
+          "numbering_evidence": "Inline markers '(g) 1.'; 27.07(2)(d) cites 'Sec. 27.05(2)(g)2.' in the same scheme."
+        },
+        {
+          "section_id": "27.05(2)(g)2.",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "Every foundation, exterior wall, and floor and roof shall be reasonably weathertight, watertight and rodentproof and shall be kept in proper repair and shall be capable of affording privacy.",
+          "kind": "direct",
+          "references": [],
+          "page": 14,
+          "numbering_evidence": "Inline marker '2.' under (g); cited as 'Sec. 27.05(2)(g)2.' in 27.07(2)(d)."
+        }
+      ],
+      "why": "Water stains on walls or ceilings are damage to interior surfaces (good repair) and may indicate the building is not watertight.",
+      "uncertainty": "Chapter 27 never mentions mold (0 hits for 'mold' or 'mildew'). It cannot support any statement about mold or its health effects. The placeholder CH27-MOISTURE ('conditions that support mold growth') is not supported by the text. A stain alone does not show an active leak or which surface failed.",
+      "separate_source_required": true
+    },
+    {
+      "type_id": "PEST_EVIDENCE",
+      "items": [
+        {
+          "section_id": "27.07(2)(d)",
+          "section": "27.07",
+          "caption": "",
+          "excerpt": "Whenever infestation exists in any residential dwelling other than a single-family dwelling, extermination shall be the responsibility of the owner.",
+          "kind": "direct",
+          "references": [],
+          "page": 30,
+          "numbering_evidence": "Inline markers (2) ... (d) in 27.07."
+        },
+        {
+          "section_id": "27.03",
+          "section": "27.03",
+          "caption": "Infestation.",
+          "excerpt": "\"Infestation\" means the sustained presence of pests, vermin, or rodents.",
+          "kind": "direct (definition)",
+          "references": [],
+          "page": 3,
+          "numbering_evidence": "Definition within 27.03 (definitions are not numbered)."
+        }
+      ],
+      "why": "27.07(2)(d) places extermination on the owner in any dwelling other than a single-family dwelling; 27.03 defines infestation.",
+      "uncertainty": "In a single-family dwelling the occupant is responsible, with exceptions (owner failed to clean before occupancy, or owner out of compliance with 27.05(2)(g)2.). 'Sustained presence' means one photo of droppings may not show an infestation. Building type must be known.",
+      "separate_source_required": false
+    },
+    {
+      "type_id": "BROKEN_LOCK",
+      "items": [
+        {
+          "section_id": "27.05(2)(h)",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "All door and window hardware shall be installed and maintained in proper working condition.",
+          "kind": "direct",
+          "references": [],
+          "page": 15,
+          "numbering_evidence": "Inline markers (2) ... (h); history note '(Sec. 27.05(2)(h) Am. by Ord. 7481 ...)'."
+        },
+        {
+          "section_id": "27.05(2)(h)3.",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "All doors into each dwelling unit shall have a keyed deadbolt lock with a minimum one (1) inch throw, which is openable with a key on the exterior side of the door and a knob on the interior side of the door.",
+          "kind": "direct",
+          "references": [],
+          "page": 15,
+          "numbering_evidence": "Inline marker '3.' under (h); 27.05(2)(h)7. refers to 'Paragraphs 1., 2., 3., ... of Subdivision (h) of Subsection (2) of Section 27.05'."
+        },
+        {
+          "section_id": "27.05(2)(h)4.",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "All basement, first, and second story windows and all other windows accessible by balconies, fire escapes, trees or other existing means shall be provided with sash fasteners.",
+          "kind": "direct",
+          "references": [],
+          "page": 15,
+          "numbering_evidence": "Inline marker '4.' under (h)."
+        }
+      ],
+      "why": "27.05(2)(h) directly requires working door and window hardware, keyed deadbolts on doors into dwelling units, and sash fasteners on accessible windows.",
+      "uncertainty": "Paragraphs 1.-6. apply to rented dwelling units 'Except as provided in Paragraph 9.' (bed and breakfasts). Window rules depend on the story and accessibility. The parse of paragraph 7. (lodging rooms / shared entrances) came back with lines out of order, so it is not quoted; check it on Municode if needed.",
+      "separate_source_required": false
+    },
+    {
+      "type_id": "BROKEN_WINDOW",
+      "items": [
+        {
+          "section_id": "27.05(2)(h)",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "Every window, exterior door, interior door, and basement hatchway shall be reasonably weathertight, watertight, and rodentproof and kept in proper repair.",
+          "kind": "direct",
+          "references": [],
+          "page": 15,
+          "numbering_evidence": "Inline markers (2) ... (h); history note '(Sec. 27.05(2)(h) Am. by Ord. 7481 ...)'."
+        },
+        {
+          "section_id": "27.04(2)(f)",
+          "section": "27.04",
+          "caption": "",
+          "excerpt": "All doors required for ventilation and all windows shall be protected with insect screen equivalent to not less than sixteen (16) wire mesh installed to prevent the entrance of flies, mosquitoes and other insects, annually during May before June 1 and maintained until storm windows are installed in autumn.",
+          "kind": "direct",
+          "references": [],
+          "page": 7,
+          "numbering_evidence": "Inline markers (2) ... (f); history note '(Sec. 27.04(2)(f) Am. by Ord. 12,349 ...)'."
+        },
+        {
+          "section_id": "27.07(2)(c)",
+          "section": "27.07",
+          "caption": "",
+          "excerpt": "Every owner of a residential building shall be responsible for hanging, installation, and maintenance of all screens and double or storm doors and windows whenever the same are required under the provisions of the Madison General Ordinances.",
+          "kind": "direct",
+          "references": [],
+          "page": 30,
+          "numbering_evidence": "Inline markers (2) ... (c) in 27.07."
+        }
+      ],
+      "why": "Windows must be kept in proper repair and weathertight; screens are required seasonally, and the owner is responsible for screens.",
+      "uncertainty": "'Cracked glass' is not named explicitly; it falls under 'proper repair' / 'weathertight' by interpretation. The screen requirement is seasonal (by June 1 until storm windows go in), so a missing screen in winter may not be a violation.",
+      "separate_source_required": false
+    },
+    {
+      "type_id": "LEAK_PLUMBING",
+      "items": [
+        {
+          "section_id": "27.05(2)(j)",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "Every plumbing fixture and water and waste pipe shall be properly installed and maintained in good working condition, free from defects, leaks, and obstructions.",
+          "kind": "direct",
+          "references": [],
+          "page": 17,
+          "numbering_evidence": "Inline markers (2) ... (j)."
+        }
+      ],
+      "why": "Directly requires plumbing fixtures and pipes to be free from leaks and in good working condition.",
+      "uncertainty": "Low. Whether a given drip is a 'leak' is still an inspector's call; FixIt cannot see inside walls.",
+      "separate_source_required": false
+    },
+    {
+      "type_id": "DAMAGED_SURFACES",
+      "items": [
+        {
+          "section_id": "27.05(2)(g)1.",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "All surfaces shall be free from serious cracking, irregularities, and peeling paint.",
+          "kind": "direct",
+          "references": [],
+          "page": 14,
+          "numbering_evidence": "Inline markers '(g) 1.'."
+        }
+      ],
+      "why": "Directly addresses cracking and peeling paint; the same paragraph requires interior floors, walls and ceilings to be in good repair.",
+      "uncertainty": "'Serious' cracking is a judgment call. Nothing here addresses lead paint; do not imply a lead hazard from this section.",
+      "separate_source_required": false
+    },
+    {
+      "type_id": "BLOCKED_EGRESS",
+      "items": [
+        {
+          "section_id": "27.04(2)(d)",
+          "section": "27.04",
+          "caption": "",
+          "excerpt": "Every dwelling unit and lodging room shall have direct access to at least two (2) accessible unobstructed means of egress leading to a safe and open public street, alley, or court connected to a street, except as provided in Sec. 27.06(4), MGO.",
+          "kind": "direct",
+          "references": [
+            "MGO Sec. 27.06(4) (exception, not reviewed)"
+          ],
+          "page": 6,
+          "numbering_evidence": "Inline markers (2) ... (d)."
+        },
+        {
+          "section_id": "27.04(2)(d)",
+          "section": "27.04",
+          "caption": "",
+          "excerpt": "All stairways and platforms shall be protected with handrails and guardrails as specified in Wis. Admin. Code § SPS 321.04(2) or ch. SPS 362.",
+          "kind": "reference",
+          "references": [
+            "Wis. Admin. Code § SPS 321.04(2)",
+            "Wis. Admin. Code ch. SPS 362"
+          ],
+          "page": 6,
+          "numbering_evidence": "Same paragraph (d)."
+        },
+        {
+          "section_id": "27.05(2)(i)",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "Every inside and outside stair, every porch, platform, balcony, and every appurtenance thereto shall be so constructed as to be safe to use and capable of supporting the load that normal use may cause to be placed thereon, and shall be kept in proper condition and repair and shall present an attractive appearance.",
+          "kind": "direct",
+          "references": [
+            "Wis. Admin. Code § SPS 321.04 and ch. SPS 362 (stair requirements, same paragraph)"
+          ],
+          "page": 17,
+          "numbering_evidence": "Inline markers (2) ... (i)."
+        }
+      ],
+      "why": "Two unobstructed means of egress are required directly; stairs must be safe and in repair; handrail and guardrail specifics come from the SPS codes.",
+      "uncertainty": "The handrail sentence sits in a passage about exterior stairways and exit platforms, and the actual handrail specs are in SPS (not reviewed). Whether furniture temporarily blocking a door makes an exit 'obstructed' is an inspector's call. Exception 27.06(4) not reviewed.",
+      "separate_source_required": false
+    },
+    {
+      "type_id": "NO_HEAT",
+      "items": [
+        {
+          "section_id": "27.04(2)(h)",
+          "section": "27.04",
+          "caption": "Heating.",
+          "excerpt": "A minimum temperature of sixty-seven degrees Fahrenheit (67°) shall be maintained in all habitable rooms, kitchens and bathrooms.",
+          "kind": "direct + reference",
+          "references": [
+            "MGO Chapter 30 (Heating, Ventilating and Air Conditioning Code); Sec. 30.03(1) and 30.04(4)(d) for the heating system itself"
+          ],
+          "page": 9,
+          "numbering_evidence": "Inline markers (2) ... (h); history note '(Sec. 27.04(2)(h) Am. by Ord. 9326 ...)'."
+        },
+        {
+          "section_id": "27.05(2)(m)",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "No owner, operator or occupant shall cause any service, facility, equipment, or utility which is required under this ordinance to be removed from or shut off from or discontinued for any occupied dwelling, dwelling unit or lodging room let or occupied by them except for such temporary interruption as may be necessary while actual repairs are in process, or during temporary emergencies when discontinuance of service is approved by an authorized inspector.",
+          "kind": "direct",
+          "references": [],
+          "page": 18,
+          "numbering_evidence": "Inline markers (2) ... (m)."
+        }
+      ],
+      "why": "27.04(2)(h) directly sets the 67°F minimum in habitable rooms, kitchens and bathrooms; 27.05(2)(m) prohibits shutting off required services except for repairs or approved emergencies.",
+      "uncertainty": "The occupant may keep a lower temperature if it doesn't affect other units. Chapter 27 sets no repair response time: FixIt's 24h/48h/7-day follow-up windows are FixIt defaults, not from this ordinance. The history note says 'Ord. 9326, 11-13-76' here but '11-13-87' elsewhere (an inconsistency in the source, quoted as-is).",
+      "separate_source_required": false
+    }
+  ]
+}

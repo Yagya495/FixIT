@@ -33,33 +33,31 @@ WHERE CAST(e.value:content AS STRING) IS NOT NULL
   AND coalesce(CAST(e.value:type AS STRING), '') NOT IN ('page_header', 'page_footer', 'page_number');
 
 -- COMMAND ----------
--- MAGIC %md Split into sections: a new section starts at an element that begins with a section number like `27.05(2)(a)`.
+-- MAGIC %md Split into sections at explicit headings like `27.051 - ENERGY CODE ...` (2-3 digits after the dot, so 27.051
+-- MAGIC and 27.085 are not folded into 27.05 / 27.08). Results go to a bronze STAGING table: the app reads only silver/ref,
+-- MAGIC so parsing changes nothing it shows. Same SQL as `scripts/code_parse.py parse`. Subsection ids are not derived here;
+-- MAGIC a human approves them via docs/legal/CH27_REVIEW.md -> `scripts/code_parse.py approve`.
 
 -- COMMAND ----------
-CREATE OR REPLACE TEMP VIEW tagged AS
-SELECT *, regexp_extract(content, '^\\s*(27\\.\\d{2}(?:\\(\\d+\\))*(?:\\([a-z]\\))*)', 1) AS sec_start
-FROM bronze.code_elements;
-
-CREATE OR REPLACE TEMP VIEW grouped AS
-SELECT *, last_value(NULLIF(sec_start, ''), true) OVER (PARTITION BY source_doc ORDER BY element_idx
-          ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS section_id
-FROM tagged;
-
--- Keep the unverified seed summaries; replace only previously parsed rows.
-DELETE FROM silver.code_sections WHERE source_doc NOT LIKE 'seed%';
-
-INSERT INTO silver.code_sections
+CREATE OR REPLACE TABLE bronze.code_sections_parsed AS
+WITH tagged AS (
+  SELECT *, regexp_extract(content, '^\s*(27\.[0-9]{2,3})\s*-\s', 1) AS sec_start
+  FROM bronze.code_elements),
+grouped AS (
+  SELECT *, last_value(NULLIF(sec_start, ''), true) OVER (PARTITION BY source_doc ORDER BY element_idx
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS section_id
+  FROM tagged)
 SELECT section_id,
-       trim(regexp_replace(first(content), '^\\s*27\\.[0-9().a-z]+\\s*', '')) AS title,
-       concat_ws('\n', collect_list(content)) AS text,
-       first(source_doc) AS source_doc,
+       trim(regexp_replace(min_by(content, element_idx), '^\s*27\.[0-9]+\s*-\s*', '')) AS title,
+       array_join(transform(array_sort(collect_list(struct(element_idx, content))), x -> x.content), '\n') AS text,
+       min_by(source_doc, element_idx) AS source_doc,
        min(page) AS page,
        'https://library.municode.com/wi/madison/codes/code_of_ordinances?nodeId=COORMAWIVOIICH20--31_CH27MIHOPRMACO' AS url,
-       0 AS verified   -- NEVER 1 here: section ids come from a regex split; a human approves them later
-FROM (SELECT * FROM grouped WHERE section_id IS NOT NULL ORDER BY source_doc, element_idx)
+       0 AS verified   -- NEVER 1 here; only a named human reviewer approves sections
+FROM grouped WHERE section_id IS NOT NULL
 GROUP BY section_id;
 
-SELECT COUNT(*) AS sections FROM silver.code_sections;
+SELECT section_id, title, page, length(text) AS chars FROM bronze.code_sections_parsed ORDER BY section_id;
 
 -- COMMAND ----------
 -- Chunk (~800 tokens ≈ 3200 chars, ~100 token overlap ≈ 400 chars).
@@ -75,5 +73,5 @@ LATERAL VIEW posexplode(sequence(0, CAST(floor(greatest(length(text) - 1, 0) / 2
 SELECT COUNT(*) AS chunks FROM silver.code_chunks;
 
 -- COMMAND ----------
--- Sanity: should surface the smoke-detector section.
-SELECT section_id, title FROM silver.code_sections WHERE lower(text) LIKE '%smoke detector%' LIMIT 10;
+-- Sanity: the smoke alarm paragraph (27.05(2)(w)) should be in the parsed 27.05 text.
+SELECT section_id, title FROM bronze.code_sections_parsed WHERE lower(text) LIKE '%smoke alarms shall be installed%';
