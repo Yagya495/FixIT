@@ -1,0 +1,96 @@
+{
+ "zip_sha256": "4fbe3698a15edbcfd1e5cae778fa0a99a57edcf5d681d6bec7eb5b908b77b52b",
+ "seed": 42,
+ "dup_threshold_bits": 30,
+ "duplicate_groups": 242,
+ "summary": {
+  "test": {
+   "images": 50,
+   "images_with_class": {
+    "ceiling_crack": 20,
+    "ceiling_damp": 16,
+    "ceiling_hole": 11,
+    "ceiling_mold": 20,
+    "ceiling_stain": 11
+   },
+   "instances": {
+    "ceiling_crack": 73,
+    "ceiling_damp": 31,
+    "ceiling_hole": 14,
+    "ceiling_mold": 87,
+    "ceiling_stain": 25
+   },
+   "multi_class_images": 19
+  },
+  "valid": {
+   "images": 50,
+   "images_with_class": {
+    "ceiling_crack": 15,
+    "ceiling_damp": 15,
+    "ceiling_hole": 14,
+    "ceiling_mold": 16,
+    "ceiling_stain": 14
+   },
+   "instances": {
+    "ceiling_crack": 25,
+    "ceiling_damp": 25,
+    "ceiling_hole": 82,
+    "ceiling_mold": 57,
+    "ceiling_stain": 26
+   },
+   "multi_class_images": 20
+  },
+  "train": {
+   "images": 150,
+   "images_with_class": {
+    "ceiling_crack": 36,
+    "ceiling_damp": 40,
+    "ceiling_hole": 40,
+    "ceiling_mold": 54,
+    "ceiling_stain": 40
+   },
+   "instances": {
+    "ceiling_crack": 81,
+    "ceiling_damp": 103,
+    "ceiling_hole": 75,
+    "ceiling_mold": 253,
+    "ceiling_stain": 86
+   },
+   "multi_class_images": 46
+  }
+ },
+ "available_images_with_class_per_original_split": {
+  "train": {
+   "ceiling_crack": 48,
+   "ceiling_damp": 101,
+   "ceiling_hole": 83,
+   "ceiling_mold": 122,
+   "ceiling_stain": 80
+  },
+  "valid": {
+   "ceiling_crack": 26,
+   "ceiling_damp": 31,
+   "ceiling_hole": 27,
+   "ceiling_mold": 36,
+   "ceiling_stain": 26
+  },
+  "test": {
+   "ceiling_crack": 63,
+   "ceiling_damp": 18,
+   "ceiling_hole": 11,
+   "ceiling_mold": 24,
+   "ceiling_stain": 12
+  }
+ },
+ "clean_holdout": [
+  "66-delaminating-cracks_jpg.rf.4d2ffbd4755f4614add85502b92b5350.jpg",
+  "66-delaminating-cracks_jpg.rf.ae481a19ad8c95c5a3b18dc4939e85a7.jpg"
+ ],
+ "unused_images": 250,
+ "distinct_photos_per_split": {
+  "test": 50,
+  "valid": 50,
+  "train": 115
+ },
+ "train_images_that_are_a_second_copy_of_a_selected_photo": 35
+}
