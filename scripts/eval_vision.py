@@ -97,15 +97,23 @@ def main() -> int:
         t0 = time.time()
         try:
             res = vision.analyze_frame_live(data, a.mode, mt)  # live call only: never cache, never scripted fallback
-            dets = {d.violation_type: d.confidence for d in res.detections}
+            # Score what the app would show: the same alarm screening as scans.process_frames (a photo can't show an
+            # alarm is missing). Raw model output that was screened out is kept for analysis.
+            dets, screened = {}, []
+            for d in res.detections:
+                kept = vision.screen_detection(d.model_dump())
+                if kept is None:
+                    screened.append(d.violation_type)
+                else:
+                    dets[d.violation_type] = max(d.confidence, dets.get(d.violation_type, 0.0))
             err = None
         except Exception as e:
-            dets, err = {}, f"{type(e).__name__}: {str(e)[:160]}"
+            dets, screened, err = {}, [], f"{type(e).__name__}: {str(e)[:160]}"
             failures += 1
         latencies.append(time.time() - t0)
         pred = {t for t, c in dets.items() if c >= a.threshold}
         per_photo.append({"file": str(p.relative_to(photo_dir)), "truth": sorted(truth), "pred": sorted(pred),
-                          "all_detections": dets, "error": err, "secs": round(latencies[-1], 2)})
+                          "all_detections": dets, "screened_out": screened, "error": err, "secs": round(latencies[-1], 2)})
         mark = "OK " if pred == truth and not err else "XX "
         print(f"{mark}{p.relative_to(photo_dir)}  truth={sorted(truth) or ['NONE']}  pred={sorted(pred) or ['NONE']}"
               + (f"  ERROR {err}" if err else ""))

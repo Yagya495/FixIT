@@ -8,8 +8,8 @@ Put them in `eval/photos/<TYPE_ID>/` (one folder per violation type) and `eval/p
 
 | Folder | What to photograph | Aim for |
 |---|---|---|
-| `SMOKE_DETECTOR_MISSING` | empty ceiling mount plate, detector bagged/taped, detector hanging by wires | 4–6 |
-| `CO_DETECTOR_MISSING` | outlet/ceiling area near bedrooms with no CO alarm (hard to show; skip if unsure) | 0–3 |
+| `SMOKE_DETECTOR_MISSING` | detector bagged/taped, detector hanging by wires, empty ceiling mount plate (the app shows a mount as "verify in person") | 4–6 |
+| `CO_DETECTOR_MISSING` | a labeled CO alarm that is covered, hanging, or removed from its mount. **Not** a room without a CO alarm: the app never reports absence | 0–3 |
 | `EXPOSED_WIRING` | outlet or switch with no cover plate; loose wires | 4–6 |
 | `WATER_DAMAGE_MOLD` | brown ring stain on ceiling, mold spots in a shower corner | 4–6 |
 | `PEST_EVIDENCE` | droppings, dead insects, traps in use | 3–5 |
@@ -18,7 +18,7 @@ Put them in `eval/photos/<TYPE_ID>/` (one folder per violation type) and `eval/p
 | `LEAK_PLUMBING` | dripping faucet, puddle under sink, damaged fixture | 3–5 |
 | `DAMAGED_SURFACES` | holes in drywall, peeling paint, damaged flooring | 4–6 |
 | `BLOCKED_EGRESS` | furniture blocking an exit, stairs missing a handrail | 2–4 |
-| `NONE` | normal, tidy rooms with a working detector, covered outlets | **10+** (false-alarm check) |
+| `NONE` | normal, tidy rooms (some with a detector, **some with no detector in frame**: these must produce no smoke/CO finding), covered outlets | **10+** (false-alarm check) |
 
 Photos with more than one issue: add a row to `eval/labels.csv` (`file,labels` with labels separated by `;`).
 
@@ -47,3 +47,6 @@ exact-match rate, failures, latency. Every photo is sent live to the serving end
 - If Gemma beats Maverick, set `VISION_ENDPOINT` in `app/app.yaml` and redeploy.
 - Then put the exact stage photos in `demo/demo_inputs/{listing,walkthrough}/` and run `POST /api/demo/warm` to save
   their live results for Demo Mode. The app matches them even after the browser re-encodes the upload.
+
+Scoring applies the app's alarm screening (`vision.screen_detection`): a smoke/CO detection counts only when the
+photo shows a visible alarm problem; screened-out raw detections are listed per photo as `screened_out`.
