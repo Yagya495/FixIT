@@ -6,10 +6,11 @@
 # MAGIC
 # MAGIC Data: 302 training files (155 distinct photos, incl. rotated copies of training photos only), 36 validation photos,
 # MAGIC and the **same 50 test images as experiment 1** (every other copy of those photos excluded), so the two models are
-# MAGIC scored on identical images. Training: yolo26n-obb, 640 px, up to 100 epochs, patience 15, seed 42, batch 16,
+# MAGIC scored on identical images. Training: yolo26n-obb, 640 px, up to 100 epochs (fitted to the 30-min GPU limit
+# MAGIC by the cell-6 probe), patience 15 if practical, seed 42, batch 16,
 # MAGIC validation every epoch (best checkpoint = best validation fitness).
 # MAGIC
-# MAGIC **Order:** cells 1–5 (checks), 6 (timing probe; check quota), 7 (train), 8 (save), 9 (evaluate once + compare).
+# MAGIC **Order:** cells 1–5 (checks), 6 (timing probe -> epoch count; check quota), 7 (train), 8 (save), 9 (evaluate once + compare).
 
 # COMMAND ----------
 
@@ -60,7 +61,7 @@ import shutil, zipfile, hashlib, glob
 NB_PATH = dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
 WS_DIR = "/Workspace" + os.path.dirname(NB_PATH)
 MLFLOW_EXPERIMENT = os.path.dirname(NB_PATH) + "/yolo_ceiling_full_mlflow"
-LOCAL, MAX_TRAIN_MINUTES, RUN = "/tmp/yolo_ceiling_full_work", 45, "yolo26n-obb_full"
+LOCAL, MAX_TRAIN_MINUTES, RUN = "/tmp/yolo_ceiling_full_work", 30, "yolo26n-obb_full"   # GPU safety limit
 shutil.rmtree(LOCAL, ignore_errors=True); os.makedirs(LOCAL)
 parts = sorted(glob.glob(WS_DIR + "/bundle/yolo_ceiling_full_bundle.zip.part*"))
 blob = b"".join(open(p, "rb").read() for p in parts)
@@ -116,28 +117,71 @@ print("outputs ->", OUT_WS.split("/fixit-yolo-ceiling-full")[-1] or "/", "| MLfl
 
 # COMMAND ----------
 
-# 6. Timing probe (2 epochs, train/valid only). Free Edition GPU quota is shown in the workspace UI, not via an API:
-#    check it before cell 7. The full run is refused if the projection exceeds MAX_TRAIN_MINUTES.
-import time, train_yolo
-t = time.time()
-train_yolo.main(["--model", "weights/yolo26n-obb.pt", "--epochs", "2", "--name", "probe_full", "--workers", "2"])
-probe_min = (time.time() - t) / 60
-projected = probe_min / 2 * 100 * 1.15
-print(f"probe: {probe_min:.1f} min / 2 epochs -> worst case {projected:.0f} min for 100 epochs (patience 15 usually stops earlier)")
-FULL_RUN_OK = projected <= MAX_TRAIN_MINUTES
+# 6. Timing probe v2 (train/valid only; the test split is never touched). 5 epochs from the pretrained checkpoint into
+#    a throwaway run folder. Uses Ultralytics' per-epoch cumulative training time (results.csv "time") to separate:
+#      fixed overhead = setup (model, data scan/cache) + final best.pt validation/plots
+#      first-epoch extra (warm-up, cuDNN autotune) and steady-state seconds per epoch.
+#    Then picks the largest epoch count <= 100 that fits MAX_TRAIN_MINUTES with buffers. Free Edition GPU quota is shown
+#    in the workspace UI only: check it before cell 7.
+import time, math, statistics, csv as _csv, torch
+PROBE = "probe_timing"
+shutil.rmtree(f"{PKG}/runs/{PROBE}", ignore_errors=True)
+torch.cuda.reset_peak_memory_stats()
+t0 = time.time()
+train_yolo.main(["--model", "weights/yolo26n-obb.pt", "--epochs", "5", "--patience", "15", "--name", PROBE, "--workers", "2"])
+wall = time.time() - t0
+peak_gb = torch.cuda.max_memory_allocated() / 1e9
+pinfo = json.load(open(f"{PKG}/runs/{PROBE}/run_info.json"))
+assert pinfo["device"] != "cpu" and pinfo["gpu"] and peak_gb > 0.2,     f"GPU NOT used: device={pinfo['device']} gpu={pinfo['gpu']} peak={peak_gb:.2f} GB"
+r = [{k.strip(): v for k, v in x.items()} for x in _csv.DictReader(open(f"{PKG}/runs/{PROBE}/results.csv"))]
+cum = [float(x["time"]) for x in r]                       # seconds since the training loop started, per epoch
+deltas = [b - a for a, b in zip(cum, cum[1:])]
+steady = statistics.median(deltas)                        # s/epoch incl. per-epoch validation
+first_extra = max(0.0, cum[0] - steady)
+overhead = wall - cum[-1]                                 # setup + final validation/plots (paid once)
+# Buffers: probe epochs run without mosaic (close_mosaic=10 > 5 epochs) and epoch times vary -> x1.3 per epoch;
+# fixed costs x1.2; only 85% of the budget is planned.
+budget_s = MAX_TRAIN_MINUTES * 60 * 0.85
+fixed_s = (overhead + first_extra) * 1.2
+EPOCHS = int(min(100, math.floor((budget_s - fixed_s) / (steady * 1.3))))
+assert EPOCHS >= 30, f"only {EPOCHS} epochs fit in {MAX_TRAIN_MINUTES} min: not a meaningful run; stopping"
+PATIENCE = 15 if EPOCHS >= 45 else max(8, EPOCHS // 3)
+HARD_STOP_MIN = MAX_TRAIN_MINUTES - (overhead * 1.2) / 60 - 1   # end the epoch loop in time for the final validation
+planned = (fixed_s + EPOCHS * steady * 1.3) / 60
+print(f"GPU check OK: {pinfo['gpu']}, peak {peak_gb:.1f} GB allocated during the probe")
+print(f"probe wall {wall:.0f}s | fixed overhead {overhead:.0f}s | first-epoch extra {first_extra:.0f}s | "
+      f"steady {steady:.1f}s/epoch (median of {len(deltas)})")
+print(f"-> EPOCHS = {EPOCHS} (max 100), PATIENCE = {PATIENCE}, planned <= {planned:.1f} min incl. buffers, "
+      f"hard stop of the epoch loop at {HARD_STOP_MIN:.1f} min | budget {MAX_TRAIN_MINUTES} min")
+FULL_RUN_OK = planned <= MAX_TRAIN_MINUTES
 print("FULL_RUN_OK =", FULL_RUN_OK)
 
 # COMMAND ----------
 
-# 7. Train: up to 100 epochs, patience 15, 640 px, seed 42, validation every epoch; MLflow via the Ultralytics callback
-assert FULL_RUN_OK, "Projected time exceeds MAX_TRAIN_MINUTES: not starting."
+# 7. Train FROM THE ORIGINAL PRETRAINED CHECKPOINT (never from the probe): EPOCHS / PATIENCE from cell 6, 640 px,
+#    seed 42, batch 16, validation every epoch; best checkpoint = best validation fitness. A backstop callback ends the
+#    epoch loop if wall time reaches HARD_STOP_MIN (best.pt so far is kept and validated). MLflow via Ultralytics.
+assert FULL_RUN_OK and "EPOCHS" in globals(), "Run cell 6 first (and it must report FULL_RUN_OK = True)."
+sums = json.load(open(f"{PKG}/weights/SHA256SUMS.json"))
+assert hashlib.sha256(open(f"{PKG}/weights/yolo26n-obb.pt", "rb").read()).hexdigest() == sums["yolo26n-obb.pt"],     "pretrained checkpoint changed"
+from ultralytics.utils.callbacks import base as _cb
+HARD_STOPPED = {"hit": False, "epoch": None}
+def _hard_stop(trainer):
+    if time.time() - trainer.train_time_start > HARD_STOP_MIN * 60 and not trainer.stop:
+        HARD_STOPPED.update(hit=True, epoch=trainer.epoch + 1)
+        print(f"[hard stop] {HARD_STOP_MIN:.1f} min reached after epoch {trainer.epoch + 1}: ending training")
+        trainer.stop = True
+_cb.default_callbacks["on_fit_epoch_end"] = [f for f in _cb.default_callbacks["on_fit_epoch_end"]
+                                             if getattr(f, "__name__", "") != "_hard_stop"] + [_hard_stop]
+shutil.rmtree(f"{PKG}/runs/{RUN}", ignore_errors=True)       # fresh run folder; nothing resumed
 os.environ["MLFLOW_TRACKING_URI"] = "databricks"
 os.environ["MLFLOW_EXPERIMENT_NAME"] = MLFLOW_EXPERIMENT
 os.environ["MLFLOW_RUN"] = f"{RUN}_train"
 t0 = time.time()
-train_yolo.main(["--model", "weights/yolo26n-obb.pt", "--name", RUN, "--workers", "2"])
+train_yolo.main(["--model", "weights/yolo26n-obb.pt", "--epochs", str(EPOCHS), "--patience", str(PATIENCE),
+                 "--name", RUN, "--workers", "2"])
 TRAIN_MIN = round((time.time() - t0) / 60, 2)
-print("training wall time:", TRAIN_MIN, "min")
+print("training wall time:", TRAIN_MIN, "min | hard stop:", HARD_STOPPED)
 
 # COMMAND ----------
 
@@ -152,7 +196,9 @@ res = [{k.strip(): v for k, v in r.items()} for r in _csv.DictReader(open(f"{PKG
 best = max(res, key=lambda r: 0.1 * float(r["metrics/mAP50(B)"]) + 0.9 * float(r["metrics/mAP50-95(B)"]))
 mlflow.set_experiment(MLFLOW_EXPERIMENT)
 with mlflow.start_run(run_name=f"{RUN}_artifacts"):
-    mlflow.log_params({"model": "yolo26n-obb", "imgsz": 640, "epochs_max": 100, "patience": 15, "seed": 42, "batch": 16,
+    mlflow.log_params({"model": "yolo26n-obb", "imgsz": 640, "epochs_max": EPOCHS, "patience": PATIENCE, "seed": 42, "batch": 16,
+                       "budget_minutes": MAX_TRAIN_MINUTES, "probe_steady_s_per_epoch": round(steady, 2),
+                       "probe_fixed_overhead_s": round(overhead, 1), "hard_stop_hit": HARD_STOPPED["hit"],
                        "train_files": 302, "train_photos": 155, "valid_photos": 36, "test_images": 50,
                        "gpu": info.get("gpu"), "ultralytics": info.get("ultralytics")})
     mlflow.log_metrics({"train_minutes": TRAIN_MIN, "epochs_run": len(res), "best_epoch": int(best["epoch"]),
