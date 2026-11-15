@@ -90,12 +90,31 @@ def test_scripted_call_is_coherent_and_confirms_thursday():
     assert "Thursday, November 19" in replies[-1]
 
 
-def test_no_review_means_placeholders_only():
+def test_no_review_means_placeholders_only(monkeypatch):
     from app.backend.services import taxonomy
-    if taxonomy.verified_review()["sections"]:
-        pytest.skip("a human-approved review is present")
+    monkeypatch.setattr(taxonomy, "verified_review", lambda: {"mapping": {}, "sections": []})  # always runs
     assert all(s["verified"] == 0 for s in taxonomy.code_section_rows())
     assert [v["code_sections"] for v in taxonomy.taxonomy_rows()] == [v["code_sections"] for v in VIOLATION_TYPES]
+
+
+def test_committed_approvals_are_exactly_the_three_reviewed_citations():
+    """The approvals file holds only the reviewer-approved citations (2026-11-14); everything else stays unverified."""
+    from app.backend.services import taxonomy
+    review = taxonomy.verified_review()
+    expected = {"LEAK_PLUMBING": ["27.05(2)(j)"], "NO_HEAT": ["27.04(2)(h)"], "DAMAGED_SURFACES": ["27.05(2)(g)1."]}
+    assert review["mapping"] == expected
+    import json
+    from pathlib import Path
+    raw = json.loads((Path(taxonomy.__file__).resolve().parents[1] / "code_sections_verified.json").read_text(encoding="utf-8"))
+    assert raw["reviewers"] == {t: "Naisha Chadha" for t in expected}
+    assert "not mean the reviewer is a lawyer" in raw["review_meaning"]
+    assert sorted(s["section_id"] for s in review["sections"]) == ["27.04(2)(h)", "27.05(2)(g)1.", "27.05(2)(j)"]
+    rows = {v["type_id"]: v["code_sections"] for v in taxonomy.taxonomy_rows()}
+    for v in VIOLATION_TYPES:
+        if v["type_id"] not in expected:
+            assert rows[v["type_id"]] == v["code_sections"]           # unapproved types keep placeholders
+    heat = next(s for s in review["sections"] if s["section_id"] == "27.04(2)(h)")
+    assert "sixty-seven degrees" in heat["text"] and "lesser temperature" in heat["text"]
 
 
 def test_approved_review_applies_mapping_and_verified_flag(monkeypatch):

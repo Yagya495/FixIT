@@ -1,50 +1,50 @@
 {
   "question": "Show violation counts by type for the last 6 months.",
-  "text": "There were 375 reports of pest evidence, 321 reports of water damage or mold, and 311 reports of damaged surfaces in the last 6 months. Other notable violation types include leak plumbing (254) and smoke detector missing (177). The most common violation was pest evidence, while no heat was the least frequent with 56 reports.",
-  "sql": "SELECT reports.violation_type, COUNT(*) AS violation_count\nFROM fixit.gold.reports\nWHERE reports.reported_at >= dateadd(MONTH, -6, CURRENT_DATE)\n  AND reports.violation_type IS NOT NULL\nGROUP BY reports.violation_type\nORDER BY violation_count DESC",
+  "text": "Over the past 6 months, the most common violation types reported were Droppings / insects / pest damage (375 reports), Water damage / suspected mold (322), and Holes, peeling paint, damaged flooring (311). Less frequent violations included No heat (user-reported / temp evidence) (56) and Blocked exit / unsafe stairs / missing handrail (64). The data shows that pest and water-related issues are the most prevalent concerns among reported violations.",
+  "sql": "SELECT vt.name AS violation_type, COUNT(*) AS violation_count\nFROM fixit.gold.reports r\nJOIN fixit.ref.violation_types vt ON r.violation_type = vt.type_id\nWHERE r.reported_at >= dateadd(MONTH, -6, CURRENT_DATE)\n  AND r.reported_at IS NOT NULL\n  AND r.violation_type IS NOT NULL\nGROUP BY vt.name\nORDER BY violation_count DESC",
   "rows": [
     {
-      "violation_type": "PEST_EVIDENCE",
+      "violation_type": "Droppings / insects / pest damage",
       "violation_count": "375"
     },
     {
-      "violation_type": "WATER_DAMAGE_MOLD",
-      "violation_count": "321"
+      "violation_type": "Water damage / suspected mold",
+      "violation_count": "322"
     },
     {
-      "violation_type": "DAMAGED_SURFACES",
+      "violation_type": "Holes, peeling paint, damaged flooring",
       "violation_count": "311"
     },
     {
-      "violation_type": "LEAK_PLUMBING",
+      "violation_type": "Active leak / damaged fixtures",
       "violation_count": "254"
     },
     {
-      "violation_type": "SMOKE_DETECTOR_MISSING",
+      "violation_type": "Missing/disabled smoke detector",
       "violation_count": "177"
     },
     {
-      "violation_type": "BROKEN_WINDOW",
+      "violation_type": "Broken/cracked window or screen",
       "violation_count": "153"
     },
     {
-      "violation_type": "BROKEN_LOCK",
+      "violation_type": "Broken/missing entry or window lock",
       "violation_count": "139"
     },
     {
-      "violation_type": "EXPOSED_WIRING",
+      "violation_type": "Exposed wiring / missing outlet or switch cover",
       "violation_count": "115"
     },
     {
-      "violation_type": "CO_DETECTOR_MISSING",
+      "violation_type": "Missing CO detector near sleeping area",
       "violation_count": "65"
     },
     {
-      "violation_type": "BLOCKED_EGRESS",
+      "violation_type": "Blocked exit / unsafe stairs / missing handrail",
       "violation_count": "64"
     },
     {
-      "violation_type": "NO_HEAT",
+      "violation_type": "No heat (user-reported / temp evidence)",
       "violation_count": "56"
     }
   ],

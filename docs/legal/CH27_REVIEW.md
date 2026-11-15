@@ -26,10 +26,10 @@
 | Droppings / insects / pest damage (`PEST_EVIDENCE`) | §27.07(2)(d), §27.03 | direct (single-family dwellings, with exceptions), direct (dwellings other than single-family), direct (definition) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
 | Broken/missing entry or window lock (`BROKEN_LOCK`) | §27.05(2)(h), §27.05(2)(h)3., §27.05(2)(h)4., §27.05(2)(h)6. | direct, condition (applies to rented units; Paragraph 9. = bed and breakfasts), supporting reference (alternative devices only WITH Building Inspection approval) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
 | Broken/cracked window or screen (`BROKEN_WINDOW`) | §27.05(2)(h), §27.04(2)(f), §27.07(2)(c) | general maintenance obligation, direct (seasonal: screens by June 1 until storm windows go in), direct (seasonal: storm windows Oct 15 - Nov 15), direct (owner responsibility for screens and storm windows) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
-| Active leak / damaged fixtures (`LEAK_PLUMBING`) | §27.05(2)(j) | direct | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
-| Holes, peeling paint, damaged flooring (`DAMAGED_SURFACES`) | §27.05(2)(g)1. | general maintenance obligation, direct | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
+| Active leak / damaged fixtures (`LEAK_PLUMBING`) | §27.05(2)(j) | direct | No | **Verified** (reviewer: Naisha Chadha, 2026-11-14; applied and deployed) |
+| Holes, peeling paint, damaged flooring (`DAMAGED_SURFACES`) | §27.05(2)(g)1. | general maintenance obligation, direct | No | **Verified** (reviewer: Naisha Chadha, 2026-11-14; applied and deployed) |
 | Blocked exit / unsafe stairs / missing handrail (`BLOCKED_EGRESS`) | §27.04(2)(d), §27.05(2)(i) | direct, reference | No | **On hold** (27.06(4) cross-reference + SPS requirements) |
-| No heat (user-reported / temp evidence) (`NO_HEAT`) | §27.04(2)(h) | direct + reference, direct (exception) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
+| No heat (user-reported / temp evidence) (`NO_HEAT`) | §27.04(2)(h) | direct + reference, direct (exception) | No | **Verified** (reviewer: Naisha Chadha, 2026-11-14; applied and deployed) |
 
 ## Details
 
@@ -320,9 +320,9 @@
 - *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Lists 'Fixtures improperly installed or leaking' and 'Plugged or slow drains' under Plumbing.
 - *interpretation*: User decision. Citation limited to plumbing fixtures and water/waste pipes; not roof leaks or unexplained stains.
 
-**Decision so far:** PROVISIONAL: user accepted 27.05(2)(j) as the primary mapping (2026-11-14). 27.04(2)(a) not added. Applies only to plumbing fixtures and water/waste pipes, not roof leaks or unexplained water stains. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
+**Decision so far:** VERIFIED: reviewed against the official City of Madison Chapter 27 (Municode, version Sep 1, 2026) and explicitly approved by the reviewer, Naisha Chadha, on 2026-11-14. Applied to Databricks and deployed the same day. Approval means the citation and quoted text were checked against the official source; it does not mean the reviewer is a lawyer or City inspector, or that an AI-detected condition is a confirmed violation. Earlier provisional decision: user accepted 27.05(2)(j) as the primary mapping (2026-11-14). 27.04(2)(a) not added. Applies only to plumbing fixtures and water/waste pipes, not roof leaks or unexplained water stains. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
-**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
+**Verified:** Yes. Reviewer: Naisha Chadha (2026-11-14).
 
 ### Holes, peeling paint, damaged flooring (`DAMAGED_SURFACES`)
 
@@ -353,9 +353,9 @@
 - *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Lists 'Holes, water damage, or peeling paint on walls, ceilings…' and damaged floors.
 - *interpretation*: FixIt. 'Serious cracking' / 'peeling paint' are named in the text; holes and flooring fall under 'good repair' (interpretation, consistent with the RA schedule).
 
-**Decision so far:** PROVISIONAL: user accepted 27.05(2)(g)1. for interior surfaces (2026-11-14). Keep 'serious cracking' / 'peeling paint' (direct) distinct from general 'good repair'. Damaged stairs removed from this category (stair safety handled separately under 27.05(2)(i)). Lead paint labeled general safety information, not a Chapter 27 requirement. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
+**Decision so far:** VERIFIED: reviewed against the official City of Madison Chapter 27 (Municode, version Sep 1, 2026) and explicitly approved by the reviewer, Naisha Chadha, on 2026-11-14. Applied to Databricks and deployed the same day. Approval means the citation and quoted text were checked against the official source; it does not mean the reviewer is a lawyer or City inspector, or that an AI-detected condition is a confirmed violation. Earlier provisional decision: user accepted 27.05(2)(g)1. for interior surfaces (2026-11-14). Keep 'serious cracking' / 'peeling paint' (direct) distinct from general 'good repair'. Damaged stairs removed from this category (stair safety handled separately under 27.05(2)(i)). Lead paint labeled general safety information, not a Chapter 27 requirement. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
-**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
+**Verified:** Yes. Reviewer: Naisha Chadha (2026-11-14).
 
 ### Blocked exit / unsafe stairs / missing handrail (`BLOCKED_EGRESS`)
 
@@ -432,9 +432,9 @@
 - *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '9. 27.04(2)(h) a. Heat i. No heat or consistently below 55°… ii. Inadequate (55-66°)…' confirms the subsection number. Abatement percentages, not the Chapter 27 rule itself.
 - *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Says heat 'must keep at least 67°F at all times'. Omits the occupant exception; FixIt follows the ordinance text.
 
-**Decision so far:** PROVISIONAL: user accepted 27.04(2)(h) as the primary mapping (2026-11-14), including the 67°F minimum, the rooms covered (habitable rooms, kitchens and bathrooms) and the occupant exception. 27.05(2)(m) not added. Remove the unsupported 'heating season' limit; FixIt follow-up deadlines are not legal requirements. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
+**Decision so far:** VERIFIED: reviewed against the official City of Madison Chapter 27 (Municode, version Sep 1, 2026) and explicitly approved by the reviewer, Naisha Chadha, on 2026-11-14. Applied to Databricks and deployed the same day. Approval means the citation and quoted text were checked against the official source; it does not mean the reviewer is a lawyer or City inspector, or that an AI-detected condition is a confirmed violation. Earlier provisional decision: user accepted 27.04(2)(h) as the primary mapping (2026-11-14), including the 67°F minimum, the rooms covered (habitable rooms, kitchens and bathrooms) and the occupant exception. 27.05(2)(m) not added. Remove the unsupported 'heating season' limit; FixIt follow-up deadlines are not legal requirements. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
-**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
+**Verified:** Yes. Reviewer: Naisha Chadha (2026-11-14).
 
 ## Problems found in the current placeholder summaries
 

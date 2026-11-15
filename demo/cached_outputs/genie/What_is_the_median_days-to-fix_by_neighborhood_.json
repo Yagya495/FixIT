@@ -1,7 +1,7 @@
 {
   "question": "What is the median days-to-fix by neighborhood?",
-  "text": "The median days-to-fix for rental issues is very consistent across Madison neighborhoods, ranging from 10 to 12 days. Examples include:\n- Mifflin: 11 days\n- Langdon: 11 days\n- Vilas: 10 days\n- Tenney-Lapham: 12 days\n- Greenbush: 11 days\n\nMost neighborhoods have a median of 11 days, with only slight variation in a few areas.",
-  "sql": "SELECT\n  `properties`.`neighborhood`,\n  percentile_approx(DATEDIFF(`reports`.`fixed_at`, `reports`.`reported_at`), 0.5) AS median_days_to_fix\nFROM `fixit`.`gold`.`reports` AS reports\nJOIN `fixit`.`gold`.`properties` AS properties\n  ON `reports`.`property_id` = `properties`.`property_id`\nWHERE `reports`.`fixed_at` IS NOT NULL\n  AND `properties`.`neighborhood` IS NOT NULL\nGROUP BY `properties`.`neighborhood`",
+  "text": "The median days-to-fix for issues varies by neighborhood, ranging from 10 to 12 days. Most neighborhoods, including Mifflin, Langdon, Marquette, Southwest, Eken Park, Greenbush, and Regent, have a median of 11 days. The fastest median fix times are in Vilas and Allied Drive (10 days), while Tenney-Lapham, Bay Creek, and Emerson East have the slowest at 12 days.",
+  "sql": "SELECT `p`.`neighborhood`, percentile_approx(DATEDIFF(`r`.`fixed_at`, `r`.`reported_at`), 0.5) AS median_days_to_fix\nFROM `fixit`.`gold`.`reports` AS r\nJOIN `fixit`.`gold`.`properties` AS p ON `r`.`property_id` = `p`.`property_id`\nWHERE `r`.`fixed_at` IS NOT NULL AND `p`.`neighborhood` IS NOT NULL AND `r`.`reported_at` IS NOT NULL\nGROUP BY `p`.`neighborhood`",
   "rows": [
     {
       "neighborhood": "Mifflin",
@@ -49,7 +49,7 @@
     },
     {
       "neighborhood": "Allied Drive",
-      "median_days_to_fix": "11"
+      "median_days_to_fix": "10"
     }
   ],
   "columns": [

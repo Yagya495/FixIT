@@ -182,9 +182,41 @@ Workspace `https://dbc-bae64bde-0c7f.cloud.databricks.com`, **Free Edition** (pe
 **Not yet verified:** detection quality on real problem photos (needs staged photos), table writes, Volumes, Genie
 over FixIt tables, App deployment, service-principal permissions.
 
+## Chapter 27: first three citations verified and deployed (2026-11-14, night; approved by the user)
+- **Reviewer:** Naisha Chadha personally reviewed against the official Chapter 27 (Municode, Sep 1, 2026) and explicitly
+  approved:
+  - `LEAK_PLUMBING` → §27.05(2)(j)
+  - `NO_HEAT` → §27.04(2)(h) (67°F + occupant exception)
+  - `DAMAGED_SURFACES` → §27.05(2)(g)1.
+- **Sequence (each step verified before the next):**
+  1. Dry run: exactly 3 mappings, checked excerpts, reviewer present.
+  2. 88 tests and the type-check pass.
+  3. Branch diff reviewed: no changes to the database layer, seeding, scan/vision, calls or Genie.
+  4. Rollback point recorded (below).
+  5. **Deployed the reviewed code first** (`01f1e0b3…`), with "Possibly relevant code" wording and the City-inspector line
+     confirmed live, 0 verified sections.
+  6. Then `code_parse.py approve --apply`: database holds exactly the 3 verified rows with the exact checked text; the
+     other 8 categories unchanged.
+  7. Data reset: the approvals survived; CO moved to the "legal source not yet verified" placeholder.
+  8. Redeployed (`01f1e0b369…`) to restart the app (it had cached the citation table) and bundle the approvals file.
+  9. Live check on a test case: the 3 approved categories return `verified=true`, the right section, page and exact
+     excerpt; smoke, CO, water damage and exits stay unverified; the letter cites "MGO § …" under "Possibly relevant
+     code" with "may violate" framing and the disclaimer.
+  10. Smoke test 11/11, then reset to clean: 6 / D (0.916) / 11 / 0, app tables empty.
+  11. Genie 5/8 matched after the reset (date windows shifted past midnight UTC); 3 refreshed live → 8/8.
+  12. Redeployed (`01f1e0b4…`) with the refreshed answers.
+  13. 89 tests pass, none skipped. One test now always runs (it used to skip when approvals exist); one new test locks
+      the approved state.
+- **Rollback:** git tag `deploy-pre-ch27-2026-11-14` (cef6822 = deployment `01f1e0a5dc26…`). Delta: `silver.code_sections`
+  v11, `ref.violation_types` v7 → `RESTORE TABLE fixit.<t> TO VERSION AS OF <v>`, delete
+  `app/backend/code_sections_verified.json`, redeploy the tag.
+- **Not done:** no merge into `main`; the local fallback (:8000) still runs the older code and data; the smoke/CO legal
+  deadline stays disabled; no P1 work.
+
 ## Next (priorities set by the user, 2026-11-14)
-1. **Complete the Chapter 27 citation review**: the reviewer's personal approval of plumbing, heat and surfaces (ready),
-   then the rest (`docs/legal/CH27_REVIEW.md`); exits wait on Building Inspection's §27.06(4) clarification.
+1. **Complete the Chapter 27 citation review**: plumbing, heat and surfaces are verified and deployed. Next: the
+   remaining provisional citations (`docs/legal/CH27_REVIEW.md`); exits wait on Building Inspection's §27.06(4)
+   clarification.
 2. **Improve real-photo analysis reliability**: staged/real photos → `scripts/eval_vision.py`; warm the stage cache.
 3. **Finish frontend and mobile testing**: open the App URL (OAuth Continue), walk `docs/DEMO_SCRIPT.md` on laptop + phone.
 4. **Prepare the three-minute demo**: dry run ×3, Demo Mode on and off. Redeploy on judging day (Apps auto-stop ~24 h).

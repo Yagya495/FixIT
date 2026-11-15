@@ -1,0 +1,49 @@
+{
+  "source": "https://library.municode.com/wi/madison/codes/code_of_ordinances?nodeId=COORMAWIVOIICH20--31_CH27MIHOPRMACO",
+  "review_meaning": "Reviewer approval means the ordinance citation and quoted text were checked against the official source. It does not mean the reviewer is a lawyer or a City inspector, or that an AI-detected condition is a confirmed legal violation.",
+  "mapping": {
+    "LEAK_PLUMBING": [
+      "27.05(2)(j)"
+    ],
+    "DAMAGED_SURFACES": [
+      "27.05(2)(g)1."
+    ],
+    "NO_HEAT": [
+      "27.04(2)(h)"
+    ]
+  },
+  "reviewers": {
+    "LEAK_PLUMBING": "Naisha Chadha",
+    "DAMAGED_SURFACES": "Naisha Chadha",
+    "NO_HEAT": "Naisha Chadha"
+  },
+  "sections": [
+    {
+      "section_id": "27.04(2)(h)",
+      "title": "MINIMUM STANDARDS FOR BASIC EQUIPMENT, LIGHTING, VENTILATION, HEATING, AND ELECTRICAL SERVICE. Heating.",
+      "text": "A minimum temperature of sixty-seven degrees Fahrenheit (67\u00b0) shall be maintained in all habitable rooms, kitchens and bathrooms.\nThe occupant of a room or an apartment may maintain a lesser temperature than is specified above as long as it does not affect the temperature in other habitable areas of the building.",
+      "source_doc": "dbfs:/Volumes/fixit/raw/code_docs/Madison_Chapter_27.pdf",
+      "page": 9,
+      "url": "https://library.municode.com/wi/madison/codes/code_of_ordinances?nodeId=COORMAWIVOIICH20--31_CH27MIHOPRMACO",
+      "verified": 1
+    },
+    {
+      "section_id": "27.05(2)(g)1.",
+      "title": "SAFE AND SANITARY MAINTENANCE OF PROPERTY.",
+      "text": "Every interior floor, wall and ceiling including door and window assemblies shall be kept clean and in good repair, and shall be capable of affording privacy.\nAll surfaces shall be free from serious cracking, irregularities, and peeling paint.",
+      "source_doc": "dbfs:/Volumes/fixit/raw/code_docs/Madison_Chapter_27.pdf",
+      "page": 14,
+      "url": "https://library.municode.com/wi/madison/codes/code_of_ordinances?nodeId=COORMAWIVOIICH20--31_CH27MIHOPRMACO",
+      "verified": 1
+    },
+    {
+      "section_id": "27.05(2)(j)",
+      "title": "SAFE AND SANITARY MAINTENANCE OF PROPERTY.",
+      "text": "Every plumbing fixture and water and waste pipe shall be properly installed and maintained in good working condition, free from defects, leaks, and obstructions.",
+      "source_doc": "dbfs:/Volumes/fixit/raw/code_docs/Madison_Chapter_27.pdf",
+      "page": 17,
+      "url": "https://library.municode.com/wi/madison/codes/code_of_ordinances?nodeId=COORMAWIVOIICH20--31_CH27MIHOPRMACO",
+      "verified": 1
+    }
+  ]
+}

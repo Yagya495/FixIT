@@ -95,6 +95,8 @@ def main() -> int:
 
     def status(p: dict) -> str:
         d = p.get("decision", "")
+        if d.startswith("VERIFIED"):
+            return "**Verified** (reviewer: Naisha Chadha, 2026-11-14; applied and deployed)"
         if d.startswith("PROVISIONAL"):
             extra = " (mold aspect pending a separate legal source)" if "mold" in d.lower() else ""
             return "Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name)" + extra
@@ -163,7 +165,8 @@ def main() -> int:
             md += [""]
         if p.get("decision"):
             md += [f"**Decision so far:** {p['decision']}", ""]
-        md += ["**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.", ""]
+        md += ["**Verified:** Yes. Reviewer: Naisha Chadha (2026-11-14)." if p.get("decision", "").startswith("VERIFIED")
+               else "**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.", ""]
     md += [
         "## Problems found in the current placeholder summaries",
         "",

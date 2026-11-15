@@ -1,7 +1,7 @@
 {
   "question": "What percent of issues are fixed within 30 days, by owner grade?",
-  "text": "The percentage of issues fixed within 30 days varies by owner grade. Owners with a grade A have the highest rate at 94.1%, while those with a grade F have the lowest at 42.2%. The rates for other grades are:\n- B: 86.8%\n- C: 75.8%\n- D: 51.3%\n- F: 42.2%",
-  "sql": "SELECT ls.grade, \n  try_divide(100.0 * SUM(CASE WHEN r.fixed_at IS NOT NULL AND DATEDIFF(r.fixed_at, r.reported_at) <= 30 THEN 1 ELSE 0 END),COUNT(r.report_id)) AS pct_fixed_within_30d\nFROM `fixit`.`gold`.`reports` r\nJOIN `fixit`.`gold`.`properties` p ON r.property_id = p.property_id\nJOIN `fixit`.`gold`.`landlord_scores` ls ON p.owner_id = ls.owner_id\nWHERE ls.grade IS NOT NULL\n  AND r.reported_at IS NOT NULL\nGROUP BY ls.grade\nORDER BY ls.grade",
+  "text": "The percentage of issues fixed within 30 days varies by owner grade. Examples include:\n- Grade A: 94.1%\n- Grade B: 86.8%\n- Grade C: 75.8%\n- Grade D: 51.8%\n- Grade F: 42.2%\nOwners with higher grades tend to resolve issues more quickly, with grade A owners fixing the vast majority of issues within 30 days.",
+  "sql": "SELECT ls.grade, try_divide(100.0 * SUM(CASE WHEN r.fixed_at IS NOT NULL AND DATEDIFF(r.fixed_at, r.reported_at) <= 30 THEN 1 ELSE 0 END),COUNT(*)) AS pct_fixed_within_30d\nFROM `fixit`.`gold`.`reports` r\nJOIN `fixit`.`gold`.`properties` p ON r.property_id = p.property_id\nJOIN `fixit`.`gold`.`landlord_scores` ls ON p.owner_id = ls.owner_id\nWHERE ls.grade IS NOT NULL\nGROUP BY ls.grade\nORDER BY ls.grade",
   "rows": [
     {
       "grade": "A",
@@ -9,7 +9,7 @@
     },
     {
       "grade": "B",
-      "pct_fixed_within_30d": "86.77746999076639"
+      "pct_fixed_within_30d": "86.80517082179132"
     },
     {
       "grade": "C",
@@ -17,7 +17,7 @@
     },
     {
       "grade": "D",
-      "pct_fixed_within_30d": "51.31578947368421"
+      "pct_fixed_within_30d": "51.75438596491228"
     },
     {
       "grade": "F",

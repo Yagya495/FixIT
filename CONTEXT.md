@@ -116,11 +116,18 @@ Finish every P0 before starting any P1.
   is a confirmed violation (recorded as `review_meaning` in `code_sections_verified.json`).
 - **Live official check (2026-11-14):** all 26 provisional excerpts match live Municode Chapter 27 (version Sep 1, 2026;
   no amendments newer than the PDF). Plumbing, heat and surfaces were re-checked structurally (right subsection label,
-  exceptions present) and are **ready for the reviewer's personal approval**. MGO 32.04(4)(d) (rent-abatement
-  schedule) independently confirms several subsection numbers. Record: `docs/legal/ch27_live_check.md`.
-- **Review status (2026-11-14):** all decisions **provisional, nothing verified**. Provisionally accepted: plumbing
-  §27.05(2)(j); heat §27.04(2)(h) (67°F in habitable rooms, kitchens, bathrooms + occupant exception; no "heating
-  season"); surfaces §27.05(2)(g)1.; locks §27.05(2)(h), (h)3., (h)4., with (h)6. as a supporting reference only
+  exceptions present). MGO 32.04(4)(d) (rent-abatement schedule) independently confirms several subsection numbers.
+  Record: `docs/legal/ch27_live_check.md`.
+- **VERIFIED (2026-11-14), the only verified citations:** reviewed against the official source and explicitly approved by
+  **Naisha Chadha**; applied to Databricks (`silver.code_sections` verified=1, `ref.violation_types`) and
+  `app/backend/code_sections_verified.json`; deployed:
+  - `LEAK_PLUMBING` → **§27.05(2)(j)** (p. 17)
+  - `NO_HEAT` → **§27.04(2)(h)** (p. 9; the 67°F sentence + occupant exception)
+  - `DAMAGED_SURFACES` → **§27.05(2)(g)1.** (p. 14; "good repair" + "serious cracking … peeling paint")
+
+  The app shows "Possibly relevant: MGO § …" with the exact excerpt and "Whether this condition violates it is for a City
+  of Madison inspector to decide."
+- **Everything else stays provisional/unverified:** locks §27.05(2)(h), (h)3., (h)4., with (h)6. as a supporting reference only
   (alternative devices are allowed only with Building Inspection approval, never automatically); windows
   §27.05(2)(h) + §27.04(2)(f) / §27.07(2)(c) for screens (by June 1) and storm windows (Oct 15–Nov 15); pests §27.07(2)(d)
   + §27.03 "infestation" (sustained presence; owner exterminates except in single-family dwellings); electrical §27.04(2)(g)
@@ -206,24 +213,31 @@ scripts/  dbx_setup · app_smoke · genie_verify · code_parse · ch27_review_sh
 - No secrets in code: read `.env` (gitignored) and `.env.example` is the template.
 - Commit working states often. Update `PROGRESS.md` after every milestone.
 
-## 10. Current status (2026-11-14, late evening)
+## 10. Current status (2026-11-14, night)
 - All P0 features run end to end locally (SQLite) and on Databricks. **Deployed App:**
   https://fixit-madison-7474647207905142.aws.databricksapps.com (catalog `fixit`, warehouse `6361516ab33ba2d2`, Genie space
   `01f1e089ff07126aac09984f839aaef1`, minimal SP grants). Smoke test `scripts/app_smoke.py` 11/11; data reset to the clean
   story (6 open heat at 1234 Demo St, owner grade D (score 0.916), 11 open issues across 3 other buildings); 8/8 saved Genie
-  answers match. Apps auto-stop ~24 h after deploy: redeploy on judging day.
-- **Branches:** `main` = what is deployed (70 tests pass there). `ch27-review` = Chapter 27 review work, **not deployed**:
-  provisional decisions, corrected wording (heat, plumbing, surfaces, locks, windows, pests, exits renamed "Blocked exit /
-  unsafe stairs / missing handrail", electrical, water damage renamed "Water damage / suspected mold", placeholders that no
-  longer claim CO/mold/cover plates), "Possibly relevant code" wording, CO "legal source not yet verified" placeholder.
-  76 tests pass on the branch.
+  answers match (3 refreshed live after the reset). Apps auto-stop ~24 h after deploy: redeploy on judging day.
+- **Branches:**
+  - The deployed app now runs **`ch27-review`** (deployment `01f1e0b4…`; **not merged** into `main`). It includes the
+    corrected wording, explicit synthetic-data labels, the smoke/CO prototype (deadline disabled), the responsive fixes,
+    and the 3 verified citations. 89 tests pass on the branch, none skipped.
+  - `main` is the previous deployment.
+- **Rollback point:** git tag `deploy-pre-ch27-2026-11-14` (commit cef6822, deployment `01f1e0a5dc26…`). Delta versions
+  before the change: `silver.code_sections` v11, `ref.violation_types` v7 (`RESTORE TABLE … TO VERSION AS OF`); then
+  redeploy the tag.
+- **Local fallback (:8000):** still the older code and data (not updated); its frontend files were backed up and restored
+  around each build.
 - Vector Search skipped (not created). No P1 work started (no Twilio).
 - Quick start: `make setup && make build && make api` → http://localhost:8000 (Windows commands in README).
 
 ## 11. Inputs still needed from the human
-- Ch. 27: the reviewer's personal approval of plumbing, heat and surfaces (ready), then the rest; City Building
-  Inspection clarification of the §27.06(4) cross-reference; SPS 321.04 / SPS 362 for stairs and handrails.
-- Smoke/CO: review the design for building questions and the 5-day written-notice deadline (not implemented).
+- Ch. 27: personal review and approval of the remaining provisional citations (locks, windows, pests, electrical, water
+  damage); City Building Inspection clarification of the §27.06(4) cross-reference; SPS 321.04 / SPS 362 for stairs and
+  handrails.
+- Smoke/CO: verify the sources and written-notice requirements before the (disabled) legal deadline can be enabled.
+- Decide whether to merge `ch27-review` into `main`, and whether to update the local fallback.
 - Manual checklist on the App + phone (`docs/DEMO_SCRIPT.md`); staged photos for `scripts/eval_vision.py` and the stage cache.
 - 19 photos from the user's manual test remain in `/Volumes/fixit/raw/evidence/` (resets never delete files).
 - P1 only: Twilio keys + consenting allowlist numbers. Details in `PROGRESS.md`.
