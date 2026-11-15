@@ -46,8 +46,10 @@ WALKTHROUGH_SCENARIO = [
 LISTING_SCENARIO = [
     {"violation_type": "WATER_DAMAGE_MOLD", "confidence": 0.74, "bbox": None,
      "evidence_note": "Discoloration on ceiling consistent with a past leak", "severity_hint": "urgent"},
+    # Not "no smoke detector in frame": a photo can't show an alarm is missing (vision.screen_detection drops that).
     {"violation_type": "SMOKE_DETECTOR_MISSING", "confidence": 0.58, "bbox": None,
-     "evidence_note": "Bedroom ceiling visible with no smoke detector in frame", "severity_hint": "urgent"},
+     "evidence_note": "Empty smoke alarm base plate on the bedroom ceiling", "severity_hint": "urgent",
+     "alarm_observation": "removed_mount_visible"},
     {"violation_type": "DAMAGED_SURFACES", "confidence": 0.66, "bbox": None,
      "evidence_note": "Peeling paint along window trim", "severity_hint": "routine"},
 ]

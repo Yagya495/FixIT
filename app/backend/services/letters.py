@@ -26,6 +26,10 @@ def _issue_lines(violations: list[dict], with_evidence: bool = True) -> list[str
         ev = ""
         if with_evidence and v.get("evidence_ids"):
             ev = f' Photo evidence: {", ".join(v["evidence_ids"][:3])}.'
+        if v.get("verify_in_person"):
+            ev += " Seen in a photo; needs an in-person check."
+        if v.get("tenant_reported"):
+            ev += " Reported by the tenant."
         # "Possibly relevant": a cited section is the rule that may apply, not a finding that it was violated.
         lines.append(f'{i}. {v["name"]} ({v["severity"]}). Possibly relevant code: {secs}. Requested fix: {v["remedy"]}{ev}')
     return lines

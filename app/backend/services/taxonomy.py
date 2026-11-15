@@ -17,14 +17,14 @@ CATEGORIES = (
 VIOLATION_TYPES: list[dict] = [
     {
         "type_id": "SMOKE_DETECTOR_MISSING", "name": "Missing/disabled smoke detector", "category": "SMOKE_CO",
-        "visual_cues": "empty ceiling mount plate, detector covered with bag/tape, detector hanging by wires, no detector in bedroom or hallway",
+        "visual_cues": "ONLY a visible problem with a smoke alarm: alarm covered with a bag, tape or paint; alarm visibly broken or hanging by its wires; an empty base plate or mounting bracket where an alarm was (needs an in-person check). Never report this because no alarm appears in the photo, and never judge from a photo whether an alarm works",
         "default_severity": "urgent", "code_sections": ["CH27-SMOKE"],
         "plain_explanation": "Madison's smoke alarm ordinance (MGO 34.907) and Wisconsin law require smoke alarms in many rental buildings. Which rule applies, and where alarms must be, depends on the building (for example its age and number of units); FixIt has not verified which rule applies here. These rules generally make the tenant responsible for testing alarms inside the unit and for telling the owner in writing when one stops working. A photo cannot show whether an alarm works, or that no alarm exists elsewhere. General safety information: a missing, covered or disabled alarm is a fire-safety risk.",
         "remedy_request": "Install, replace or repair working smoke alarms wherever the applicable rules require them, and test them.",
     },
     {
-        "type_id": "CO_DETECTOR_MISSING", "name": "Missing CO detector near sleeping area", "category": "SMOKE_CO",
-        "visual_cues": "no carbon monoxide alarm near bedrooms in a unit with fuel-burning appliances",
+        "type_id": "CO_DETECTOR_MISSING", "name": "Missing/disabled CO alarm", "category": "SMOKE_CO",
+        "visual_cues": "ONLY a visible problem with a labeled carbon monoxide alarm: covered, visibly broken or hanging, or an empty mount where one was (needs an in-person check). Never report this because no CO alarm appears in the photo; a photo cannot show whether one is required or whether it works",
         "default_severity": "urgent", "code_sections": ["PENDING-CO"],
         "plain_explanation": "Chapter 27 does not address carbon monoxide alarms. Wisconsin law requires them in many homes and apartment buildings, but whether and where depends on the building: its number of units, and whether it has fuel-burning appliances, a fuel-burning furnace, a fireplace or an attached garage. FixIt has not verified which rule applies here, and a photo cannot show whether one is required.",
         "remedy_request": "Install a working carbon monoxide alarm wherever the applicable rule requires one.",

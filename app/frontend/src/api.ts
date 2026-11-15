@@ -4,7 +4,10 @@ export type Violation = {
   violation_id: string; scan_id: string; property_id: string | null; violation_type: string; name: string;
   category: string; severity: "routine" | "urgent" | "emergency"; confidence: number; certain: boolean; label: string;
   explanation: string; remedy: string; code_sections: CodeSection[]; evidence_ids: string[]; notes: string[];
+  /** One per supporting photo or tenant report, each tied to its own evidence (null = tenant report, no photo). */
+  observations?: Observation[]; bases?: string[]; verify_in_person?: boolean; tenant_reported?: boolean;
 };
+export type Observation = { evidence_id: string | null; note: string; basis: string; basis_text: string; confidence: number };
 export type Frame = { evidence_id: string; sha256: string; scene: string; detections: any[]; source: string };
 
 async function handle(r: Response) {

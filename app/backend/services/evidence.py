@@ -52,7 +52,7 @@ def store(scan_id: str, data: bytes, media_type: str, captured_at: str | None = 
     sha = sha256_bytes(data)
     existing = get(evidence_id_for(sha, scan_id))
     if existing:  # identical file uploaded twice in one scan: same evidence, keep the first timestamps
-        return existing
+        return existing | {"reused": True}
     path = storage_path(sha, media_type)
     _write(path, data)
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")

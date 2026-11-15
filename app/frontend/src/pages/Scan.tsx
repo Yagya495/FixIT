@@ -87,14 +87,15 @@ export default function Scan() {
     upload([b]);
   }
 
-  async function reportNoHeat() {
+  async function reportManual(type_id: string, note: string) {
     setError(null);
     try {
       const id = await ensureScan();
-      const r = await post(`/api/scans/${id}/manual`, { type_id: "NO_HEAT", note: "Tenant reports no heat" });
+      const r = await post(`/api/scans/${id}/manual`, { type_id, note });
       setViolations(r.violations);
     } catch (e: any) { setError(e.message); }
   }
+  const reportNoHeat = () => reportManual("NO_HEAT", "Tenant reports no heat");
 
   async function createCase() {
     setBusy(true);
@@ -138,6 +139,10 @@ export default function Scan() {
             </div>
           )}
           <button className="btn-ghost w-full" onClick={reportNoHeat}><Flame className="w-5 h-5 text-badger" /> Report no heat (can't be photographed)</button>
+          <div className="grid grid-cols-2 gap-2">
+            <button className="btn-ghost text-sm" onClick={() => reportManual("SMOKE_DETECTOR_MISSING", "Tenant reports a missing or non-working smoke alarm")}>Report smoke alarm missing / not working</button>
+            <button className="btn-ghost text-sm" onClick={() => reportManual("CO_DETECTOR_MISSING", "Tenant reports a missing or non-working CO alarm")}>Report CO alarm missing / not working</button>
+          </div>
           {busy && <div className="card p-4"><Progress steps={["Saving evidence + SHA-256 hash…", "Looking for possible issues…", "Matching to MGO Chapter 27…"]} done={false} intervalMs={700} /></div>}
           <ErrorBox error={error} />
           {frames > 0 && <p className="text-sm text-neutral-500">{frames} frame{frames > 1 ? "s" : ""} analyzed and saved to the evidence locker.</p>}

@@ -74,7 +74,7 @@ export function ViolationCard({ v, open: initOpen = false }: { v: Violation; ope
     <div className={`card overflow-hidden ${v.certain ? "" : "border-dashed"}`}>
       <button onClick={() => setOpen(!open)} className="w-full text-left p-4 flex gap-3 items-start">
         {v.evidence_ids?.[0] ? (
-          <img src={imgUrl(v.evidence_ids[0])} className="w-16 h-16 rounded-lg object-cover shrink-0 bg-neutral-100" />
+          <img src={imgUrl(v.evidence_ids[0])} alt="" className="w-16 h-16 rounded-lg object-cover shrink-0 bg-neutral-100" />
         ) : (
           <div className="w-16 h-16 rounded-lg bg-neutral-100 grid place-items-center shrink-0">
             <AlertTriangle className="w-6 h-6 text-neutral-400" />
@@ -87,14 +87,31 @@ export function ViolationCard({ v, open: initOpen = false }: { v: Violation; ope
           </div>
           {!v.certain && <div className="text-sm text-amber-700 font-semibold">Possible issue — verify in person</div>}
           <div className="text-sm text-neutral-500 mt-0.5">
-            Confidence {(v.confidence * 100).toFixed(0)}% · {v.code_sections[0]?.title ?? "MGO Ch. 27"}
+            {v.tenant_reported && !v.evidence_ids?.length ? "Reported by you" : `Confidence ${(v.confidence * 100).toFixed(0)}%`}
+            {" · "}{v.code_sections[0]?.title ?? "MGO Ch. 27"}
           </div>
         </div>
         <span className="text-neutral-400 text-sm">{open ? "▲" : "▼"}</span>
       </button>
       {open && (
         <div className="px-4 pb-4 space-y-3 border-t border-neutral-100 pt-3">
-          {v.notes?.length > 0 && <p className="text-sm italic text-neutral-600">“{v.notes[0]}”</p>}
+          {v.observations?.length ? (
+            <ul className="space-y-2">
+              {v.observations.map((o, k) => (
+                <li key={k} className="flex gap-2 items-start text-sm">
+                  {o.evidence_id ? <img src={imgUrl(o.evidence_id)} alt="" className="w-10 h-10 rounded object-cover shrink-0 bg-neutral-100" />
+                    : <div className="w-10 h-10 rounded bg-neutral-100 shrink-0" />}
+                  <div className="min-w-0">
+                    <span className="text-xs font-semibold uppercase text-neutral-500">{o.basis_text}{o.evidence_id ? ` · ${o.evidence_id}` : ""}</span>
+                    {o.note && <p className="italic text-neutral-600 break-words">“{o.note}”</p>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : v.notes?.length > 0 && <p className="text-sm italic text-neutral-600">“{v.notes[0]}”</p>}
+          {v.category === "SMOKE_CO" && (
+            <p className="text-xs text-neutral-500">A photo can't show that an alarm is missing from the unit or whether it works. Test alarms in person.</p>
+          )}
           {v.code_sections.map((s) => (
             <blockquote key={s.section_id} className="border-l-4 border-badger bg-badger-light/50 rounded-r-lg p-3">
               <div className="text-xs font-bold uppercase text-badger">

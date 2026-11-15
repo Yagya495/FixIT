@@ -75,8 +75,15 @@ def evidence_packet(case: dict) -> bytes:
               Spacer(1, 6)]
     vio_by_ev = {}
     for v in case["violations"]:
-        for e in v.get("evidence_ids") or []:
-            vio_by_ev.setdefault(e, []).append(v["name"])
+        obs = v.get("observations")
+        if obs:  # each photo lists only what was observed in THAT photo, and on what basis
+            for o in obs:
+                if o.get("evidence_id"):
+                    note = f': {o["note"]}' if o.get("note") else ""
+                    vio_by_ev.setdefault(o["evidence_id"], []).append(f'{v["name"]} ({o["basis_text"]}{note})')
+        else:
+            for e in v.get("evidence_ids") or []:
+                vio_by_ev.setdefault(e, []).append(v["name"])
     for e in case["evidence"]:
         try:
             img = Image(io.BytesIO(ev_svc.read(e["volume_path"])))

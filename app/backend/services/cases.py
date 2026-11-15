@@ -49,12 +49,28 @@ def create_case(scan_id: str, tone: str = "formal") -> dict:
     # The tenant's own report enters the lakehouse (source=fixit) so future neighbors match against it.
     if scan["property_id"]:
         uh = unit_hash(scan["property_id"], scan["unit"] or "?")
-        db.insert_many("gold.reports", [{
-            "report_id": f"R-FX-{rid[3:]}-{i}", "property_id": scan["property_id"], "unit_hash": uh,
-            "violation_category": BY_ID[v["violation_type"]]["category"], "violation_type": v["violation_type"],
-            "severity": v["severity"], "reported_at": now.isoformat(timespec="seconds"), "fixed_at": None,
-            "status": "open", "source": "fixit"} for i, v in enumerate(vio)])
+        new = reportable(vio, _open_fixit_types(scan["property_id"], uh))
+        if new:
+            db.insert_many("gold.reports", [{
+                "report_id": f"R-FX-{rid[3:]}-{i}", "property_id": scan["property_id"], "unit_hash": uh,
+                "violation_category": BY_ID[v["violation_type"]]["category"], "violation_type": v["violation_type"],
+                "severity": v["severity"], "reported_at": now.isoformat(timespec="seconds"), "fixed_at": None,
+                "status": "open", "source": "fixit"} for i, v in enumerate(new)])
     return get_case(rid)
+
+
+def _open_fixit_types(property_id: str, uh: str) -> set[str]:
+    rows = db.q("SELECT violation_type FROM {gold.reports} WHERE property_id = :p AND unit_hash = :u "
+                "AND source = 'fixit' AND status = 'open'", {"p": property_id, "u": uh})
+    return {r["violation_type"] for r in rows}
+
+
+def reportable(vio: list[dict], already_open: set[str]) -> list[dict]:
+    """Which of a case's issues enter the shared building record (pure, tested).
+
+    Skips an issue this household already has open (a second scan or case must not count twice for neighbors, grades
+    or the building history), and an alarm observation that only an in-person check could confirm."""
+    return [v for v in vio if v["violation_type"] not in already_open and not v.get("verify_in_person")]
 
 
 def get_case(request_id: str) -> dict | None:

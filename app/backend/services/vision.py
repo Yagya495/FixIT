@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from typing import Literal, Optional
 
 from pydantic import BaseModel, Field, ValidationError, field_validator
@@ -19,6 +20,8 @@ class Detection(BaseModel):
     bbox: Optional[list[float]] = None
     evidence_note: str = ""
     severity_hint: Literal["routine", "urgent", "emergency"] = "routine"
+    # Smoke/CO only: what is actually visible (see screen_detection). Anything else is ignored.
+    alarm_observation: Optional[str] = None
 
     @field_validator("violation_type")
     @classmethod
@@ -50,16 +53,21 @@ Look at the photo and report ONLY visible signs of these violation types:
 {taxonomy}
 
 Rules: only report what is visible; do not guess. Confidence reflects how sure you are it's that violation.
+Smoke and carbon monoxide alarms (SMOKE_DETECTOR_MISSING, CO_DETECTOR_MISSING): report ONLY a visible problem with an
+alarm or its mount, and set "alarm_observation" to one of: "covered_or_obstructed" (bag, tape, paint, cover over the
+alarm), "damaged_or_hanging" (alarm visibly broken or hanging by its wires), "removed_mount_visible" (an empty base
+plate or mounting bracket where an alarm was). NEVER report these types because no alarm appears in the photo: a photo
+does not show the rest of the unit. You cannot tell from a photo whether an alarm works, so never claim it does or doesn't.
 bbox is [x, y, w, h] as fractions of image size (0-1) if you can localize it, else null.
 Reply with STRICT JSON only, no prose:
-{{"detections":[{{"violation_type":"<TYPE_ID>","confidence":0.0,"bbox":null,"evidence_note":"short description","severity_hint":"routine|urgent|emergency"}}],
+{{"detections":[{{"violation_type":"<TYPE_ID>","confidence":0.0,"bbox":null,"evidence_note":"short description","severity_hint":"routine|urgent|emergency","alarm_observation":null}}],
  "scene":"bedroom|kitchen|bathroom|hallway|exterior|other"}}
 If nothing is visible, return {{"detections":[],"scene":"..."}}."""
 
 SYSTEM_LISTING = SYSTEM_WALKTHROUGH.replace(
     "Look at the photo",
     "This is a MARKETING photo from a rental listing. Look closely for signs of problems landlords may not notice or "
-    "mention (stains, missing smoke detectors on visible ceilings, damaged surfaces, exposed wiring, mold, pest evidence, "
+    "mention (stains, covered or removed smoke alarms, damaged surfaces, exposed wiring, mold, pest evidence, "
     "broken windows or locks). Look at the photo",
 )
 
@@ -119,11 +127,83 @@ def analyze_frame(image: bytes, sha256: str, mode: str, frame_index: int, n_fram
         return FrameResult(), "none"
 
 
+# ---------------------------------------------------------------- alarm screening (pure)
+# A photo can show an alarm that is covered, damaged, hanging or removed from its mount. It cannot show that a unit has
+# no alarm (the rest of the unit isn't in the frame) or whether an alarm works. Rules (user, 2026-11-14):
+#   visible damage/obstruction                 -> finding, basis "visible_alarm_condition"
+#   empty mount / opened battery compartment   -> basis "verify_in_person" (never shown as a certain finding)
+#   "no alarm visible", "alarm present", other -> dropped (not a finding)
+#   tenant-reported missing / not working      -> basis "tenant_report" (manual path, never screened out)
+ALARM_TYPES = frozenset({"SMOKE_DETECTOR_MISSING", "CO_DETECTOR_MISSING"})
+BASIS_PHOTO, BASIS_VISIBLE_ALARM = "photo", "visible_alarm_condition"
+BASIS_VERIFY, BASIS_TENANT = "verify_in_person", "tenant_report"
+BASIS_TEXT = {BASIS_PHOTO: "Seen in photo", BASIS_VISIBLE_ALARM: "Seen in photo",
+              BASIS_VERIFY: "Needs an in-person check", BASIS_TENANT: "Reported by tenant"}
+VERIFY_LABEL = "Possible issue — verify in person"
+
+_OBS = {"covered_or_obstructed": (BASIS_VISIBLE_ALARM, "Alarm visibly covered or obstructed"),
+        "damaged_or_hanging": (BASIS_VISIBLE_ALARM, "Alarm visibly damaged or hanging"),
+        "removed_mount_visible": (BASIS_VERIFY, "Empty alarm mount or base plate visible")}
+_ALARM = r"(smoke |co |carbon monoxide )?(detector|alarm)s?"
+_NEG = re.compile(
+    rf"\b(no {_ALARM}|without (a |an |any )?{_ALARM}|{_ALARM} (is |are )?(not|isn't|aren't) (visible|present|seen|installed)"
+    rf"|not (visible )?in (the )?frame|none visible|no visible {_ALARM}|missing {_ALARM}|{_ALARM} (is |appears )?missing"
+    rf"|absence of)", re.I)
+_VISIBLE = re.compile(r"\b(cover(ed|ing)?|bag(ged)?|taped?|wrapped|obstruct\w*|painted over|hanging|dangling|pulled down"
+                      r"|ripped|smashed|broken|cracked|damaged|melted|crushed)\b", re.I)
+_VERIFY = re.compile(r"\b(base ?plate|mount(ing)?( plate| bracket)?|bracket|battery (compartment|door) (is )?(open|empty)"
+                     r"|open battery|battery removed|disconnected)\b", re.I)
+
+
+def classify_alarm_note(note: str) -> str | None:
+    """Basis implied by an alarm note, or None if it shows no visible alarm problem (pure, tested).
+
+    Negations ("no detector", "not in frame") override damage words, so "ceiling not covered, no alarm" is dropped.
+    An empty mount or opened battery compartment needs an in-person check; it never proves anything by itself."""
+    n = note or ""
+    if _NEG.search(n):
+        return BASIS_VERIFY if _VERIFY.search(n) else None
+    if _VISIBLE.search(n):
+        return BASIS_VISIBLE_ALARM
+    return BASIS_VERIFY if _VERIFY.search(n) else None
+
+
+def screen_detection(det: dict) -> dict | None:
+    """Apply the alarm rules to one PHOTO detection. Returns it with `basis` (alarm notes made self-describing so a
+    stored row can be re-screened from its note), or None when the photo doesn't support it."""
+    d = dict(det)
+    d.pop("alarm_observation", None)
+    if det["violation_type"] not in ALARM_TYPES:
+        return d | {"basis": BASIS_PHOTO}
+    note = (det.get("evidence_note") or "").strip()
+    obs = det.get("alarm_observation")
+    if obs in _OBS:
+        basis, prefix = _OBS[obs]
+        if classify_alarm_note(note) != basis:
+            note = f"{prefix}: {note}" if note else prefix
+            if classify_alarm_note(note) != basis:  # the note contradicts the observation (e.g. "no alarm"): drop
+                return None
+        return d | {"evidence_note": note, "basis": basis}
+    if obs:  # "no_alarm_visible", "alarm_present" or anything unexpected
+        return None
+    basis = classify_alarm_note(note)
+    return d | {"basis": basis} if basis else None
+
+
+def detection_basis(violation_type: str, note: str | None, model_endpoint: str | None) -> str | None:
+    """Basis of a stored detection row; None = unsupported (e.g. an alarm 'absence' row saved before screening)."""
+    if model_endpoint == "user":
+        return BASIS_TENANT
+    if violation_type not in ALARM_TYPES:
+        return BASIS_PHOTO
+    return classify_alarm_note(note or "")
+
+
 # ---------------------------------------------------------------- pure helpers
 def apply_threshold(det: dict, threshold: float = config.CONFIDENCE_THRESHOLD) -> dict:
     d = dict(det)
-    d["certain"] = d["confidence"] >= threshold
-    d["label"] = BY_ID[d["violation_type"]]["name"] if d["certain"] else "Possible issue — verify in person"
+    d["certain"] = d["confidence"] >= threshold and d.get("basis") != BASIS_VERIFY
+    d["label"] = BY_ID[d["violation_type"]]["name"] if d["certain"] else VERIFY_LABEL
     return d
 
 
