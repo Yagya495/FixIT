@@ -97,3 +97,12 @@ Weak spots: holes, cracks and a third of stains. The YOLO result will be compare
 ## Next step
 Run `fixit-yolo-ceiling/yolo_ceiling_train` on the existing Serverless GPU notebook (cells 1-6, check the projection
 and quota, then 7-9), then copy `outputs/` back here and fill in the measured results.
+
+## Results (measured; added 2026-11-15 after the owner ran the notebook)
+Ran on Databricks Free Edition Serverless GPU (NVIDIA A10G), ultralytics 8.4.196, torch 2.11.0+cu130: 1.4 min,
+28 epochs (early stop, best val mAP50 0.206 at epoch 18). Single test evaluation (50 images): precision 0.195, recall
+0.231, mAP50 0.122, mAP50-95 0.053; mAP50 crack 0.108 / damp 0.187 / hole 0.085 / mold-like 0.207 / stain 0.025.
+At conf 0.25: 27 TP, 53 FP (14 wrong class), 203 FN; matched-box IoU 0.73; 8 ms/image inference.
+Image level vs Llama 4 Maverick: surface 11/29 vs 15/29, moisture 21/33 vs 27/33, missed stains 8/11 vs 4/11.
+**It does not beat the current Llama pipeline.** Artifacts: workspace `fixit-yolo-ceiling/outputs/` and MLflow.
+Follow-up: experiment 2 (`experiments/yolo_ceiling_full/`), same test images, more training photos.

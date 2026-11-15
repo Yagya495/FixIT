@@ -1,0 +1,17 @@
+# Experiment-local: large or reproducible artifacts stay out of git (see README/REPORT for how to rebuild them)
+.venv/
+dataset_full/
+runs/
+mlruns/
+_dupcheck/
+*.pt
+*.zip
+results/*/predictions/
+results/*/val_test/
+results/*/clean/
+results/*_pipelinecheck/
+databricks/*.zip
+databricks/parts/
+databricks/*.zip
+databricks/parts/
+*.pt

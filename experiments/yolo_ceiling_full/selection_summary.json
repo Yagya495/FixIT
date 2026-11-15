@@ -1,0 +1,220 @@
+{
+ "zip_sha256": "4fbe3698a15edbcfd1e5cae778fa0a99a57edcf5d681d6bec7eb5b908b77b52b",
+ "seed": 42,
+ "images_examined": 500,
+ "distinct_photos": 242,
+ "splits": {
+  "train": {
+   "image_files": 302,
+   "distinct_photos": 155,
+   "images_with_class": {
+    "ceiling_crack": 78,
+    "ceiling_damp": 82,
+    "ceiling_hole": 60,
+    "ceiling_mold": 113,
+    "ceiling_stain": 68
+   },
+   "photos_with_class": {
+    "ceiling_crack": 48,
+    "ceiling_damp": 38,
+    "ceiling_hole": 28,
+    "ceiling_mold": 59,
+    "ceiling_stain": 32
+   },
+   "instances": {
+    "ceiling_crack": 173,
+    "ceiling_damp": 151,
+    "ceiling_hole": 212,
+    "ceiling_mold": 509,
+    "ceiling_stain": 151
+   }
+  },
+  "valid": {
+   "image_files": 36,
+   "distinct_photos": 36,
+   "images_with_class": {
+    "ceiling_crack": 11,
+    "ceiling_damp": 12,
+    "ceiling_hole": 12,
+    "ceiling_mold": 12,
+    "ceiling_stain": 11
+   },
+   "photos_with_class": {
+    "ceiling_crack": 11,
+    "ceiling_damp": 12,
+    "ceiling_hole": 12,
+    "ceiling_mold": 12,
+    "ceiling_stain": 11
+   },
+   "instances": {
+    "ceiling_crack": 17,
+    "ceiling_damp": 38,
+    "ceiling_hole": 34,
+    "ceiling_mold": 46,
+    "ceiling_stain": 21
+   }
+  },
+  "test": {
+   "image_files": 50,
+   "distinct_photos": 50,
+   "images_with_class": {
+    "ceiling_crack": 20,
+    "ceiling_damp": 16,
+    "ceiling_hole": 11,
+    "ceiling_mold": 20,
+    "ceiling_stain": 11
+   },
+   "photos_with_class": {
+    "ceiling_crack": 20,
+    "ceiling_damp": 16,
+    "ceiling_hole": 11,
+    "ceiling_mold": 20,
+    "ceiling_stain": 11
+   },
+   "instances": {
+    "ceiling_crack": 73,
+    "ceiling_damp": 31,
+    "ceiling_hole": 14,
+    "ceiling_mold": 87,
+    "ceiling_stain": 25
+   }
+  }
+ },
+ "excluded": {
+  "copy_of_a_test_photo": {
+   "image_files": 74,
+   "distinct_photos": 44,
+   "images": [
+    "1-damp_causes_symptoms_treatments_damp_patch_787515373_768_jpg.rf.6a14cf2cad1d047efb715dc7a7351f9b.jpg",
+    "10-what_to_do_about_a_water_stain_on_the_ceiling_50-scaled_jpeg_jpg.rf.058186f111ceb392f0cf96553af225b4.jpg",
+    "10-what_to_do_about_a_water_stain_on_the_ceiling_50-scaled_jpeg_jpg.rf.fac0e913758a216b146cbd8d22171f84.jpg",
+    "12-gettyimages-469903840-5e6f392408f24eeaa0fcc7a19e633f8d_jpg.rf.bb73d8f553801e7a0e4ef443ddf76cad.jpg",
+    "12-gg9xrbzhqmhc4qurggj9aodykp92kf-pazs1no6xf0q_jpg.rf.ff5705e1e25ddd920746b46d49b2aa98.jpg",
+    "13-bathroom-ceiling-mold-2_jpeg_jpg.rf.96cdb8a2ba855efa3bcf6bb7ab3bd409.jpg",
+    "15-how-long-does-it-take-for-a-ceiling-to-dry-after-a-leak_jpg.rf.6e3c442d57b99d3d2ffc54ac5db5756c.jpg",
+    "15-how-long-does-it-take-for-a-ceiling-to-dry-after-a-leak_jpg.rf.928ef54d1e8a1bcd8da679f088b829f0.jpg",
+    "17-gettyimages-518143302-1521556343_jpg.rf.c05bc9cc3d618bd08f12c4bb78e6b67b.jpg",
+    "2-ceiling-stains_jpg.rf.4432cbddd1c1f6013f337570d7c6efa1.jpg",
+    "2-ceiling-stains_jpg.rf.93905405f6491a805a3c9bdea68b81ee.jpg",
+    "2-mould-on-bedroom-ceiling_jpg.rf.40b093c5e94b4c594c85b99849993465.jpg",
+    "22-mold-growing-on-ceiling-lines_jpg.rf.9ac483ed1de4cf09c5acadb234961fe0.jpg",
+    "23-image0184_jpg.rf.fc4198ccfe4a7f6ee4b9d7c21d7840a5.jpg",
+    "23-moldonceiling_jpg.rf.02c4b19de13279dde4d25578f51c469f.jpg",
+    "23-moldonceiling_jpg.rf.182cba9b3067869e6e396ad8c69998cd.jpg",
+    "25-shutterstock_1500751856-1024x576_jpg.rf.d8317c095701d1075c47b90d2563d756.jpg",
+    "27-1oplz_jpg.rf.7e6c04d881ff99b9b1751566a3c7b0bc.jpg",
+    "27-plasterer-wanted-patch-2-small-holes-in-ceiling2_jpg.rf.222bc8528462287ffe37988c03c86e14.jpg",
+    "27-plasterer-wanted-patch-2-small-holes-in-ceiling2_jpg.rf.51c53263cf0cd8d64f73615c09f9b6b5.jpg",
+    "28-ceiling-damaged-water-leak-ceiling-damaged-water-leak-home-182265168_jpg.rf.abb78af421b76f69501c96ca8dcb4922.jpg",
+    "28-shutterstock-1121850314-1632493657_jpg.rf.3695a13c378834247d2c460235f79356.jpg",
+    "28_JPG_jpg.rf.eb6250a1e93d3cc7bd096fee0279ec7b.jpg",
+    "29-5cb2ef300f56a013_2600-w500-h375-b0-p0--_jpg.rf.369ef793398beb597a02200a581d10e1.jpg",
+    "29-5cb2ef300f56a013_2600-w500-h375-b0-p0--_jpg.rf.9b4ab62efd70024726295d2c798159ea.jpg",
+    "31_JPG_jpg.rf.6a307f092196577ccca396b464b8b8dc.jpg",
+    "31_JPG_jpg.rf.bb4c750f1b9c1c31668716b285c203f5.jpg",
+    "33-how-to-fix-a-mold-problem-in-the-bathroom_jpg.rf.b7312c765de594ec146865e7851f57c8.jpg",
+    "35-why_20do_20i_20have_20ceiling_20cracks__20_28dalinghaus_29_jpg.rf.d274b43ab488baece88c8940fabce287.jpg",
+    "36-ceiling-with-leak_jpg.rf.19157d70dad2314023c08998fb8d6317.jpg",
+    "36-ceiling-with-leak_jpg.rf.fcc684a176d4e9032c68d5d966cdb5f5.jpg",
+    "38-ceiling-stain-bath-fan_jpg.rf.8a5dbbb3df0f8095d2e5397e4985b6c2.jpg",
+    "38-ceiling-stain-bath-fan_jpg.rf.e39bbbfb3c2590d94159fccec3b01566.jpg",
+    "4-ceilingmold_jpg.rf.791601fa2771a373f70fcae70aed72b0.jpg",
+    "4-hqdefault_jpg.rf.4e35d627be5065ef1d418b7f723f2687.jpg",
+    "44-fix-water-stains-on-ceiling-leaks-3_jpg.rf.afacc44003b5bf45ef193fe4d238b9ba.jpg",
+    "44-fix-water-stains-on-ceiling-leaks-3_jpg.rf.d881c9838dfbd7e5ae863ed2892d1f85.jpg",
+    "49-random-holes-in-ceiling_jpg.rf.e6a448f321a18e81a88666c84149d1a2.jpg",
+    "49-random-holes-in-ceiling_jpg.rf.eca160f731cb3e3d9ec505bbbd29bad2.jpg",
+    "5-pephguc5m_obgi0rcacd4smq4_lfqcnreahgf3c-jqw_jpg.rf.943f9d594b5038a0924eabb7764acd90.jpg",
+    "5-pephguc5m_obgi0rcacd4smq4_lfqcnreahgf3c-jqw_jpg.rf.a9edd0b6318123ba740b4a849bce80bd.jpg",
+    "50-ceiling-stain_jpg.rf.13e9f355991f9ab33b7be8947637d5cd.jpg",
+    "53--742ba90e535831ae_jpg.rf.e45e1fd21a7ee2a867da666e21c29fa6.jpg",
+    "54-damp-proof-1-main-image-1024x683_jpg.rf.e02d7cf712d380cfe6c34cb16f5d258e.jpg",
+    "56-ceiling-leakage-from-small-hole_jpg.rf.0624bebfe71ea69ae18f88eb21147a8b.jpg",
+    "58-aml7r_jpg.rf.e3d9e7a67e988f872795b6542a76f55b.jpg",
+    "58-shutterstock_1618304920_jpg.rf.85db32bfd8bdc91209db7b409758358a.jpg",
+    "66-ed72f02904ae4454_6903-w500-h752-b0-p0--_jpg.rf.cbe147cf43558f50116f18c8a730784b.jpg",
+    "69-ceiling_leak_detector_small_jpg.rf.13b4d165a807bd0e083bfe5b589b16e5.jpg",
+    "7-how-to-repair-a-small-hole-in-your-ceiling-home-maintenance-repairs-how-to-walls-ceilings-1_jpg.rf.eeb450a1dbec15b78840b225433f35a8.jpg",
+    "70-ceiling-crack-3_jpeg_jpg.rf.903296e74c7d31b2dad24c11f8c6f635.jpg",
+    "71-mold_istock_185062572_jpg.rf.7f528098c9d104e71d4f8f19844920ae.jpg",
+    "71-mold_istock_185062572_jpg.rf.ab43e6894d41be1a42a0e043d7246487.jpg",
+    "72-cracks-drywall-203_jpg.rf.2e4945eb3a99d5e9faa502a829088073.jpg",
+    "76-_jpg.rf.1209b408f8218d8a0e095e56607a816a.jpg",
+    "79-tiny-bugs-on-walls-and-ceiling-plaster-bagworm_jpg.rf.e1b3613bfd9211a64e3f5bc53681fcdb.jpg",
+    "8-ty2cf--kx7v12kbidhg8dfghzrrntvtjkr9dkhdev5e_jpg.rf.33c55ad54e1cb7e7ed998c16a4a279c6.jpg",
+    "8-ty2cf--kx7v12kbidhg8dfghzrrntvtjkr9dkhdev5e_jpg.rf.cd4988c986bd086f0435e805e7349950.jpg",
+    "8-ty2cf--kx7v12kbidhg8dfghzrrntvtjkr9dkhdev5e_jpg.rf.fb1944145c92af496ea7de3095f11c09.jpg",
+    "8-wall-leakage_jpg.rf.0e45540c08367869ea9e4cf97a25ff3c.jpg",
+    "83-cac25dc216e27f0a8abc0145e161e30f_jpg.rf.371cddcec61f7af924ce9f892a9ad838.jpg",
+    "83-cac25dc216e27f0a8abc0145e161e30f_jpg.rf.e52672c492bd9008be53ed5c1401d754.jpg",
+    "85-scrape-off-damaged-popcorn-ceiling_jpg.rf.dcaf7b0484ec58676aec1f65f4d64493.jpg",
+    "86-1420674815311_jpeg_jpg.rf.f911e74037b915a8d7b7f9cfd004f56e.jpg",
+    "9-stillsmall_jpg.rf.75f69d2d640075c666ce0cf630c0f6b7.jpg",
+    "9-stillsmall_jpg.rf.9e9cc401f459f7b3f511427efca67b89.jpg",
+    "90-bathroom-ceiling-mold-1-1_jpg.rf.9a6dcb8c7f97fad8fd11cd61458306e4.jpg",
+    "95-143884d1422476747-cracks-ceiling-throughout-house-20150125_212228_jpg.rf.f3d4c3c9736c2be4bebdfa2176d193e6.jpg",
+    "96-neighbors-have-a-water-leak-waterdamaged-ceiling-closeup-of-a-stain-picture-id1301457818_jpg.rf.4a2367ae67ece2b57a3dbac20846d5af.jpg",
+    "96-neighbors-have-a-water-leak-waterdamaged-ceiling-closeup-of-a-stain-picture-id1301457818_jpg.rf.ef5a54f03f9c5f48048e6ff97c1270ba.jpg",
+    "97-black-mold-on-ceiling-from-leak-2_jpg.rf.39331e7dc996c953c5c153ed592f98a1.jpg",
+    "98-adobestock_342692860-1_jpg.rf.ce843e9cc8f22b59e6ce2e02e336279d.jpg",
+    "98-maxresdefault_jpg.rf.0bc06fc6614497175fa3bedf59c32cf8.jpg",
+    "98-maxresdefault_jpg.rf.1b46c7874944223763134f9774112ed8.jpg"
+   ]
+  },
+  "unannotated": {
+   "image_files": 2,
+   "distinct_photos": 1,
+   "images": [
+    "66-delaminating-cracks_jpg.rf.4d2ffbd4755f4614add85502b92b5350.jpg",
+    "66-delaminating-cracks_jpg.rf.ae481a19ad8c95c5a3b18dc4939e85a7.jpg"
+   ]
+  },
+  "extra_copy_of_a_valid_photo": {
+   "image_files": 36,
+   "distinct_photos": 28,
+   "images": [
+    "12-ceiling-cracks_jpg.rf.11217e13a598524320a08b887039f6f4.jpg",
+    "12-ceiling-cracks_jpg.rf.20a40c0aa2f6e7dada0fcd42926e8eec.jpg",
+    "12-stain_jpg.rf.eea5140416a9af3e573c62af88960f69.jpg",
+    "13-thvniymvoq_jpg.rf.36f7257bd1f6ff674b74eea61a104fa8.jpg",
+    "13-thvniymvoq_jpg.rf.5998ae976a0032a35e98c96afc801e9a.jpg",
+    "14-straight_20ceiling_20crack_20_28dalinghaus_29_jpg.rf.26d4eca13f806a8ce960b04f3cede929.jpg",
+    "16-5z1vopgzka851_jpg.rf.adc148a933c307c06044ab86d24b269d.jpg",
+    "19-5z1vopgzka851_jpg.rf.33cab9abe3bc3997a9ed8a73ea2c5a6e.jpg",
+    "19-water-stain-on-stipple-ceiling_jpg.rf.fc972199140789c5a28e57c95ef819cc.jpg",
+    "20-how-to-repair-a-small-hole-in-your-ceiling-home-maintenance-repairs-how-to-walls-ceilings-1_jpg.rf.74754c5996c360814a99f1eb04412c6a.jpg",
+    "34-a99f94af61a7455184526289ff26f2a9_jpg.rf.f698ad280841c61731de8f0ba645f3e5.jpg",
+    "34-fix-small-hole-in-drywall-1822830_01_clean_1555-2968b53e86444d2aa90fb5134bfaec20_jpg.rf.bc50d5d308336d5e38ce2e05b092ff13.jpg",
+    "37-thermal_tracking536-dfs_jpg.rf.4d746d30123d6e0a1f8657dbe37a9883.jpg",
+    "37-thermal_tracking536-dfs_jpg.rf.d5d0e7ad0bf8ea7af03caf198f03d1f4.jpg",
+    "38-how-to-repair-water-damage-on-ceiling-_jpg.rf.e4c84ea66ce10273de4fb799a5b65959.jpg",
+    "39-1-6-1_jpg.rf.a67a4950767d4dbda9ec220dc8fea7be.jpg",
+    "40-ceiling-drywall-hole_jpg.rf.8a385456b4fc3751260785efe28fe39a.jpg",
+    "44-mold-popcorn-ceiling-chicago-il_jpg.rf.97309bf852c0802ee79e57e87e1934a3.jpg",
+    "44-mold-popcorn-ceiling-chicago-il_jpg.rf.ac18165a865287c824e80b5a7eb33054.jpg",
+    "5-zarqacpqrcg3gd2x3vpm5cnvby_jpg.rf.10e578804e05e4106d4dd1e89dff2c71.jpg",
+    "50-repair-hole-ceiling-water-damage-840x560-75_jpg.rf.690cc7f282a1b8356f35f696f9558b63.jpg",
+    "54-plaster-small-ceiling-hole2_jpg.rf.77b3a1e779a1c0eca15d2f0713f3a26f.jpg",
+    "54-plaster-small-ceiling-hole2_jpg.rf.7a34863ffddb985ce3ba1c92a1aa0e41.jpg",
+    "56-mold_hand_glove_1200x628-facebook-1200x628_jpg.rf.0dc6913bed12696090e252041020c7a2.jpg",
+    "6-mold-and-condensation-on-ceiling2_jpeg_jpg.rf.3aa7f918687c39e8bfddfdea697271b0.jpg",
+    "62-ceilingholerepair_jpg.rf.66e2665279f7411b711796df7b204983.jpg",
+    "73-sydbccaiwtybhxwdc6q4zb_jpg.rf.ed6f1f0c274a2e5aa29b43c4980ddd1c.jpg",
+    "76-4bc2c317056f3d37_3541-w500-h373-b0-p0--_jpg.rf.4ff925967f97833cbbbb02c08d5687e2.jpg",
+    "80-istock-1152018965_jpg.rf.4deee94d2dd3f050001e1477df731b01.jpg",
+    "80-istock-1152018965_jpg.rf.b02dc4e15ea55748afd7f9e09672c10a.jpg",
+    "84-cf328c22384a24e853baafe23081adb4_jpg.rf.8287564d569f33f8367653e7be30713c.jpg",
+    "89-getty_2f28ff8725ed0e4115a7f40989760d7952_jpg.rf.37f54d120af05039f84ce84ae4e7589b.jpg",
+    "95-hqdefault_jpg.rf.71f7277888492ab6ca28b7ffd165fdd0.jpg",
+    "97-4920311760_a40c2cbfc7_b_jpg.rf.c562bc0584f1e28b99b957f576db1838.jpg",
+    "97-4920311760_a40c2cbfc7_b_jpg.rf.eb0e4eae42c82a21789091bd6620ca88.jpg",
+    "99_jpg.rf.68795b4059aba4157cdb7e22727245aa.jpg"
+   ]
+  }
+ },
+ "clean_holdout": [
+  "66-delaminating-cracks_jpg.rf.4d2ffbd4755f4614add85502b92b5350.jpg",
+  "66-delaminating-cracks_jpg.rf.ae481a19ad8c95c5a3b18dc4939e85a7.jpg"
+ ],
+ "accounted_for": 500
+}
