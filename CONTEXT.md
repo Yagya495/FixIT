@@ -48,7 +48,11 @@ Finish every P0 before starting any P1.
 | App stack | FastAPI backend + React/Vite/TS/Tailwind frontend, built to static files served by FastAPI | One Databricks App; demos better than Streamlit |
 | **Dual data backend** | `DATA_BACKEND=local` → SQLite (`data/fixit.db`), `DATA_BACKEND=databricks` → SQL warehouse | App runs and demos before Databricks is ready, and is a stage fallback if the warehouse fails |
 | SQL dialect | Plain ANSI SQL with `:named` params (works in sqlite3 *and* databricks-sql-connector ≥3). Dates computed in Python and passed as params. Arrays stored as JSON strings | One code path for both backends |
-| Synthetic data | One pure-Python generator (`app/backend/services/synthetic.py`) used by both the local seeder and `notebooks/05_generate_synthetic.py` | Same demo story everywhere |
+| Synthetic data | One pure-Python generator (`app/backend/services/synthetic.py`) used by the local seeder, `scripts/dbx_setup.py` and `notebooks/05_generate_synthetic.py`. Generated at a fixed `REFERENCE_NOW` (2026-11-14 12:00) then shifted to the real `now`; the demo story has its own RNG stream | Same demo story everywhere, at any time of day (before this, the demo owner's grade flipped D/F with the clock) |
+| Databricks profile | Only the CLI profile `fixit` (Free Edition workspace). Never `sleepsafe` | User instruction |
+| Models | `databricks-llama-4-maverick` (chat + vision), `gte-large-en` (embeddings); verified live. No Claude endpoints in this workspace | Free Edition availability |
+| Ch. 27 parse staging | `ai_parse_document` output goes to `fixit.bronze.code_sections_parsed` (staging). The App reads only silver/ref (its SP has no bronze grants) | Parsing never changes what the App shows |
+| Approved citations | `scripts/code_parse.py approve` stores only excerpt-checked text from the approved categories, never a whole parsed section | The parser drops words at some page breaks |
 | Video | Frames sampled **in the browser** (canvas, 1 fps, max 30) and uploaded as JPEGs | No OpenCV in the app |
 | LLM / vision / embeddings | Databricks model serving, OpenAI-compatible `/serving-endpoints/{name}/invocations`. Endpoint names in `config.py` / env, **verified by smoke tests** | Free Edition availability varies |
 | Code matching | Vector Search Delta Sync index (Databricks) → fallback BM25 over `code_sections` + taxonomy mapping (local, no deps) | Must always return an answer |
@@ -65,13 +69,19 @@ Finish every P0 before starting any P1.
 - Vision: cached by image SHA-256 (`demo/cached_outputs/vision/<sha>.json`). In walkthrough mode, any frame that misses the
   cache falls back to the scripted "staged corner" scenario (covered smoke detector, water stain, missing outlet cover).
 - Listing X-Ray: the demo listing photos are cached by hash.
-- Call: scripted transcript. Genie: cached answers per sample question. Letters: template-based, no LLM needed.
-- `POST /api/demo/reset` (hidden) reseeds the DB and clears cases.
+- Call: scripted transcript. Genie: in Demo Mode a saved live Genie answer is served instantly (labeled "saved"); live
+  Genie takes ~17-24 s. Letters: template-based, no LLM needed.
+- `POST /api/demo/reset` (hidden) reseeds the DB and clears cases. Databricks twin: `scripts/dbx_setup.py --only reset
+  --apply` (story check must print 6 / D / 11 / 0). After any Databricks reset run `scripts/genie_verify.py` (8/8 saved
+  Genie answers must match a fresh run of their SQL; re-capture with `genie.warm()` if one drifts).
 - Responses carry `"source": "live" | "cache" | "fallback" | "none"`. **The UI shows it** (decision changed 2026-11-14 at the
   user's request): a gray line on Listing/Scan ("Analyzed live just now by …", "Saved result…", "Demo script…"), the
   Genie caption, and the call's extraction note. Never imply a live model when it wasn't one.
 - Wording rules: "possible issue" (never "violation found"), "not an inspection", "FixIt reminder, not a legal deadline",
   "draft, not submitted", "Final request" (never "Final notice": the City issues Official Notices).
+- Citations are "Possibly relevant code", never a finding. A verified citation card says whether the condition violates
+  it is for a City inspector to decide. Safety guidance (lead paint, shock risk) is labeled "General safety information,
+  not a Chapter 27 requirement".
 
 ---
 
@@ -87,9 +97,30 @@ Finish every P0 before starting any P1.
   cases are resolved within 30 to 60 days." Only current tenants can file interior complaints. Sources + check date:
   PROGRESS.md → "Official sources".
 - **Never guess section numbers.** Seed rows are FixIt summaries (`verified=0`, "section number pending verification").
-  Parsing (`scripts/code_parse.py parse` / notebook 10) adds official text with `verified=0`. Only a human-approved
-  review (`propose` → fill `eval/code_review.csv` with a reviewer name → `approve`) sets `verified=1` and remaps the taxonomy;
-  the approval is saved to `app/backend/code_sections_verified.json` so both backends and resets keep it.
+  Only a human-approved review sets `verified=1`, remaps the taxonomy, and is saved to
+  `app/backend/code_sections_verified.json` (merged, never overwritten) so both backends and resets keep it.
+- **Ch. 27 source:** `docs/legal/Madison_Chapter_27.pdf` (user's Municode export, 41 pp, §27.01–§27.13, printed
+  11/14/26; sha256 `7feae63e…`). Raw parse: `docs/legal/ch27_parsed_sections.json` (kept unmodified). Parse defects at page
+  breaks (§27.05(2)(h)7., §27.05(2)(x)) are corrected from the PDF text in `docs/legal/ch27_parse_corrections.json`.
+- **Review workflow:** proposals in `docs/legal/ch27_proposed_mappings.json` → `scripts/ch27_review_sheet.py` checks every
+  excerpt verbatim against the parse and the PDF text layer and writes `docs/legal/CH27_REVIEW.md` + `eval/code_review.csv`
+  → user decides → cross-check against the current official source → user supplies the reviewer name →
+  `code_parse.py approve` (dry run, then `--apply`). The reviewer field stays blank until the user gives a name.
+- **Review status (2026-11-14):** all decisions **provisional, nothing verified**. Provisionally accepted: plumbing
+  §27.05(2)(j); heat §27.04(2)(h) (67°F in habitable rooms, kitchens, bathrooms + occupant exception; no "heating
+  season"); surfaces §27.05(2)(g)1.; locks §27.05(2)(h), (h)3., (h)4. (+ (h)6. alternatives, to be confirmed); windows
+  §27.05(2)(h) + §27.04(2)(f) / §27.07(2)(c) for screens (by June 1) and storm windows (Oct 15–Nov 15); pests §27.07(2)(d)
+  + §27.03 "infestation" (sustained presence; owner exterminates except in single-family dwellings); electrical §27.04(2)(g)
+  only; water damage §27.05(2)(g)1./(g)2. as potentially relevant. **On hold:** exits (§27.04(2)(d) cites §27.06(4),
+  which is about rooms below grade: unresolved cross-reference; SPS stair/handrail specs unreviewed). **Pending other
+  sources:** smoke alarms, CO, mold. Considered and not mapped: §27.05(2)(m) for heat, §27.04(2)(g)3. for electrical.
+- **Chapter 27 does not mention** carbon monoxide, mold, cover plates or cracked glass, and has no general "pest-free" rule.
+  Smoke alarms: §27.05(2)(w) only incorporates MGO 34.907 + SPS codes.
+- **Outside Ch. 27** (research notes, unverified: `docs/legal/OTHER_SOURCES_REVIEW.md`): smoke detectors Wis. Stat.
+  §101.145 (residential buildings) / §101.645 (1–2 family); CO §101.149 (residential buildings) / §101.647 (1–2 unit
+  dwellings, §101.61(1)); for both, the owner must fix within **5 days of the tenant's written notice** (a real legal
+  deadline, unlike FixIt's defaults). MGO 34.907 (per the Fire Dept. page) has the same 5-day rule; its text is not yet
+  read. Mold: no mold-specific requirement found; general repair duty in Wis. Stat. §704.07(2)(a).
 - Default deadline windows (7 days routine / 48h urgent / 24h emergency) are **FixIt defaults, not legal deadlines**.
 
 ## 6. Safety / privacy
@@ -122,6 +153,8 @@ app/backend/services/{synthetic,taxonomy,code_match,vision,listing,evidence,lett
 app/backend/routes/*.py   app/backend/tests/
 app/frontend/ (Vite React TS Tailwind)
 sidecar/  notebooks/  eval/  demo/{demo_inputs,cached_outputs}
+docs/legal/  (Ch. 27 PDF, parse, corrections, proposals, CH27_REVIEW.md, OTHER_SOURCES_REVIEW.md)
+scripts/  dbx_setup · app_smoke · genie_verify · code_parse · ch27_review_sheet · eval_vision · bundle · grant_app_sp
 ```
 
 ## 9. Conventions
@@ -131,13 +164,24 @@ sidecar/  notebooks/  eval/  demo/{demo_inputs,cached_outputs}
 - No secrets in code: read `.env` (gitignored) and `.env.example` is the template.
 - Commit working states often. Update `PROGRESS.md` after every milestone.
 
-## 10. Current status (2026-11-14)
-- All P0 features are built and run end to end **locally** (SQLite + Demo Mode), verified in a real browser. 44 tests pass.
-- Databricks notebooks, the warehouse backend, Volumes, Vector Search, the Genie client and the App bundle are written but **not yet run
-  against a workspace**.
-- Code section ids are placeholders (`CH27-*`) until the Ch. 27 PDF is parsed and the matches are human-reviewed.
-- Quick start: `make setup && make build && make api` → http://localhost:8000
+## 10. Current status (2026-11-14, late evening)
+- All P0 features run end to end locally (SQLite) and on Databricks. **Deployed App:**
+  https://fixit-madison-7474647207905142.aws.databricksapps.com (catalog `fixit`, warehouse `6361516ab33ba2d2`, Genie space
+  `01f1e089ff07126aac09984f839aaef1`, minimal SP grants). Smoke test `scripts/app_smoke.py` 11/11; data reset to the clean
+  story (6 open heat at 1234 Demo St, owner grade D (score 0.916), 11 open issues across 3 other buildings); 8/8 saved Genie
+  answers match. Apps auto-stop ~24 h after deploy: redeploy on judging day.
+- **Branches:** `main` = what is deployed (70 tests pass there). `ch27-review` = Chapter 27 review work, **not deployed**:
+  provisional decisions, corrected wording (heat, plumbing, surfaces, locks, windows, pests, exits renamed "Blocked exit /
+  unsafe stairs / missing handrail", electrical, water damage renamed "Water damage / suspected mold", placeholders that no
+  longer claim CO/mold/cover plates), "Possibly relevant code" wording, CO "legal source not yet verified" placeholder.
+  76 tests pass on the branch.
+- Vector Search skipped (not created). No P1 work started (no Twilio).
+- Quick start: `make setup && make build && make api` → http://localhost:8000 (Windows commands in README).
 
 ## 11. Inputs still needed from the human
-Databricks workspace/profile + SQL warehouse ID, the Ch. 27 PDF + checklist + saved city pages, demo listing/walkthrough
-photos, and (P1) Twilio keys + consenting allowlist numbers. Details in `PROGRESS.md`.
+- Ch. 27: confirm §27.05(2)(h)6. for alternative locks; decide on showing the legal 5-day notice deadline for smoke/CO;
+  decide how to handle CO rules that depend on building size; approve the live cross-check against Municode (browser) incl.
+  MGO 34.907 and the §27.06(4) cross-reference; give the reviewer name.
+- Manual checklist on the App + phone (`docs/DEMO_SCRIPT.md`); staged photos for `scripts/eval_vision.py` and the stage cache.
+- 19 photos from the user's manual test remain in `/Volumes/fixit/raw/evidence/` (resets never delete files).
+- P1 only: Twilio keys + consenting allowlist numbers. Details in `PROGRESS.md`.
