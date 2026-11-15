@@ -350,6 +350,63 @@ over FixIt tables, App deployment, service-principal permissions.
 4. **Real-phone test** (`docs/PHONE_TEST_CHECKLIST.md`) and **demo dry runs** ×3 with the new script.
 - Paused: legal approvals/research, YOLO, real-data ingestion, Twilio, P1.
 
+## Retell phone calls (2026-11-15; merged into `ch27-review`)
+Committed on `feature/retell-ai` and merged into `ch27-review` with only the agent's files and lines. Always disabled when `PUBLIC_DEMO=true` (config clears all Retell settings; test added). Not deployed, no Databricks change (`notebooks/02_retell_calls.sql`
+prepared, **not applied**).
+- **Retell resources (created 2026-11-15 with the user's authorization):** one LLM and one agent ("FixIT — authorized landlord test calls", voice `retell-Nico`, gpt-4.1, temp 0.2,
+  start_speaker agent). `scripts/retell_setup.py --check` passes against the live agent. Local `.env` (gitignored, mode
+  600) holds the API key, agent ID and a generated operator token; `CALLS_ENABLED=false`; from-number and allowlist empty.
+  The API key was pasted in chat: rotate it after testing.
+- **What exists:** separate Retell panel on the Case page (`RetellCall.tsx`), operator-token-gated API
+  (`routes/retell.py`), `services/retell.py` (kill switch + exact E.164 allowlist, four explicit consents, durable
+  attempt saved before dialing, body idempotency key, provider preflight of the remote agent, polling for
+  status/transcript/analysis, reconcile by verified metadata, stop, sticky opt-outs), dedicated prompt
+  (`prompts/retell_landlord.md`), offline-first agent setup (`scripts/retell_setup.py`), new table
+  `silver.retell_calls` (SQLite on startup; kept across demo resets). The simulated call is unchanged.
+- **Review fixes against the official Retell API docs (this session):**
+  - `start_speaker: "agent"` was missing from the LLM config (Retell describes it as required; outbound AI must speak
+    first). Added in `llm_config()`, and the preflight now rejects a mismatched value.
+  - Preflight reads the exact LLM version the agent pins and rejects an agent `webhook_url` (transcripts must not go to
+    an unreviewed endpoint).
+  - Opening no longer asserts "recorded with your prior consent"; it discloses the recording and asks for consent as its
+    single question. The prompt now ends the call if the recipient declines, asks what the tenant must provide (e.g.
+    access times) without agreeing to it, and ends the call on consent withdrawal.
+  - Definitive first-request rejections (HTTP 400/401/402/403/404/422/429) are now `rejected` (no call, new attempt
+    allowed) instead of a permanent `unknown`; a 400 mentioning do-not-call sets a sticky opt-out.
+  - New operator **Resume**: re-sends the byte-identical stored request with the same idempotency key within 50 min
+    (Retell documents 1-hour dedupe). A failed resume always stays `unknown`.
+  - Any unexpected exception during create is treated as uncertain (never left half-recorded).
+  - Analysis: enum fields for acknowledgement/appointment kind, optional string fields (`required: false`);
+    grounding is punctuation-insensitive and whole-word; a grounded offer without a date keeps its kind; dates before
+    the call day are dropped; opt-out phrases broadened ("take me off your list", "no more calls") and "never called"
+    no longer counts as an opt-out.
+  - Citations sent to the agent must also be in the human-approved mapping for that same issue type.
+  - Non-ASCII operator token returned HTTP 500 (`compare_digest` on str); now 401.
+  - UI: shows `rejected` and the Resume action; HTML/non-JSON responses (e.g. a sign-in redirect) give a clear error.
+- **Tests (at merge):** backend **228 passed** incl. upstream suites; earlier in the Retell session: backend 203 passed (181 before this session's additions; Retell suite 29 → 51). Frontend `tsc -b` clean,
+  production build OK, **10/10** frontend tests. Provider fully stubbed in all tests.
+- **Mocked browser validation (headless Chrome, Playwright):** the real app on a scratch SQLite DB (port 8765,
+  Demo Mode, no Databricks credentials, only Retell's HTTP layer stubbed), a scratch case with NO_HEAT
+  (verified §27.04(2)(h) sent; no other citation). Passed: wrong token rejected; unlock; button disabled until all four
+  consents; call → registered → refresh → ended with inspection/2026-11-17, grounded recipient quote, "no repair
+  deadline was set automatically"; consents cleared and attempt not reusable; uncertain create → `unknown`, new call
+  blocked → Resume re-sent the same idempotency key → linked; DNC 400 → `rejected` + blocked banner; next call to that
+  number refused before reaching the provider; lock clears token; case deadline unchanged; history persists on
+  reload; 390 px phone width: no horizontal overflow; no page/console errors.
+- **Unverified (needs a live, consented test):** real Retell account/agent creation, the voice and prompt behavior,
+  begin-message variable substitution, actual analysis quality, Retell's idempotency dedupe, stop-call on a live call,
+  the exact error codes/bodies for DNC rejections, Databricks table creation, App secrets and outbound access to
+  `api.retellai.com`, and any deployed behavior.
+- **Live test call (2026-11-15, user-authorized, local app on 127.0.0.1:8001):** one call from the Retell number to
+  the user's own allowlisted phone, case `RR-325122f1ff` (local SQLite; NO_HEAT + LEAK_PLUMBING). Worked end to end:
+  AI identity, tenant authorization, test-call and recording disclosure, recording consent asked and given, case
+  variables substituted, most urgent issue first; the user hung up after the first question. Outcome stored honestly
+  (`not_discussed`, no appointment, follow-up needed, no opt-out); no deadline change. Prompt nits observed (user
+  accepted as fine): one turn asked two questions; "This is considered an emergency" restates FixIt's own severity
+  label. `CALLS_ENABLED` set back to `false` afterwards. The Retell from-number is a 218 area code.
+- **Remaining for deployment:** approval for the Delta migration (`notebooks/02_retell_calls.sql`), App secret
+  resources for the Retell key and operator token, outbound access to `api.retellai.com`, and a redeploy.
+
 ## Data decision (user, 2026-11-14): synthetic dataset for the demo
 - The demo keeps the existing **synthetic Madison dataset**: 2,004 buildings, 251 owners, 11,941 reports. Every owner,
   building, neighbor report, complaint history and landlord grade is fictional (only street geography is real).

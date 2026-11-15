@@ -66,6 +66,45 @@ Before going on stage, put the exact demo photos in `demo/demo_inputs/{listing,w
 `curl -X POST localhost:8000/api/demo/warm` (with Databricks configured) to cache live vision results. Commit
 `demo/cached_outputs/`. `POST /api/demo/reset` reseeds the local DB.
 
+## Retell AI phone calls
+
+_Merged into `ch27-review`; not deployed yet. Always off in `PUBLIC_DEMO` mode._
+
+The Case page has a separate **Retell phone call** panel that places a real call to a consenting teammate or judge
+role-playing the landlord. The simulated call is unchanged and remains the stage default.
+
+**How the agent behaves** (prompt: `app/backend/prompts/retell_landlord.md`):
+- Opens by saying it is an AI acting with the tenant's authorization and that this is a test call. It discloses the
+  recording and transcription and **asks** for recording consent before anything else.
+- Uses only the supplied case facts. Raises the most urgent issue first. Asks for inspection or repair plans, dates,
+  the coordinator and anything needed from the tenant.
+- Keeps inspection appointments, repair estimates and firm repair commitments distinct.
+- Cites only backend-verified code sections, and only as "possibly relevant".
+- Never threatens enforcement, never claims to be a lawyer or inspector, and never agrees to anything for the tenant.
+- Ends the call when the recipient refuses to talk to an AI, withdraws consent, or asks not to be called again.
+
+**Safety controls:**
+- Kill switch and exact-number allowlist.
+- Operator token: the demo app has no tenant login.
+- Four explicit confirmations before every call.
+- A durable attempt is saved before dialing, and the attempt ID is sent as Retell's idempotency key.
+- No automatic redial. An uncertain create can only be **resumed** with the same key within 50 minutes, or
+  **reconciled** using verified call metadata.
+- Sticky opt-outs, and a pre-call check that the remote agent still matches the reviewed prompt.
+
+**Handling results:**
+- Results (status, transcript, analysis) are **polled**, because the Databricks App's sign-in blocks webhooks.
+- Machine-extracted outcomes are labeled for review and **never** change deadlines, letters or complaints
+  automatically.
+
+Setup, API, failure handling and the Databricks migration: [`docs/RETELL_SETUP.md`](docs/RETELL_SETUP.md).
+
+```bash
+.venv/bin/python scripts/retell_setup.py --voice-id <voice>          # offline dry run of the agent config
+.venv/bin/python scripts/retell_setup.py --voice-id <voice> --apply  # creates one LLM + one agent (no number, no call)
+.venv/bin/python scripts/retell_setup.py --check                     # verify the live agent matches the bundled prompt
+```
+
 ## Public demo (no Databricks sign-in)
 
 Databricks Apps always require a workspace sign-in. For judges, the same app can run in **`PUBLIC_DEMO=true`** mode:

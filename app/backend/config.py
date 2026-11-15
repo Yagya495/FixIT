@@ -102,6 +102,10 @@ RETELL_AGENT_ID = os.getenv("RETELL_AGENT_ID", "").strip()
 RETELL_FROM_NUMBER = os.getenv("RETELL_FROM_NUMBER", "").strip()
 # Separate from the provider key. Required because the demo app has no tenant authentication.
 RETELL_OPERATOR_TOKEN = os.getenv("RETELL_OPERATOR_TOKEN", "").strip()
+if PUBLIC_DEMO:  # anonymous public demo: real phone calls are never possible, even if keys are set by mistake
+    CALLS_ENABLED = False
+    CALL_ALLOWLIST = set()
+    RETELL_API_KEY = RETELL_AGENT_ID = RETELL_FROM_NUMBER = RETELL_OPERATOR_TOKEN = ""
 
 DISCLAIMER = (
     "FixIt is not a lawyer and this is not legal advice. For help, contact the Tenant Resource Center "

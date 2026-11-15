@@ -423,3 +423,18 @@ def test_opening_asks_for_recording_consent_instead_of_assuming_it():
     assert "with your prior consent" not in retell.OPENING
     assert retell.OPENING.rstrip().endswith("Is it okay to continue on a recorded line?")
     assert "AI assistant" in retell.OPENING and "test call" in retell.OPENING
+
+
+def test_public_demo_disables_real_calls_even_with_keys_set():
+    """PUBLIC_DEMO must clear every Retell setting so anonymous visitors can never place a real call."""
+    import os
+    import subprocess
+    import sys
+
+    env = {**os.environ, "PUBLIC_DEMO": "true", "CALLS_ENABLED": "true", "CALL_ALLOWLIST": "+16085550123",
+           "RETELL_API_KEY": "fake-key", "RETELL_AGENT_ID": "fake-agent", "RETELL_FROM_NUMBER": "+16085550456",
+           "RETELL_OPERATOR_TOKEN": "x" * 40}
+    code = ("from app.backend import config; from app.backend.services import retell; "
+            "print(config.CALLS_ENABLED, len(config.CALL_ALLOWLIST), bool(config.RETELL_API_KEY), retell.configured())")
+    out = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True, check=True).stdout.split()
+    assert out == ["False", "0", "False", "False"]
