@@ -20,7 +20,7 @@
 | FixIt issue category | Proposed section(s) | Kind | Separate legal source needed? | Status |
 |---|---|---|---|---|
 | Missing/disabled smoke detector (`SMOKE_DETECTOR_MISSING`) | §27.05(2)(w) | reference | **Yes** | Pending separate legal source |
-| Missing CO detector near sleeping area (`CO_DETECTOR_MISSING`) | **none found in Ch. 27** | — | **Yes** | Pending separate legal source |
+| Missing/disabled CO alarm (`CO_DETECTOR_MISSING`) | **none found in Ch. 27** | — | **Yes** | Pending separate legal source |
 | Exposed wiring / missing outlet or switch cover (`EXPOSED_WIRING`) | §27.04(2)(g) | general safety and maintenance obligation (+ reference to the Wisconsin Electric Code) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
 | Water damage / suspected mold (`WATER_DAMAGE_MOLD`) | §27.05(2)(g)1., §27.05(2)(g)2. | general maintenance obligation (potentially relevant) | **Yes** | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) (mold aspect pending a separate legal source) |
 | Droppings / insects / pest damage (`PEST_EVIDENCE`) | §27.07(2)(d), §27.03 | direct (single-family dwellings, with exceptions), direct (dwellings other than single-family), direct (definition) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
@@ -28,7 +28,7 @@
 | Broken/cracked window or screen (`BROKEN_WINDOW`) | §27.05(2)(h), §27.04(2)(f), §27.07(2)(c) | general maintenance obligation, direct (seasonal: screens by June 1 until storm windows go in), direct (seasonal: storm windows Oct 15 - Nov 15), direct (owner responsibility for screens and storm windows) | No | Provisionally accepted; **not verified** (pending official-source cross-check + reviewer name) |
 | Active leak / damaged fixtures (`LEAK_PLUMBING`) | §27.05(2)(j) | direct | No | **Verified** (reviewer: Naisha Chadha, 2026-11-14; applied and deployed) |
 | Holes, peeling paint, damaged flooring (`DAMAGED_SURFACES`) | §27.05(2)(g)1. | general maintenance obligation, direct | No | **Verified** (reviewer: Naisha Chadha, 2026-11-14; applied and deployed) |
-| Blocked exit / unsafe stairs / missing handrail (`BLOCKED_EGRESS`) | §27.04(2)(d), §27.05(2)(i) | direct, reference | No | **On hold** (27.06(4) cross-reference + SPS requirements) |
+| Blocked exit / unsafe stairs / missing handrail (`BLOCKED_EGRESS`) | §27.04(2)(d) | direct, reference | No | **On hold** (27.06(4) cross-reference + SPS requirements) |
 | No heat (user-reported / temp evidence) (`NO_HEAT`) | §27.04(2)(h) | direct + reference, direct (exception) | No | **Verified** (reviewer: Naisha Chadha, 2026-11-14; applied and deployed) |
 
 ## Details
@@ -60,7 +60,7 @@
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
-### Missing CO detector near sleeping area (`CO_DETECTOR_MISSING`)
+### Missing/disabled CO alarm (`CO_DETECTOR_MISSING`)
 
 > ⚠ **Separate legal-source verification required.** Chapter 27 does not itself establish the full
 > requirement for this category.
@@ -130,6 +130,20 @@
 
 > Every foundation, exterior wall, and floor and roof shall be reasonably weathertight, watertight and rodentproof and shall be kept in proper repair and shall be capable of affording privacy.
 
+**Conditional proposal (separate from the category mapping, not approved): §27.05(2)(g)1.** (p. 14)
+
+- Applies only when: Water damage on a wall or surface in a wet area (shower, tub, sink or laundry area).
+- Never when: Ceiling or wall stains in rooms that are not wet areas.
+
+> A waterproof and hard surface shall be provided in spaces subject to moisture.
+
+**Conditional proposal (separate from the category mapping, not approved): §27.05(2)(k)** (p. 17)
+
+- Applies only when: Water damage to a bathroom or toilet-room floor.
+- Never when: Walls, ceilings, or floors outside a bathroom or toilet room.
+
+> Every water closet compartment floor surface and bathroom floor surface shall be properly constructed and maintained so as to be reasonably impervious to water and so as to permit such floor to be easily kept in clean and sanitary condition.
+
 **Why it matches:** Water stains on walls or ceilings are damage to interior surfaces (good repair) and may indicate the building is not watertight.
 
 **Uncertainty / missing source:** Chapter 27 never mentions mold (0 hits for 'mold' or 'mildew'). It cannot support any statement about mold or its health effects. The placeholder CH27-MOISTURE ('conditions that support mold growth') is not supported by the text. A stain alone does not show an active leak or which surface failed.
@@ -140,7 +154,7 @@
 - *interpretation*: FixIt. This is the City's classification for RENT ABATEMENT (Chapter 32, available only after the 32.04 process, e.g. an inspection order). Chapter 27's own text still does not mention mold, so it is not a mold-specific Chapter 27 rule. Mold stays pending.
 - *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Lists 'water damage' on interior surfaces; links a separate 'Mold' page (that URL returned 404 when fetched).
 
-**Decision so far:** PROVISIONAL: user accepted 27.05(2)(g)1. and (g)2. as potentially relevant general maintenance provisions (2026-11-14). A water stain alone does not prove a leak, a code violation, or mold. Wording distinguishes visible water damage from suspected mold; mold-specific requirements stay unverified (pending additional legal-source verification). Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user. Mold: keep City guidance, the general maintenance obligation (27.05(2)(g)1./2.), the rent-abatement classification (MGO 32.04(4)(d)) and any specific legal requirement (none verified) distinct; no citation is forced.
+**Decision so far:** PROVISIONAL: user accepted 27.05(2)(g)1. and (g)2. as potentially relevant general maintenance provisions (2026-11-14). A water stain alone does not prove a leak, a code violation, or mold. Wording distinguishes visible water damage from suspected mold; mold-specific requirements stay unverified (pending additional legal-source verification). Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user. Mold: keep City guidance, the general maintenance obligation (27.05(2)(g)1./2.), the rent-abatement classification (MGO 32.04(4)(d)) and any specific legal requirement (none verified) distinct; no citation is forced. UPDATE (user, 2026-11-14, later): §27.05(2)(g)1.'s waterproof-surface sentence and §27.05(2)(k) added as CONDITIONAL proposals only, limited to situations where the photographed condition and location make them relevant. Not approved.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 
@@ -377,12 +391,10 @@
 
 > All stairways and platforms shall be protected with handrails and guardrails as specified in Wis. Admin. Code § SPS 321.04(2) or ch. SPS 362.
 
-**§27.05(2)(i)**: direct
+**Conditional proposal (separate from the category mapping, not approved): §27.05(2)(i)** (p. 17)
 
-- Section title: *27.05 - SAFE AND SANITARY MAINTENANCE OF PROPERTY.*
-- PDF page: 17
-- Numbering evidence: Inline markers (2) ... (i).
-- Refers to (not reviewed by FixIt): Wis. Admin. Code § SPS 321.04 and ch. SPS 362 (stair requirements, same paragraph)
+- Applies only when: The photo shows visibly unsafe stairs, steps, a porch or a balcony (broken, loose, missing, sagging, rotted or cracked treads or structure).
+- Never when: A blocked exit; a missing or loose handrail with no visible stair damage; a normal staircase.
 
 > Every inside and outside stair, every porch, platform, balcony, and every appurtenance thereto shall be so constructed as to be safe to use and capable of supporting the load that normal use may cause to be placed thereon, and shall be kept in proper condition and repair and shall present an attractive appearance.
 
@@ -395,7 +407,7 @@
 - *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '4. 27.04(2)(d) [27.05(2)(i)] [27.05(2)(h)] a. Required exit … iii. Blocked by accumulation of stored items … iv. … movable furniture obstructing exit path'; row '28. 27.05(2)(i)' covers stairs and handrails/guardrails. Neither mentions 27.06(4): the cross-reference stays unresolved.
 - *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). 'Missing handrail on stairs with more than three steps'; guardrails for areas higher than 24 inches (no source cited).
 
-**Decision so far:** ON HOLD (user, 2026-11-14): final approval waits for review of the 27.06(4) cross-reference discrepancy and the relevant Wisconsin SPS requirements (SPS 321.04, SPS 362). Category renamed 'Blocked exit / unsafe stairs / missing handrail', with the three conditions kept distinct; a photo of stairs must not trigger a blocked-exit or missing-handrail finding by itself. Investigated 2026-11-14 (live text and the oldest Municode version, Feb 2018): unresolved. City of Madison Building Inspection clarification is needed; the intended meaning is not guessed.
+**Decision so far:** ON HOLD (user, 2026-11-14): final approval waits for review of the 27.06(4) cross-reference discrepancy and the relevant Wisconsin SPS requirements (SPS 321.04, SPS 362). Category renamed 'Blocked exit / unsafe stairs / missing handrail', with the three conditions kept distinct; a photo of stairs must not trigger a blocked-exit or missing-handrail finding by itself. Investigated 2026-11-14 (live text and the oldest Municode version, Feb 2018): unresolved. City of Madison Building Inspection clarification is needed; the intended meaning is not guessed. UPDATE (user, 2026-11-14, later): the combined category stays ON HOLD. §27.05(2)(i) is prepared as a SEPARATE conditional citation for visibly unsafe stairs only; it must not attach automatically to blocked-exit or missing-handrail findings. Not approved.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
 

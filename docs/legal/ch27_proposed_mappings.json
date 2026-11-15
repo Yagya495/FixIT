@@ -136,7 +136,7 @@
       "why": "Water stains on walls or ceilings are damage to interior surfaces (good repair) and may indicate the building is not watertight.",
       "uncertainty": "Chapter 27 never mentions mold (0 hits for 'mold' or 'mildew'). It cannot support any statement about mold or its health effects. The placeholder CH27-MOISTURE ('conditions that support mold growth') is not supported by the text. A stain alone does not show an active leak or which surface failed.",
       "separate_source_required": true,
-      "decision": "PROVISIONAL: user accepted 27.05(2)(g)1. and (g)2. as potentially relevant general maintenance provisions (2026-11-14). A water stain alone does not prove a leak, a code violation, or mold. Wording distinguishes visible water damage from suspected mold; mold-specific requirements stay unverified (pending additional legal-source verification). Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user. Mold: keep City guidance, the general maintenance obligation (27.05(2)(g)1./2.), the rent-abatement classification (MGO 32.04(4)(d)) and any specific legal requirement (none verified) distinct; no citation is forced.",
+      "decision": "PROVISIONAL: user accepted 27.05(2)(g)1. and (g)2. as potentially relevant general maintenance provisions (2026-11-14). A water stain alone does not prove a leak, a code violation, or mold. Wording distinguishes visible water damage from suspected mold; mold-specific requirements stay unverified (pending additional legal-source verification). Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user. Mold: keep City guidance, the general maintenance obligation (27.05(2)(g)1./2.), the rent-abatement classification (MGO 32.04(4)(d)) and any specific legal requirement (none verified) distinct; no citation is forced. UPDATE (user, 2026-11-14, later): §27.05(2)(g)1.'s waterproof-surface sentence and §27.05(2)(k) added as CONDITIONAL proposals only, limited to situations where the photographed condition and location make them relevant. Not approved.",
       "related": [
         {
           "level": "ordinance text (independently confirmed)",
@@ -152,6 +152,34 @@
           "level": "City guidance (not ordinance text)",
           "source": "City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated)",
           "note": "Lists 'water damage' on interior surfaces; links a separate 'Mold' page (that URL returned 404 when fetched)."
+        }
+      ],
+      "conditional": [
+        {
+          "section_id": "27.05(2)(g)1.",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "A waterproof and hard surface shall be provided in spaces subject to moisture.",
+          "kind": "direct (conditional: wet-area surfaces only)",
+          "references": [],
+          "page": 14,
+          "numbering_evidence": "Same paragraph '(g) 1.' as the approved DAMAGED_SURFACES excerpts.",
+          "applies_when": "Water damage on a wall or surface in a wet area (shower, tub, sink or laundry area).",
+          "not_when": "Ceiling or wall stains in rooms that are not wet areas.",
+          "conditional_id": "WET_AREA_SURFACE"
+        },
+        {
+          "section_id": "27.05(2)(k)",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "Every water closet compartment floor surface and bathroom floor surface shall be properly constructed and maintained so as to be reasonably impervious to water and so as to permit such floor to be easily kept in clean and sanitary condition.",
+          "kind": "direct (conditional: bathroom/toilet-room floors only)",
+          "references": [],
+          "page": 17,
+          "numbering_evidence": "Inline marker (k) under 27.05(2), between (j) and (l).",
+          "applies_when": "Water damage to a bathroom or toilet-room floor.",
+          "not_when": "Walls, ceilings, or floors outside a bathroom or toilet room.",
+          "conditional_id": "BATHROOM_FLOOR"
         }
       ]
     },
@@ -467,24 +495,12 @@
           ],
           "page": 6,
           "numbering_evidence": "Same paragraph (d)."
-        },
-        {
-          "section_id": "27.05(2)(i)",
-          "section": "27.05",
-          "caption": "",
-          "excerpt": "Every inside and outside stair, every porch, platform, balcony, and every appurtenance thereto shall be so constructed as to be safe to use and capable of supporting the load that normal use may cause to be placed thereon, and shall be kept in proper condition and repair and shall present an attractive appearance.",
-          "kind": "direct",
-          "references": [
-            "Wis. Admin. Code § SPS 321.04 and ch. SPS 362 (stair requirements, same paragraph)"
-          ],
-          "page": 17,
-          "numbering_evidence": "Inline markers (2) ... (i)."
         }
       ],
       "why": "Two unobstructed means of egress are required directly; stairs must be safe and in repair; handrail and guardrail specifics come from the SPS codes.",
       "uncertainty": "The handrail sentence sits in a passage about exterior stairways and exit platforms, and the actual handrail specs are in SPS (not reviewed). Whether furniture temporarily blocking a door makes an exit 'obstructed' is an inspector's call. Exception 27.06(4) not reviewed.",
       "separate_source_required": false,
-      "decision": "ON HOLD (user, 2026-11-14): final approval waits for review of the 27.06(4) cross-reference discrepancy and the relevant Wisconsin SPS requirements (SPS 321.04, SPS 362). Category renamed 'Blocked exit / unsafe stairs / missing handrail', with the three conditions kept distinct; a photo of stairs must not trigger a blocked-exit or missing-handrail finding by itself. Investigated 2026-11-14 (live text and the oldest Municode version, Feb 2018): unresolved. City of Madison Building Inspection clarification is needed; the intended meaning is not guessed.",
+      "decision": "ON HOLD (user, 2026-11-14): final approval waits for review of the 27.06(4) cross-reference discrepancy and the relevant Wisconsin SPS requirements (SPS 321.04, SPS 362). Category renamed 'Blocked exit / unsafe stairs / missing handrail', with the three conditions kept distinct; a photo of stairs must not trigger a blocked-exit or missing-handrail finding by itself. Investigated 2026-11-14 (live text and the oldest Municode version, Feb 2018): unresolved. City of Madison Building Inspection clarification is needed; the intended meaning is not guessed. UPDATE (user, 2026-11-14, later): the combined category stays ON HOLD. §27.05(2)(i) is prepared as a SEPARATE conditional citation for visibly unsafe stairs only; it must not attach automatically to blocked-exit or missing-handrail findings. Not approved.",
       "related": [
         {
           "level": "ordinance text (independently confirmed)",
@@ -495,6 +511,23 @@
           "level": "City guidance (not ordinance text)",
           "source": "City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated)",
           "note": "'Missing handrail on stairs with more than three steps'; guardrails for areas higher than 24 inches (no source cited)."
+        }
+      ],
+      "conditional": [
+        {
+          "section_id": "27.05(2)(i)",
+          "section": "27.05",
+          "caption": "",
+          "excerpt": "Every inside and outside stair, every porch, platform, balcony, and every appurtenance thereto shall be so constructed as to be safe to use and capable of supporting the load that normal use may cause to be placed thereon, and shall be kept in proper condition and repair and shall present an attractive appearance.",
+          "kind": "direct (conditional: visibly unsafe stairs only)",
+          "references": [
+            "Wis. Admin. Code § SPS 321.04 and ch. SPS 362 (stair requirements, same paragraph)"
+          ],
+          "page": 17,
+          "numbering_evidence": "Inline markers (2) ... (i).",
+          "applies_when": "The photo shows visibly unsafe stairs, steps, a porch or a balcony (broken, loose, missing, sagging, rotted or cracked treads or structure).",
+          "not_when": "A blocked exit; a missing or loose handrail with no visible stair damage; a normal staircase.",
+          "conditional_id": "STAIRS_UNSAFE"
         }
       ]
     },

@@ -56,7 +56,8 @@ def main() -> int:
     for p in prop["proposals"]:
         if p["type_id"] not in names:
             errors.append(f"unknown type {p['type_id']}")
-        for it in p["items"]:
+        # "conditional" entries get exactly the same checks; code_parse.approve never reads them (items only).
+        for it in p["items"] + p.get("conditional", []):
             sec = parsed.get(it["section"])
             if not sec or not it["section_id"].startswith(it["section"]):
                 errors.append(f"{p['type_id']}: section {it['section']} / {it['section_id']} not in the parse")
@@ -158,6 +159,11 @@ def main() -> int:
         for nm in p.get("not_mapped", []):
             md += [f"**Considered, NOT mapped: §{nm['section_id']}** (p. {nm['page']}). {nm['reason']}", "",
                    f"> {norm(nm['excerpt'])}", ""]
+        for c in p.get("conditional", []):
+            md += [f"**Conditional proposal (separate from the category mapping, not approved): §{c['section_id']}** "
+                   f"(p. {c['page']}" + (", continues onto the next page" if c.get("spans_page_break") else "") + ")",
+                   "", f"- Applies only when: {c['applies_when']}", f"- Never when: {c['not_when']}", "",
+                   f"> {norm(c['excerpt'])}", ""]
         md += [f"**Why it matches:** {p['why']}", "", f"**Uncertainty / missing source:** {p['uncertainty']}", ""]
         if p.get("related"):
             md += ["**Related sources, by evidence level:**", ""]
