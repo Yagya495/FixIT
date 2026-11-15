@@ -6,7 +6,12 @@ import re
 from contextlib import asynccontextmanager
 from datetime import datetime
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+import secrets
+import threading
+import time
+from collections import defaultdict, deque
+
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -30,6 +35,54 @@ async def lifespan(_app):
 app = FastAPI(title="FixIt Madison", version="0.1.0", lifespan=lifespan)
 
 
+# ---------------------------------------------------------------- abuse limits / public demo sessions
+_SID_COOKIE = "fixit_sid"
+_SID_RE = re.compile(r"^[A-Za-z0-9_-]{16,64}$")
+_POSTS: dict[str, deque] = defaultdict(deque)
+_POSTS_LOCK = threading.Lock()
+_CASE_OWNER: dict[str, str] = {}  # public demo only: request_id -> browser session (in memory; the host's disk is ephemeral)
+
+
+def _client_ip(request: Request) -> str:
+    # Behind a host's proxy the first X-Forwarded-For hop is the client (only used for rate limiting). A client can spoof
+    # it, so this is a soft guard against casual overuse, not a security boundary: the public demo makes no paid or
+    # credentialed calls, so the worst case is load on a free instance.
+    fwd = request.headers.get("x-forwarded-for", "")
+    return fwd.split(",")[0].strip() or (request.client.host if request.client else "?")
+
+
+def _rate_limited(ip: str, now: float) -> bool:
+    if config.RATE_LIMIT_POSTS <= 0:
+        return False
+    with _POSTS_LOCK:
+        q = _POSTS[ip]
+        while q and q[0] <= now - config.RATE_LIMIT_WINDOW_S:
+            q.popleft()
+        if len(q) >= config.RATE_LIMIT_POSTS:
+            return True
+        q.append(now)
+        if len(_POSTS) > 10_000:  # bound memory: drop idle clients
+            for k in [k for k, v in _POSTS.items() if not v]:
+                del _POSTS[k]
+        return False
+
+
+@app.middleware("http")
+async def _limits(request: Request, call_next):
+    if request.method == "POST" and request.url.path.startswith("/api/") and _rate_limited(_client_ip(request), time.time()):
+        return JSONResponse({"detail": "Too many requests. Please wait a few minutes and try again."}, status_code=429)
+    sid = request.cookies.get(_SID_COOKIE, "")
+    new_sid = None
+    if config.PUBLIC_DEMO and not _SID_RE.match(sid):
+        sid = new_sid = secrets.token_urlsafe(24)
+    request.state.sid = sid
+    response = await call_next(request)
+    if new_sid:
+        https = request.headers.get("x-forwarded-proto", request.url.scheme) == "https"
+        response.set_cookie(_SID_COOKIE, new_sid, httponly=True, samesite="lax", secure=https, max_age=7 * 86400)
+    return response
+
+
 # ---------------------------------------------------------------- meta
 @app.get("/api/health")
 def health():
@@ -40,6 +93,7 @@ def health():
             "show_bboxes": config.SHOW_BBOXES, "threshold": config.CONFIDENCE_THRESHOLD,
             # What is actually wired up, so the UI never claims more than is running (no secrets here).
             "models_configured": llm.available(), "genie_configured": bool(config.GENIE_SPACE_ID),
+            "public_demo": config.PUBLIC_DEMO, "live_app_url": config.LIVE_APP_URL if config.PUBLIC_DEMO else "",
             "code_sections_verified": cm.verified_count()}
 
 
@@ -64,9 +118,13 @@ _SHA = re.compile(r"^[0-9a-f]{64}$")
 async def _read_frames(files: list[UploadFile], captured: list[str] | None, orig: list[str] | None = None):
     """(bytes, media_type, captured_at, original_file_sha|None). The original sha lets Demo Mode's cache match a
     photo even after the browser re-encoded it; evidence is still hashed on the bytes actually received."""
+    if len(files) > config.MAX_FILES_PER_REQUEST:
+        raise HTTPException(413, f"too many files in one request (max {config.MAX_FILES_PER_REQUEST})")
     out = []
     for i, f in enumerate(files):
-        data = await f.read()
+        data = await f.read(config.MAX_UPLOAD_BYTES + 1)
+        if len(data) > config.MAX_UPLOAD_BYTES:
+            raise HTTPException(413, f"image too large (max {config.MAX_UPLOAD_BYTES // (1024 * 1024)} MB)")
         if not data:
             continue
         mt = f.content_type if f.content_type in ("image/jpeg", "image/png", "image/webp") else "image/jpeg"
@@ -156,16 +214,22 @@ class CaseCreate(BaseModel):
 
 
 @app.post("/api/cases")
-def create_case(body: CaseCreate):
+def create_case(body: CaseCreate, request: Request):
     try:
-        return cases.create_case(body.scan_id, body.tone)
+        c = cases.create_case(body.scan_id, body.tone)
     except (KeyError, ValueError) as e:
         raise HTTPException(400, str(e))
+    if config.PUBLIC_DEMO and c and c.get("request_id"):
+        _CASE_OWNER[c["request_id"]] = request.state.sid
+    return c
 
 
 @app.get("/api/cases")
-def list_cases():
-    return cases.list_cases()
+def list_cases(request: Request):
+    rows = cases.list_cases()
+    if config.PUBLIC_DEMO:  # visitors only see the cases created in their own browser
+        rows = [r for r in rows if _CASE_OWNER.get(r["request_id"]) == request.state.sid]
+    return rows
 
 
 def _case_or_404(rid: str):
@@ -355,6 +419,8 @@ def alarm_rules_eval(body: AlarmRulesRequest):
 # ---------------------------------------------------------------- demo
 @app.post("/api/demo/reset")
 def demo_reset():
+    if config.PUBLIC_DEMO:
+        raise HTTPException(403, "disabled on the public demo")
     if config.DATA_BACKEND != "local":
         raise HTTPException(400, "reset only supported on local backend; rerun notebooks/05 on Databricks")
     counts = seed.seed_local()
@@ -366,6 +432,8 @@ def demo_reset():
 @app.post("/api/demo/warm")
 def demo_warm():
     """Run live vision on demo/demo_inputs and save results to the cache (call before going on stage)."""
+    if config.PUBLIC_DEMO:
+        raise HTTPException(403, "disabled on the public demo")
     from .services import vision
 
     out = []
@@ -389,12 +457,15 @@ def demo_warm():
 if config.STATIC_DIR.exists():
     app.mount("/assets", StaticFiles(directory=config.STATIC_DIR / "assets"), name="assets")
 
+    _STATIC_ROOT = config.STATIC_DIR.resolve()
+
     @app.get("/{path:path}")
     def spa(path: str):
-        f = config.STATIC_DIR / path
-        if path and f.is_file():
+        # Resolve and confine to the built frontend: the path is URL-decoded, so "%2e%2e/" or "..%5c" must not escape it.
+        f = (_STATIC_ROOT / path).resolve()
+        if path and f.is_relative_to(_STATIC_ROOT) and f.is_file():
             return FileResponse(f)
-        return FileResponse(config.STATIC_DIR / "index.html")
+        return FileResponse(_STATIC_ROOT / "index.html")
 else:
     @app.get("/")
     def root():

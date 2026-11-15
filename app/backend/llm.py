@@ -17,6 +17,8 @@ class LLMUnavailable(RuntimeError):
 
 
 def _auth_headers() -> dict[str, str]:
+    if config.PUBLIC_DEMO:  # the public demo never authenticates to Databricks
+        raise LLMUnavailable("public demo: live models disabled")
     if config.DATABRICKS_TOKEN:
         return {"Authorization": f"Bearer {config.DATABRICKS_TOKEN}"}
     try:  # Databricks Apps service principal / CLI profile
@@ -39,6 +41,8 @@ def _host() -> str:
 
 
 def available() -> bool:
+    if config.PUBLIC_DEMO:
+        return False
     return bool(config.DATABRICKS_HOST or config.DATABRICKS_TOKEN or config.DATABRICKS_CONFIG_PROFILE)
 
 

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { NavLink, Route, Routes, Link } from "react-router-dom";
 import { Wrench } from "lucide-react";
 import Home from "./pages/Home";
@@ -11,6 +12,24 @@ import Building from "./pages/Building";
 import City from "./pages/City";
 import About from "./pages/About";
 import { DISCLAIMER } from "./components/ui";
+import { get } from "./api";
+
+/** Shown only on the public, anonymous demo (PUBLIC_DEMO=true on the server). */
+function PublicDemoBanner() {
+  const [h, setH] = useState<{ public_demo?: boolean; live_app_url?: string } | null>(null);
+  useEffect(() => { get("/api/health").then(setH).catch(() => setH(null)); }, []);
+  if (!h?.public_demo) return null;
+  return (
+    <div role="note" className="bg-amber-50 border-b border-amber-200 text-amber-900 text-xs sm:text-sm">
+      <div className="max-w-6xl mx-auto px-4 py-2">
+        <strong>Public demo.</strong> All buildings, owners and reports are synthetic. AI results here are saved or
+        scripted Demo Mode results (labeled on each screen), not live analysis; the live version runs on Databricks
+        {h.live_app_url ? <> (<a className="underline" href={h.live_app_url}>workspace sign-in required</a>)</> : null}.
+        Please don't upload personal photos; uploads are deleted when the server restarts.
+      </div>
+    </div>
+  );
+}
 
 const NAV = [
   ["/listing", "Check a listing"],
@@ -39,6 +58,7 @@ export default function App() {
           </nav>
         </div>
       </header>
+      <PublicDemoBanner />
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <Routes>
           <Route path="/" element={<Home />} />

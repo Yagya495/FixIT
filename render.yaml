@@ -1,0 +1,19 @@
+# Render Blueprint for the PUBLIC demo only (not the Databricks App). NOT deployed; needs the owner's approval and a
+# Render account. Free plan: spins down after 15 min idle (~1 min cold start), 0.1 CPU / 512 MB, 750 instance-hours/month.
+# No secrets: the public demo never uses Databricks credentials (PUBLIC_DEMO=true clears them in config.py).
+services:
+  - type: web
+    name: fixit-madison-demo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./deploy/public/Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeploy: false            # deploy manually, from a reviewed commit
+    envVars:
+      - key: PUBLIC_DEMO
+        value: "true"
+      - key: LIVE_APP_URL
+        value: "https://fixit-madison-7474647207905142.aws.databricksapps.com"
+      - key: RATE_LIMIT_POSTS
+        value: "120"
