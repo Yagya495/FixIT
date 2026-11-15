@@ -1,0 +1,14 @@
+{
+ "delta_versions_before": {
+  "silver.complaints": 22,
+  "silver.deadlines": 46,
+  "silver.calls": 26,
+  "gold.reports": 21,
+  "silver.repair_requests": 26,
+  "gold.violations": 147,
+  "silver.detections": 70,
+  "silver.evidence": 135,
+  "silver.scans": 35
+ },
+ "manifest": "docs/ops/test_records_2026-11-15.json"
+}
