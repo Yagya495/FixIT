@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Camera, CameraOff, Flame, Upload, Video } from "lucide-react";
-import { post, postForm, sampleVideo, toJpeg, type Violation } from "../api";
-import { Disclaimer, ErrorBox, Progress, ViolationCard } from "../components/ui";
+import { post, postForm, sampleVideo, sha256Hex, toJpeg, type Violation } from "../api";
+import { AiSource, Disclaimer, ErrorBox, Progress, ViolationCard } from "../components/ui";
 
 export default function Scan() {
   const nav = useNavigate();
@@ -14,6 +14,7 @@ export default function Scan() {
   const [frames, setFrames] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [live, setLive] = useState(false);
+  const [aiSource, setAiSource] = useState<{ source?: string; model?: string | null }>({});
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -26,16 +27,20 @@ export default function Scan() {
     return s.scan_id;
   }
 
-  async function upload(blobs: Blob[]) {
+  async function upload(blobs: Blob[], origShas: string[] = []) {
     if (!blobs.length) return;
     setBusy(true); setError(null);
     try {
       const id = await ensureScan();
       const fd = new FormData();
-      blobs.forEach((b, i) => { fd.append("files", b, `frame-${i}.jpg`); fd.append("captured_at", new Date().toISOString()); });
+      blobs.forEach((b, i) => {
+        fd.append("files", b, `frame-${i}.jpg`); fd.append("captured_at", new Date().toISOString());
+        fd.append("orig_sha", origShas[i] ?? "");
+      });
       const r = await postForm(`/api/scans/${id}/frames`, fd);
       setViolations(r.violations);
       setFrames((n) => n + blobs.length);
+      setAiSource({ source: r.source, model: r.model });
       // "none" = the vision model didn't respond and Demo Mode is off: say so, don't imply the room is clean.
       if (r.source === "none") setError("The vision model didn't respond, so these photos weren't analyzed (they're still saved as evidence). Try again, or add issues manually.");
     } catch (e: any) { setError(e.message); } finally { setBusy(false); }
@@ -44,16 +49,21 @@ export default function Scan() {
   async function onFiles(list: FileList | null) {
     const files = Array.from(list ?? []);
     const blobs: Blob[] = [];
+    const origs: string[] = [];
     setError(null);
     for (const f of files) {
       try {
-        if (f.type.startsWith("video/")) blobs.push(...(await sampleVideo(f, 1, 30)));
-        else blobs.push(await toJpeg(f));
+        if (f.type.startsWith("video/")) {
+          const frames = await sampleVideo(f, 1, 30);
+          blobs.push(...frames); origs.push(...frames.map(() => ""));
+        } else {
+          blobs.push(await toJpeg(f)); origs.push(await sha256Hex(f).catch(() => ""));
+        }
       } catch {
         setError(`Couldn't read ${f.name}. Try a JPG/PNG photo or an MP4 video.`);
       }
     }
-    upload(blobs.slice(0, 30));
+    upload(blobs.slice(0, 30), origs.slice(0, 30));
   }
 
   async function startCamera() {
@@ -134,8 +144,21 @@ export default function Scan() {
         </div>
 
         <div className="space-y-3">
-          <h2 className="h2">Detected issues {violations.length > 0 && <span className="text-badger">({violations.length})</span>}</h2>
-          {violations.length === 0 && <div className="card p-6 text-neutral-500 text-center">Nothing yet. Capture or upload a photo.</div>}
+          <h2 className="h2">Possible issues {violations.length > 0 && <span className="text-badger">({violations.length})</span>}</h2>
+          {violations.length > 0 && (
+            <div className="space-y-1">
+              <AiSource {...aiSource} />
+              <p className="text-xs text-neutral-500">Spotted by AI or reported by you. This is not an inspection: only a City of Madison building inspector can determine a code violation.</p>
+            </div>
+          )}
+          {violations.length === 0 && (frames === 0 ? (
+            <div className="card p-6 text-neutral-500 text-center">Nothing yet. Capture or upload a photo.</div>
+          ) : aiSource.source !== "none" && (
+            <div className="card p-6 text-neutral-600 text-center space-y-2">
+              <div>No possible issues spotted in {frames} photo{frames > 1 ? "s" : ""}. Try a closer shot or another angle, or report an issue yourself (e.g. no heat).</div>
+              <AiSource {...aiSource} />
+            </div>
+          ))}
           {violations.map((v, i) => <ViolationCard key={v.violation_id} v={v} open={i === 0} />)}
           {violations.length > 0 && (
             <button className="btn-dark w-full text-lg" onClick={createCase} disabled={busy}>Create repair request →</button>

@@ -38,7 +38,8 @@ def repair_letter(violations: list[dict], address: str, unit: str | None, landlo
         ask = f"Could you let me know when these can be fixed? Ideally by {fix_s}. Thanks so much for your help!"
         close = "Best,"
     elif tone == "final":
-        opening = (f"{landlord}:\n\nFINAL NOTICE. I have previously notified you of the following conditions at {where}, "
+        # Not "FINAL NOTICE": the City issues "Official Notices"; a tenant letter must not read like one.
+        opening = (f"{landlord}:\n\nFINAL REQUEST BEFORE A CITY COMPLAINT. I have previously notified you of the following conditions at {where}, "
                    f"which may violate the City of Madison Minimum Housing and Property Maintenance Code (MGO Chapter 27):")
         ask = (f"If these conditions are not corrected by {fix_s}, I intend to file a complaint with City of Madison "
                f"Building Inspection, and may seek rent abatement under MGO 32.04 if the conditions remain uncorrected "
@@ -99,7 +100,7 @@ def lease_addendum(violations: list[dict], address: str, unit: str | None, move_
 def city_complaint(case: dict, violations: list[dict], notified_dates: list[str], evidence_count: int) -> dict:
     """Pre-filled City of Madison Building Inspection complaint. NEVER auto-submitted."""
     return {
-        "form": "City of Madison Building Inspection — File a Complaint (interior property)",
+        "form": "DRAFT for the City's interior-property complaint form (not submitted, not an official document)",
         "official_url": config.OFFICIAL_LINKS["report_problem"],
         "submit_note": "FixIt does not submit this for you. Review it, then submit through the official city page or call 608-266-4551.",
         "fields": {
@@ -134,10 +135,12 @@ def joint_complaint(address: str, owner: str, unit_issues: list[dict], other_bui
     lines = [f'{units[i]}: {u["types"]} (first reported {u["first"][:10]}, latest {u["last"][:10]})' for i, u in enumerate(unit_issues)]
     other = [f'{b["address_norm"]}: {b["open_issues"]} open issues' for b in other_buildings]
     return {
-        "form": "Joint complaint to City of Madison Building Inspection (draft)",
+        "form": "DRAFT joint complaint (not submitted). Every household must review and agree before anyone files it",
         "official_url": config.OFFICIAL_LINKS["report_problem"],
         "units": units,
-        "text": (f"We are tenants of {len(units)} households at {address}, owned or managed by {owner}. "
+        "text": ("DRAFT, NOT SUBMITTED. The other households below reported issues through FixIt but have not yet agreed "
+                 "to this complaint. Share it with them to review, edit and sign before anyone files it.\n\n"
+                 f"We are tenants of {len(units)} households at {address}, owned or managed by {owner}. "
                  f"We are jointly reporting the following conditions, which may violate MGO Chapter 27:\n\n"
                  + "\n".join(lines)
                  + ("\n\nThe same owner's other buildings currently have open reports:\n" + "\n".join(other) if other else "")

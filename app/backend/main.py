@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from contextlib import asynccontextmanager
 from datetime import datetime
 
@@ -57,14 +58,20 @@ def code_match_route(q: str):
 
 
 # ---------------------------------------------------------------- scans
-async def _read_frames(files: list[UploadFile], captured: list[str] | None):
+_SHA = re.compile(r"^[0-9a-f]{64}$")
+
+
+async def _read_frames(files: list[UploadFile], captured: list[str] | None, orig: list[str] | None = None):
+    """(bytes, media_type, captured_at, original_file_sha|None). The original sha lets Demo Mode's cache match a
+    photo even after the browser re-encoded it; evidence is still hashed on the bytes actually received."""
     out = []
     for i, f in enumerate(files):
         data = await f.read()
         if not data:
             continue
         mt = f.content_type if f.content_type in ("image/jpeg", "image/png", "image/webp") else "image/jpeg"
-        out.append((data, mt, captured[i] if captured and i < len(captured) else None))
+        o = orig[i] if orig and i < len(orig) and _SHA.match(orig[i] or "") else None
+        out.append((data, mt, captured[i] if captured and i < len(captured) else None, o))
     return out
 
 
@@ -76,8 +83,9 @@ def create_scan(mode: str = Form("walkthrough"), address: str = Form(""), unit: 
 
 
 @app.post("/api/scans/{scan_id}/frames")
-async def add_frames(scan_id: str, files: list[UploadFile] = File(...), captured_at: list[str] | None = Form(None)):
-    frames = await _read_frames(files, captured_at)
+async def add_frames(scan_id: str, files: list[UploadFile] = File(...), captured_at: list[str] | None = Form(None),
+                     orig_sha: list[str] | None = Form(None)):
+    frames = await _read_frames(files, captured_at, orig_sha)
     if not frames:
         raise HTTPException(400, "no images")
     try:
@@ -122,13 +130,14 @@ def evidence_verify(evidence_id: str):
 
 # ---------------------------------------------------------------- listing x-ray
 @app.post("/api/listing/xray")
-async def listing_xray(address: str = Form(...), unit: str = Form(""), files: list[UploadFile] = File(...)):
+async def listing_xray(address: str = Form(...), unit: str = Form(""), files: list[UploadFile] = File(...),
+                       orig_sha: list[str] | None = Form(None)):
     scan = scans.create_scan("listing", address, unit or None)
-    frames = await _read_frames(files, None)
+    frames = await _read_frames(files, None, orig_sha)
     if not frames:
         raise HTTPException(400, "no images")
     res = scans.process_frames(scan["scan_id"], frames)
-    return {**listing.xray(scan["scan_id"]), "frames": res["frames"], "source": res["source"]}
+    return {**listing.xray(scan["scan_id"]), "frames": res["frames"], "source": res["source"], "model": res["model"]}
 
 
 @app.get("/api/listing/{scan_id}/addendum.pdf")

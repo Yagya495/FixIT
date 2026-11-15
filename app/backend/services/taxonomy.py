@@ -124,6 +124,29 @@ for s in SEED_CODE_SECTIONS:
     s.update({"source_doc": "seed (unverified)", "page": None, "url": None, "verified": 0})
 
 
+def verified_review() -> dict:
+    """Human-approved Chapter 27 sections + type mapping written by `scripts/code_parse.py approve` (empty if none)."""
+    import json
+    from pathlib import Path
+
+    p = Path(__file__).resolve().parents[1] / "code_sections_verified.json"
+    if not p.exists():
+        return {"mapping": {}, "sections": []}
+    data = json.loads(p.read_text(encoding="utf-8"))
+    return {"mapping": data.get("mapping", {}), "sections": data.get("sections", [])}
+
+
+def taxonomy_rows() -> list[dict]:
+    """VIOLATION_TYPES with any human-approved section mapping applied (placeholders otherwise)."""
+    mapping = verified_review()["mapping"]
+    return [{**v, "code_sections": mapping.get(v["type_id"], v["code_sections"])} for v in VIOLATION_TYPES]
+
+
+def code_section_rows() -> list[dict]:
+    """Unverified seed summaries + human-approved official sections."""
+    return [dict(s) for s in SEED_CODE_SECTIONS] + [{**s, "verified": 1} for s in verified_review()["sections"]]
+
+
 def severity_for(type_id: str, on: date | None = None, live_or_sparking: bool = False) -> str:
     """Seasonal / contextual severity adjustments from the taxonomy table."""
     on = on or date.today()

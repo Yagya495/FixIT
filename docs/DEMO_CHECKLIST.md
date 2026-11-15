@@ -17,14 +17,15 @@ deployed Databricks App before judging (see "Day-of" below).
 - [ ] Backup video recorded (human task) in case the laptop or network dies.
 
 ## The run (≈3:00)
+> The polished, Databricks-focused talk track is in [DEMO_SCRIPT.md](DEMO_SCRIPT.md); this table is the click path.
 | Time | Screen | Do | Say / point at |
 |---|---|---|---|
 | 0:00 | Home | — | "Most Madison renters never use the rights they already have." |
 | 0:10 | `/listing` | Address is prefilled `1234 Demo St`. Choose the listing photos → **X-Ray this listing** | Progress steps stream. Verdict **Don't sign yet**, **6 heat complaints in 30 days**, owner grade **D**, flagged photos, tour questions, lease addendum. "Found in their own listing photos." |
 | 0:50 | `/scan` | Unit 9. **Photos / video** (or Live camera on phone) with the staged corner | 3 detections: covered smoke detector, water stain, outlet without cover. Tap one: Chapter 27 topic, **"section number pending verification"** label (say it out loud: honest about what's verified). |
-| 1:20 | Case page | **Create repair request →**. Drag the tone slider Friendly → Final notice | Letter rewrites with code topics and evidence hashes. |
+| 1:20 | Case page | **Create repair request →**. Drag the tone slider Friendly → Final request | Letter rewrites with code topics and evidence hashes. |
 | 1:30 | Case page | **Call landlord**. Click the **Demo line** button 3× (or a teammate speaks/types: "…Thursday") | AI discloses it's an AI in sentence 1, lists issues, answers "what's the problem?", confirms **Thursday, November 19**. Countdown starts. |
-| 1:55 | Case page | **Simulate +8 days** → **Escalate → city complaint** | "Deadline missed." Pre-filled complaint. **"FixIt does not submit this for you."** Links to the city's interior-property complaint form, rent abatement and retaliation pages. |
+| 1:55 | Case page | **Simulate +8 days** → **Prepare city complaint draft →** | "Promised date passed." DRAFT complaint (not submitted). Links to the city's interior-property complaint form, rent abatement and retaliation pages. |
 | 2:10 | Case page (top) | Point at the dark banner → **File together** | "**6 other households** reported heat in 30 days. This owner's **3 other buildings have 11 open issues**." Joint draft with anonymized Units A–G. |
 | 2:25 | `/city` | Map → "Where to inspect next" → click the first sample question | "Which owners have the most open heat issues this month?" → Isthmus Edge Properties (demo) first. Say what answered it (the caption under the table says so; see below). |
 | 2:40 | `/about` | — | Pipeline with honest status chips (running / fallback / planned). |
@@ -48,7 +49,7 @@ deployed Databricks App before judging (see "Day-of" below).
 | Commitment extraction | LLM if configured, else regex | `commitment_source` records it; the date the AI confirmed aloud always wins. |
 | Deadlines / escalation | Real logic, **simulated clock** | "+8 days" shifts that case's clock only. Windows (7d/48h/24h) are FixIt defaults, not legal deadlines. |
 | City complaint | Pre-filled draft | **Never submitted.** Links to the official form. |
-| "Ask the data" | Genie **only if connected** | Caption under each answer: "Answered live by Databricks Genie" / "Saved Genie answer" / "FixIt's prepared SQL (Genie not connected)". |
+| "Ask the data" | Genie **only if connected** | Caption under each answer: "Answered live by Databricks Genie" / "Saved answer from Databricks Genie (cached for the demo)" / "FixIt's prepared SQL (Genie not connected)". |
 | Legal facts (rent abatement, retaliation, 30–60 days) | Paraphrased from official City pages | Sources and check date in PROGRESS.md → "Official sources". Disclaimer on every legal output. |
 
 ## Day-of (Databricks)

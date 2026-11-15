@@ -67,7 +67,11 @@ Finish every P0 before starting any P1.
 - Listing X-Ray: the demo listing photos are cached by hash.
 - Call: scripted transcript. Genie: cached answers per sample question. Letters: template-based, no LLM needed.
 - `POST /api/demo/reset` (hidden) reseeds the DB and clears cases.
-- Responses carry `"source": "live" | "cache" | "fallback"` so we can tell what happened, but the UI does not show it.
+- Responses carry `"source": "live" | "cache" | "fallback" | "none"`. **The UI shows it** (decision changed 2026-11-14 at the
+  user's request): a gray line on Listing/Scan ("Analyzed live just now by …", "Saved result…", "Demo script…"), the
+  Genie caption, and the call's extraction note. Never imply a live model when it wasn't one.
+- Wording rules: "possible issue" (never "violation found"), "not an inspection", "FixIt reminder, not a legal deadline",
+  "draft, not submitted", "Final request" (never "Final notice": the City issues Official Notices).
 
 ---
 
@@ -82,9 +86,10 @@ Finish every P0 before starting any P1.
   within six months of a complaint "may be seen as retaliation" (its page links MGO 32.15). Building Inspection: "Generally,
   cases are resolved within 30 to 60 days." Only current tenants can file interior complaints. Sources + check date:
   PROGRESS.md → "Official sources".
-- **Never guess section numbers.** Until the Ch. 27 PDF is parsed, `code_sections` seed rows are marked
-  `verified=false` and the UI shows "section number pending verification". After `notebooks/10_parse_code.sql` runs,
-  the taxonomy's `code_sections` are remapped from the parsed text.
+- **Never guess section numbers.** Seed rows are FixIt summaries (`verified=0`, "section number pending verification").
+  Parsing (`scripts/code_parse.py parse` / notebook 10) adds official text with `verified=0`. Only a human-approved
+  review (`propose` → fill `eval/code_review.csv` with a reviewer name → `approve`) sets `verified=1` and remaps the taxonomy;
+  the approval is saved to `app/backend/code_sections_verified.json` so both backends and resets keep it.
 - Default deadline windows (7 days routine / 48h urgent / 24h emergency) are **FixIt defaults, not legal deadlines**.
 
 ## 6. Safety / privacy

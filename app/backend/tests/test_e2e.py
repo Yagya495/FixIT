@@ -109,6 +109,26 @@ def test_full_demo_flow(client):
     assert top["rows"][0]["owner"] == "Isthmus Edge Properties (demo)"
 
 
+def test_demo_cache_hits_by_original_file_sha_after_reencode(client):
+    """/api/demo/warm caches by the file on disk; the browser uploads a re-encoded copy plus the original's sha."""
+    from app.backend.services import demo_cache, evidence as ev
+    original, reencoded = png(1, 2, 3), png(1, 2, 4)  # different bytes, as after toJpeg()
+    osha = ev.sha256_bytes(original)
+    demo_cache.put("vision", f"walkthrough-{osha}", {"detections": [
+        {"violation_type": "PEST_EVIDENCE", "confidence": 0.9, "bbox": None, "evidence_note": "cached", "severity_hint": "urgent"}],
+        "scene": "kitchen"})
+    try:
+        s = client.post("/api/scans", data={"mode": "walkthrough", "address": "1234 Demo St", "unit": "9"}).json()
+        r = client.post(f"/api/scans/{s['scan_id']}/frames", data={"orig_sha": osha},
+                        files=[("files", ("x.jpg", reencoded, "image/jpeg"))]).json()
+        assert r["source"] == "cache" and [v["violation_type"] for v in r["violations"]] == ["PEST_EVIDENCE"]
+        r2 = client.post(f"/api/scans/{s['scan_id']}/frames", data={"orig_sha": "not-a-sha"},
+                         files=[("files", ("y.jpg", png(9, 9, 9), "image/jpeg"))]).json()
+        assert r2["source"] == "fallback"  # garbage orig_sha is ignored
+    finally:
+        demo_cache._path("vision", f"walkthrough-{osha}").unlink(missing_ok=True)
+
+
 def test_same_photo_reused_across_and_within_scans(client):
     """Rehearsals reuse the same demo photos: that must never 500 (it used to collide on detection_id)."""
     img = png(10, 200, 30)

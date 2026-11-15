@@ -39,12 +39,13 @@ def sql_statements(path: Path, catalog: str) -> list[str]:
 
 def seed_rows(now: datetime) -> dict[str, list[dict]]:
     from app.backend.services import landlords, synthetic
-    from app.backend.services.taxonomy import SEED_CODE_SECTIONS, VIOLATION_TYPES
+    from app.backend.services.taxonomy import SEED_CODE_SECTIONS, taxonomy_rows
 
     data = synthetic.generate(now=now)
     scores = landlords.compute_scores(data["owners"], data["properties"], data["reports"], now)
     return {
-        "ref.violation_types": [{**v, "code_sections": json.dumps(v["code_sections"])} for v in VIOLATION_TYPES],
+        # Human-approved Ch. 27 mapping (if any) survives resets; parsed sections are never touched here.
+        "ref.violation_types": [{**v, "code_sections": json.dumps(v["code_sections"])} for v in taxonomy_rows()],
         "silver.code_sections": [dict(s) for s in SEED_CODE_SECTIONS],
         "gold.owners": data["owners"], "gold.properties": data["properties"], "gold.reports": data["reports"],
         "gold.landlord_scores": scores,
@@ -144,7 +145,11 @@ def main() -> int:
             cur.execute(f"DESCRIBE TABLE {c}.{t}")
             cols = [(row[0], row[1]) for row in cur.fetchall() if row[0] and not row[0].startswith("#")]
             select = ", ".join(f"CAST(`{n}` AS {ty}) AS `{n}`" for n, ty in cols)
-            cur.execute(f"INSERT OVERWRITE {c}.{t} SELECT {select} FROM read_files('{path}', format => 'json')")
+            if t == "silver.code_sections":  # replace only the seed summaries; keep parsed Ch. 27 sections
+                cur.execute(f"DELETE FROM {c}.{t} WHERE source_doc LIKE 'seed%'")
+                cur.execute(f"INSERT INTO {c}.{t} SELECT {select} FROM read_files('{path}', format => 'json')")
+            else:
+                cur.execute(f"INSERT OVERWRITE {c}.{t} SELECT {select} FROM read_files('{path}', format => 'json')")
             cur.execute(f"SELECT COUNT(*) FROM {c}.{t}")
             print(f"   {c}.{t}: {cur.fetchone()[0]} rows (expected {len(r)})")
 

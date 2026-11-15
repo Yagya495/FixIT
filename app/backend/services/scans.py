@@ -26,16 +26,18 @@ def get_scan(scan_id: str) -> dict | None:
     return db.q1("SELECT * FROM {silver.scans} WHERE scan_id = :s", {"s": scan_id})
 
 
-def process_frames(scan_id: str, frames: list[tuple[bytes, str, str | None]]) -> dict:
-    """frames: list of (bytes, media_type, captured_at). Returns per-frame results + deduped violations."""
+def process_frames(scan_id: str, frames: list[tuple]) -> dict:
+    """frames: (bytes, media_type, captured_at[, original_file_sha]). Returns per-frame results + deduped violations."""
     scan = get_scan(scan_id)
     if not scan:
         raise KeyError(scan_id)
     frames = frames[: config.MAX_FRAMES]
     per_frame, all_dets, sources = [], [], set()
-    for i, (data, media_type, captured_at) in enumerate(frames):
+    for i, frame in enumerate(frames):
+        data, media_type, captured_at = frame[:3]
+        orig_sha = frame[3] if len(frame) > 3 else None
         ev = evidence.store(scan_id, data, media_type, captured_at)
-        res, source = vision.analyze_frame(data, ev["sha256"], scan["mode"], i, len(frames), media_type)
+        res, source = vision.analyze_frame(data, ev["sha256"], scan["mode"], i, len(frames), media_type, alt_sha=orig_sha)
         sources.add(source)
         dets = []
         for j, d in enumerate(res.detections):
@@ -54,8 +56,10 @@ def process_frames(scan_id: str, frames: list[tuple[bytes, str, str | None]]) ->
         per_frame.append({"evidence_id": ev["evidence_id"], "sha256": ev["sha256"], "scene": res.scene,
                           "detections": dets, "source": source})
     violations = rebuild_violations(scan_id)
-    return {"scan_id": scan_id, "frames": per_frame, "violations": violations,
-            "source": "live" if sources == {"live"} else ("cache" if "cache" in sources else sorted(sources)[0] if sources else "none")}
+    source = "live" if sources == {"live"} else ("cache" if "cache" in sources else sorted(sources)[0] if sources else "none")
+    # The UI shows where results came from; name the model only when it actually answered.
+    return {"scan_id": scan_id, "frames": per_frame, "violations": violations, "source": source,
+            "model": config.VISION_ENDPOINT if "live" in sources else None}
 
 
 def rebuild_violations(scan_id: str) -> list[dict]:

@@ -2,8 +2,10 @@
 -- MAGIC %md
 -- MAGIC # 10 · Parse MGO Chapter 27 → sections → chunks (P0-1)
 -- MAGIC 1. Upload the Chapter 27 PDF (+ Minimum Housing Standards Checklist, saved city pages) to `/Volumes/fixit/raw/code_docs/`.
--- MAGIC 2. Run this notebook. **VERIFY** the `ai_parse_document` output shape in cell 2 first; it has changed across
--- MAGIC    releases. Adjust the path expressions in cell 3 if needed.
+-- MAGIC 2. Run this notebook. Output shape verified on this workspace 2026-11-14 (ai_parse_document v2.0):
+-- MAGIC    `parsed:document:elements[*]` with `content`, `type`, `bbox[0].page_id`.
+-- MAGIC 3. Sections are inserted with **verified = 0**. Only a human review (`scripts/code_parse.py propose` → fill the CSV →
+-- MAGIC    `approve`) sets verified = 1. Laptop equivalent of this notebook: `scripts/code_parse.py parse`.
 
 -- COMMAND ----------
 USE CATALOG fixit;
@@ -22,11 +24,13 @@ SELECT path, schema_of_variant(parsed) FROM bronze.code_docs_parsed LIMIT 1;
 CREATE OR REPLACE TABLE bronze.code_elements AS
 SELECT path AS source_doc,
        e.pos AS element_idx,
+       CAST(e.value:type AS STRING) AS element_type,
        CAST(e.value:content AS STRING) AS content,
        COALESCE(CAST(e.value:bbox[0]:page_id AS INT), CAST(e.value:page_id AS INT)) + 1 AS page
 FROM bronze.code_docs_parsed,
      LATERAL variant_explode(COALESCE(parsed:document:elements, parsed:elements)) AS e
-WHERE CAST(e.value:content AS STRING) IS NOT NULL;
+WHERE CAST(e.value:content AS STRING) IS NOT NULL
+  AND coalesce(CAST(e.value:type AS STRING), '') NOT IN ('page_header', 'page_footer', 'page_number');
 
 -- COMMAND ----------
 -- MAGIC %md Split into sections: a new section starts at an element that begins with a section number like `27.05(2)(a)`.
@@ -41,14 +45,17 @@ SELECT *, last_value(NULLIF(sec_start, ''), true) OVER (PARTITION BY source_doc 
           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS section_id
 FROM tagged;
 
-CREATE OR REPLACE TABLE silver.code_sections AS
+-- Keep the unverified seed summaries; replace only previously parsed rows.
+DELETE FROM silver.code_sections WHERE source_doc NOT LIKE 'seed%';
+
+INSERT INTO silver.code_sections
 SELECT section_id,
        trim(regexp_replace(first(content), '^\\s*27\\.[0-9().a-z]+\\s*', '')) AS title,
        concat_ws('\n', collect_list(content)) AS text,
        first(source_doc) AS source_doc,
        min(page) AS page,
        'https://library.municode.com/wi/madison/codes/code_of_ordinances?nodeId=COORMAWIVOIICH20--31_CH27MIHOPRMACO' AS url,
-       1 AS verified
+       0 AS verified   -- NEVER 1 here: section ids come from a regex split; a human approves them later
 FROM (SELECT * FROM grouped WHERE section_id IS NOT NULL ORDER BY source_doc, element_idx)
 GROUP BY section_id;
 

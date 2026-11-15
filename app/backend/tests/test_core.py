@@ -90,11 +90,78 @@ def test_scripted_call_is_coherent_and_confirms_thursday():
     assert "Thursday, November 19" in replies[-1]
 
 
+def test_no_review_means_placeholders_only():
+    from app.backend.services import taxonomy
+    if taxonomy.verified_review()["sections"]:
+        pytest.skip("a human-approved review is present")
+    assert all(s["verified"] == 0 for s in taxonomy.code_section_rows())
+    assert [v["code_sections"] for v in taxonomy.taxonomy_rows()] == [v["code_sections"] for v in VIOLATION_TYPES]
+
+
+def test_approved_review_applies_mapping_and_verified_flag(monkeypatch):
+    from app.backend.services import taxonomy
+    fake = {"mapping": {"SMOKE_DETECTOR_MISSING": ["27.99(1)"]},
+            "sections": [{"section_id": "27.99(1)", "title": "Fixture", "text": "fixture text", "source_doc": "ch27.pdf",
+                          "page": 4, "url": None}]}
+    monkeypatch.setattr(taxonomy, "verified_review", lambda: fake)
+    rows = {v["type_id"]: v for v in taxonomy.taxonomy_rows()}
+    assert rows["SMOKE_DETECTOR_MISSING"]["code_sections"] == ["27.99(1)"]
+    unreviewed = next(v for v in VIOLATION_TYPES if v["type_id"] == "WATER_DAMAGE_MOLD")
+    assert rows["WATER_DAMAGE_MOLD"]["code_sections"] == unreviewed["code_sections"]  # keeps placeholders
+    secs = {s["section_id"]: s for s in taxonomy.code_section_rows()}
+    assert secs["27.99(1)"]["verified"] == 1 and secs["CH27-SMOKE"]["verified"] == 0
+
+
+def test_code_match_flags_official_text():
+    seed = dict(SEED_CODE_SECTIONS[0])
+    parsed = {"section_id": "27.99", "title": "Smoke detectors", "text": "smoke detector required",
+              "source_doc": "/Volumes/fixit/raw/code_docs/ch27.pdf", "page": 7, "url": None, "verified": 0}
+    hits = {h["section_id"]: h for h in code_match.rank_sections("smoke detector", [seed, parsed], k=2)}
+    assert hits["27.99"]["official_text"] is True and hits["27.99"]["verified"] is False and hits["27.99"]["page"] == 7
+    assert hits["CH27-SMOKE"]["official_text"] is False
+
+
+def test_eval_strips_exif_but_keeps_image_segments():
+    from scripts.eval_vision import strip_jpeg_metadata
+    seg = lambda m, body: bytes([0xFF, m]) + (len(body) + 2).to_bytes(2, "big") + body  # noqa: E731
+    jpeg = (b"\xff\xd8" + seg(0xE0, b"JFIF\x00") + seg(0xE1, b"Exif\x00\x00GPS-SECRET") + seg(0xDB, b"\x00" * 4)
+            + b"\xff\xda" + b"\x00\x0c imagedata" + b"\xff\xd9")
+    out = strip_jpeg_metadata(jpeg)
+    assert b"GPS-SECRET" not in out and b"JFIF" in out and out.endswith(b"imagedata\xff\xd9")
+    assert strip_jpeg_metadata(b"\x89PNG....") == b"\x89PNG...."
+
+
 def test_vision_parse_drops_unknown_types_keeps_rest():
     reply = ('```json\n{"detections":[{"violation_type":"SMOKE_DETECTOR_MISSING","confidence":0.8},'
              '{"violation_type":"CRACKED_CEILING_FAN","confidence":0.9}],"scene":"bedroom"}\n```')
     res = vision._parse(reply)
     assert [d.violation_type for d in res.detections] == ["SMOKE_DETECTOR_MISSING"] and res.scene == "bedroom"
+
+
+def test_delta_concurrency_conflicts_are_retried_for_updates_only(monkeypatch):
+    from contextlib import contextmanager
+    from app.backend import config, db
+
+    calls = {"n": 0}
+
+    class Cur:
+        def execute(self, sql, params):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise RuntimeError("[DELTA_CONCURRENT_APPEND.ROW_LEVEL_CHANGES] Transaction conflict detected")
+
+    @contextmanager
+    def fake_cursor():
+        yield Cur()
+
+    monkeypatch.setattr(config, "DATA_BACKEND", "databricks")
+    monkeypatch.setattr(db, "_cursor", fake_cursor)
+    monkeypatch.setattr(db.time, "sleep", lambda s: None)
+    db.execute("UPDATE {silver.deadlines} SET status = 'met' WHERE request_id = :r", {"r": "x"})
+    assert calls["n"] == 2  # retried once, then succeeded
+    calls["n"] = 0
+    with pytest.raises(RuntimeError):  # inserts are not blindly retried
+        db.execute("INSERT INTO {silver.calls} (call_id) VALUES (:c)", {"c": "x"})
 
 
 def test_databricks_host_normalized():

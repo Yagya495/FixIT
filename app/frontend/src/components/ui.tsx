@@ -97,6 +97,10 @@ export function ViolationCard({ v, open: initOpen = false }: { v: Violation; ope
               <div className="font-semibold">{s.title}</div>
               {s.verified ? (
                 <div className="text-sm text-neutral-700">“{s.snippet}”</div>
+              ) : s.official_text ? (
+                <div className="text-sm text-neutral-700">
+                  <span className="text-xs font-semibold text-neutral-500">Text from the official Ch. 27 document{s.page ? ` (p. ${s.page})` : ""}; this match hasn't been human-reviewed: </span>“{s.snippet}”
+                </div>
               ) : (
                 <div className="text-sm text-neutral-700">
                   <span className="text-xs font-semibold text-neutral-500">Plain-language summary, not official text: </span>{s.snippet}
@@ -111,6 +115,21 @@ export function ViolationCard({ v, open: initOpen = false }: { v: Violation; ope
           <div><span className="label">What to ask for</span><p>{v.remedy}</p></div>
         </div>
       )}
+    </div>
+  );
+}
+
+/** Says truthfully where an AI result came from (API `source`). Never implies a live model when it wasn't one. */
+export function AiSource({ source, model }: { source?: string; model?: string | null }) {
+  const text: Record<string, string> = {
+    live: `Analyzed live just now by ${model ? model.replace(/^databricks-/, "") : "the vision model"} on Databricks Model Serving.`,
+    cache: "Saved result from an earlier live analysis of this exact photo (Demo Mode).",
+    fallback: "Demo script: scripted example detections, shown because the live model wasn't used (Demo Mode).",
+  };
+  if (!source || !text[source]) return null;
+  return (
+    <div className={`text-xs rounded-lg px-2 py-1 inline-block ${source === "fallback" ? "bg-violet-50 text-violet-800" : "bg-neutral-100 text-neutral-600"}`}>
+      {text[source]}
     </div>
   );
 }

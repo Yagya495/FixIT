@@ -11,6 +11,7 @@ import json
 import re
 import sqlite3
 import threading
+import time
 from contextlib import contextmanager
 from datetime import date, datetime
 from decimal import Decimal
@@ -126,8 +127,18 @@ def _bind(params: dict | None) -> dict:
 
 
 def execute(sql: str, params: dict | None = None) -> None:
-    with _cursor() as cur:
-        cur.execute(_resolve(sql), _bind(params))
+    # Delta uses optimistic concurrency: two requests updating the same row can conflict. Our UPDATE/DELETEs are
+    # idempotent, so retry those briefly instead of surfacing a 500 on stage.
+    retryable = config.DATA_BACKEND == "databricks" and sql.lstrip().upper().startswith(("UPDATE", "DELETE"))
+    for attempt in range(4 if retryable else 1):
+        try:
+            with _cursor() as cur:
+                cur.execute(_resolve(sql), _bind(params))
+            return
+        except Exception as e:
+            if not retryable or "CONCURRENT" not in str(e).upper() or attempt == 3:
+                raise
+            time.sleep(0.3 * (attempt + 1))
 
 
 def insert(table: str, row: dict) -> None:

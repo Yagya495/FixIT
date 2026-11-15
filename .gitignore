@@ -9,3 +9,8 @@ app/static/
 .DS_Store
 .pytest_cache/
 build/
+eval/photos/
+eval/labels.csv
+demo/demo_inputs/**/*.jpg
+demo/demo_inputs/**/*.jpeg
+demo/demo_inputs/**/*.png

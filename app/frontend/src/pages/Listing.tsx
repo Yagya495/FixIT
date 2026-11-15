@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Ban, CircleHelp, ThumbsUp, Upload } from "lucide-react";
-import { postForm, toJpeg, imgUrl, type Violation } from "../api";
-import { CopyButton, DemoBadge, Disclaimer, ErrorBox, GradeBadge, Progress, ViolationCard } from "../components/ui";
+import { postForm, sha256Hex, toJpeg, imgUrl, type Violation } from "../api";
+import { AiSource, CopyButton, DemoBadge, Disclaimer, ErrorBox, GradeBadge, Progress, ViolationCard } from "../components/ui";
 
 const STEPS = ["Uploading listing photos…", "Scanning photos for possible code issues…", "Matching to MGO Chapter 27…",
   "Looking up the building's complaint history…", "Checking the owner's report card…", "Writing tour questions and lease addendum…"];
@@ -26,7 +26,10 @@ export default function Listing() {
     try {
       const fd = new FormData();
       fd.append("address", address);
-      for (const f of files) fd.append("files", await toJpeg(f), f.name.replace(/\.\w+$/, ".jpg"));
+      for (const f of files) {
+        fd.append("files", await toJpeg(f), f.name.replace(/\.\w+$/, ".jpg"));
+        fd.append("orig_sha", await sha256Hex(f).catch(() => ""));
+      }
       const [r] = await Promise.all([postForm("/api/listing/xray", fd), new Promise((ok) => setTimeout(ok, 3500))]);
       setRes(r);
     } catch (e: any) { setError(e.message); } finally { setBusy(false); }
@@ -81,6 +84,7 @@ function Result({ res, onReset }: { res: any; onReset: () => void }) {
         <ul className="mt-4 space-y-1 text-lg list-disc pl-6">{res.verdict.reasons.map((r: string) => <li key={r}>{r}</li>)}</ul>
       </div>
       <p className="text-sm text-neutral-600">{res.caveat}</p>
+      <AiSource source={res.source} model={res.model} />
       {res.source === "none" && (
         <ErrorBox error="The vision model didn't respond, so the photos weren't analyzed. This verdict is based on the building's history only." />
       )}

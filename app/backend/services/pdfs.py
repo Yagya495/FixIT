@@ -41,13 +41,16 @@ def text_pdf(title: str, body: str) -> bytes:
 def evidence_packet(case: dict) -> bytes:
     buf = io.BytesIO()
     story = [
-        _p("FixIt Madison — Evidence Packet", H1),
+        _p("FixIt Madison — Tenant Evidence Packet", H1),
+        _p("Compiled by the tenant with FixIt. This is NOT an official inspection record, notice or finding. Issues "
+           "below were flagged with AI assistance and/or reported by the tenant; only a City of Madison building inspector "
+           "can determine a code violation.", SMALL),
         _p(f'Address: {case.get("address") or "—"}   Unit: {case.get("unit") or "—"}'),
         _p(f'Case: {case["request_id"]}   Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}'),
         _p(f'Owner/manager: {case.get("landlord")}'),
-        Spacer(1, 10), _p("Violations", H2),
+        Spacer(1, 10), _p("Possible issues (tenant-reported / AI-assisted, not inspector findings)", H2),
     ]
-    rows = [["#", "Issue", "Severity", "Confidence", "Code reference"]]
+    rows = [["#", "Issue", "FixIt severity", "AI confidence", "Code reference"]]
     for i, v in enumerate(case["violations"], 1):
         cite = "; ".join(f'{s["title"]} ({s["section_id"] if s.get("verified") else "Ch. 27, section pending"})'
                          for s in v.get("code_sections", []))

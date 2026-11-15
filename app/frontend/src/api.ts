@@ -1,4 +1,5 @@
-export type CodeSection = { section_id: string; title: string; snippet: string; url: string; score: number; verified: boolean };
+export type CodeSection = { section_id: string; title: string; snippet: string; url: string; score: number; verified: boolean;
+  official_text?: boolean; page?: number | null };
 export type Violation = {
   violation_id: string; scan_id: string; property_id: string | null; violation_type: string; name: string;
   category: string; severity: "routine" | "urgent" | "emergency"; confidence: number; certain: boolean; label: string;
@@ -20,6 +21,13 @@ export const post = (url: string, body?: unknown) =>
 export const postForm = (url: string, form: FormData) => fetch(url, { method: "POST", body: form }).then(handle);
 
 export const imgUrl = (evidenceId: string) => `/api/evidence/${evidenceId}/image`;
+
+/** SHA-256 of the ORIGINAL file, sent with uploads so Demo Mode's cache (keyed by the file on disk) still matches
+ *  after toJpeg() re-encodes the image. Evidence hashes are still computed server-side on the uploaded bytes. */
+export async function sha256Hex(b: Blob): Promise<string> {
+  const d = await crypto.subtle.digest("SHA-256", await b.arrayBuffer());
+  return Array.from(new Uint8Array(d)).map((x) => x.toString(16).padStart(2, "0")).join("");
+}
 
 /** Downscale an image file/blob to a JPEG (max 1280px) before upload. */
 export async function toJpeg(src: Blob, max = 1280): Promise<Blob> {

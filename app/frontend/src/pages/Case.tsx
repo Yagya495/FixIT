@@ -5,7 +5,8 @@ import { get, imgUrl, post } from "../api";
 import { CopyButton, DemoBadge, Disclaimer, ErrorBox, SeverityChip, Spinner, ViolationCard } from "../components/ui";
 
 const TONES = ["friendly", "formal", "final"] as const;
-const TONE_LABEL = { friendly: "Friendly", formal: "Formal", final: "Final notice" };
+// "Final request", not "Final notice": the City issues Official Notices; a tenant letter must not sound like one.
+const TONE_LABEL = { friendly: "Friendly", formal: "Formal", final: "Final request" };
 
 export default function Case() {
   const { id } = useParams();
@@ -164,6 +165,8 @@ function Call({ c, onDone }: { c: any; onDone: () => void }) {
   const [script, setScript] = useState<string[]>([]);
   const [scriptIdx, setScriptIdx] = useState(0);
   const [err, setErr] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);  // one landlord line at a time (double-clicks used to hit a closed call)
+  const inFlight = useRef(false);  // synchronous guard: state updates land after the click handler returns
   const endRef = useRef<HTMLDivElement>(null);
   useEffect(() => { get("/api/calls/demo-script").then((r) => setScript(r.lines)).catch(() => setScript([])); }, []);
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, [transcript]);
@@ -176,16 +179,19 @@ function Call({ c, onDone }: { c: any; onDone: () => void }) {
       speak(r.transcript[0].text, voice);
     } catch (e: any) { setErr(`Couldn't start the call: ${e.message}`); }
   }
-  async function say(text: string) {
-    if (!callId || !text.trim()) return;
-    setInput(""); setErr(null);
+  async function say(text: string): Promise<boolean> {
+    if (!callId || !text.trim() || inFlight.current) return false;
+    inFlight.current = true;
+    setSending(true); setInput(""); setErr(null);
     setTranscript((t) => [...t, { speaker: "landlord", text }]);
     try {
       const r = await post(`/api/calls/${callId}/say`, { text });
       setTranscript(r.transcript);
       if (r.reply) speak(r.reply, voice);
       if (r.done) { setResult(r.result); setCallId(null); onDone(); }
-    } catch (e: any) { setErr(`The AI didn't get that: ${e.message}`); }
+      return true;
+    } catch (e: any) { setErr(`The AI didn't get that: ${e.message}`); return false; }
+    finally { inFlight.current = false; setSending(false); }
   }
   async function hangUp() {
     if (!callId) return;
@@ -228,13 +234,14 @@ function Call({ c, onDone }: { c: any; onDone: () => void }) {
       {callId && (
         <div className="space-y-2">
           <div className="flex gap-2">
-            <input className="input" value={input} placeholder="Landlord says…" onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && say(input)} />
+            <input className="input" value={input} placeholder={sending ? "AI is replying…" : "Landlord says…"} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && say(input)} />
             <button className={`btn-ghost ${listening ? "ring-2 ring-badger" : ""}`} onClick={listen} title="Speak"><Mic className="w-5 h-5" /></button>
-            <button className="btn-dark" onClick={() => say(input)}>Say</button>
+            <button className="btn-dark" disabled={sending} onClick={() => say(input)}>Say</button>
           </div>
           <div className="flex gap-2">
             {script[scriptIdx] && (
-              <button className="btn-ghost text-sm flex-1 justify-start truncate" onClick={() => { say(script[scriptIdx]); setScriptIdx(scriptIdx + 1); }}>
+              <button className="btn-ghost text-sm flex-1 justify-start truncate" disabled={sending}
+                onClick={async () => { const line = script[scriptIdx]; if (await say(line)) setScriptIdx((i) => i + 1); }}>
                 Demo line: “{script[scriptIdx]}”
               </button>
             )}
@@ -247,7 +254,11 @@ function Call({ c, onDone }: { c: any; onDone: () => void }) {
         <div className={`rounded-xl p-3 ${result.commitment_date ? "bg-emerald-50 text-emerald-900" : "bg-amber-50 text-amber-900"}`}>
           {result.commitment_date ? (
             <><div className="font-bold">Commitment captured: {new Date(result.commitment_date).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</div>
-              <div className="text-sm">“{result.commitment_text}” · landlord tone: {result.landlord_tone}. The deadline clock has started.</div></>
+              <div className="text-sm">“{result.commitment_text}” · landlord tone: {result.landlord_tone}. The follow-up clock has started.</div>
+              <div className="text-xs opacity-75 mt-1">
+                Date taken from the landlord's words and read back on the call.
+                {result.source === "live" ? " Tone and summary extracted live by the Databricks chat model." : " Tone estimated by FixIt's rules (no live model used)."}
+              </div></>
           ) : <div className="font-bold">No repair date given. A FixIt default deadline was set. Follow up in writing.</div>}
         </div>
       )}
@@ -271,9 +282,9 @@ function Deadline({ c, onChange }: { c: any; onChange: (c: any) => void }) {
   const overdue = tl.overdue || d.status === "missed" || d.status === "escalated";
   return (
     <section className="card p-5 space-y-3">
-      <h2 className="h2 flex items-center gap-2"><Clock className="w-6 h-6" /> Repair deadline</h2>
+      <h2 className="h2 flex items-center gap-2"><Clock className="w-6 h-6" /> Follow-up deadline</h2>
       <div className={`rounded-xl p-4 ${d.status === "met" ? "bg-emerald-600 text-white" : overdue ? "bg-red-600 text-white" : "bg-neutral-900 text-white"}`}>
-        <div className="text-sm uppercase font-bold opacity-80">{d.status === "met" ? "Fixed" : overdue ? "Deadline missed" : "Time left"}</div>
+        <div className="text-sm uppercase font-bold opacity-80">{d.status === "met" ? "Fixed" : overdue ? "Promised date passed" : "Time left"}</div>
         <div className="text-4xl font-extrabold tabular-nums">
           {d.status === "met" ? "✓" : `${overdue ? "−" : ""}${tl.days}d ${tl.hours}h ${tl.minutes}m`}
         </div>
@@ -284,11 +295,11 @@ function Deadline({ c, onChange }: { c: any; onChange: (c: any) => void }) {
         <div className="flex flex-wrap gap-2">
           <button className="btn-ghost" onClick={act("simulate", { days: 8 })}><FastForward className="w-4 h-4" /> Simulate +8 days</button>
           <button className="btn-ghost" onClick={act("fixed")}>Landlord fixed it</button>
-          {overdue && <button className="btn-primary" onClick={act("escalate")}>Escalate → city complaint</button>}
+          {overdue && <button className="btn-primary" onClick={act("escalate")}>Prepare city complaint draft →</button>}
         </div>
       )}
       <ErrorBox error={err} />
-      <p className="text-xs text-neutral-500">Default windows (7 days routine, 48h urgent, 24h emergency) are FixIt defaults, not legal deadlines.</p>
+      <p className="text-xs text-neutral-500">A FixIt reminder, not a legal deadline: it's the landlord's promised date, or a FixIt default (7 days routine, 48h urgent, 24h emergency). Only the City sets official repair deadlines, in an Official Notice after an inspection.</p>
       {c.complaint && <Complaint p={c.complaint} />}
     </section>
   );

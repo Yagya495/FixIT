@@ -8,7 +8,7 @@ from datetime import datetime
 
 from . import config, db
 from .services import landlords, synthetic
-from .services.taxonomy import SEED_CODE_SECTIONS, VIOLATION_TYPES
+from .services.taxonomy import code_section_rows, taxonomy_rows
 
 
 def seed_local(now: datetime | None = None, keep_code_sections: bool = True) -> dict:
@@ -17,9 +17,12 @@ def seed_local(now: datetime | None = None, keep_code_sections: bool = True) -> 
     existing_sections = db.q("SELECT * FROM {silver.code_sections}") if keep_code_sections and _has_table() else []
     db.init_local_schema(drop=True)
 
-    db.insert_many("ref.violation_types", VIOLATION_TYPES)
-    parsed = [s for s in existing_sections if s.get("verified")]
-    db.insert_many("silver.code_sections", parsed or SEED_CODE_SECTIONS)
+    db.insert_many("ref.violation_types", taxonomy_rows())  # placeholders unless a human approved a mapping
+    rows = {s["section_id"]: s for s in code_section_rows()}
+    for s in existing_sections:  # keep anything verified that was loaded earlier
+        if s.get("verified"):
+            rows.setdefault(s["section_id"], s)
+    db.insert_many("silver.code_sections", list(rows.values()))
 
     data = synthetic.generate(now=now)
     db.insert_many("gold.owners", data["owners"])

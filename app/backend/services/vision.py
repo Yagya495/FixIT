@@ -95,9 +95,14 @@ def analyze_frame_live(image: bytes, mode: str, media_type: str = "image/jpeg") 
 
 
 def analyze_frame(image: bytes, sha256: str, mode: str, frame_index: int, n_frames: int,
-                  media_type: str = "image/jpeg") -> tuple[FrameResult, str]:
-    """Returns (result, source) where source ∈ live|cache|fallback|none."""
+                  media_type: str = "image/jpeg", alt_sha: str | None = None) -> tuple[FrameResult, str]:
+    """Returns (result, source) where source ∈ live|cache|fallback|none.
+
+    The cache is keyed by the sha of the photo file that /api/demo/warm analyzed. The browser re-encodes uploads,
+    so it also sends the original file's sha (`alt_sha`), which is checked too."""
     cached = demo_cache.get("vision", f"{mode}-{sha256}")
+    if cached is None and alt_sha:
+        cached = demo_cache.get("vision", f"{mode}-{alt_sha}")
     if config.DEMO_MODE and cached is not None:
         # Cached demo inputs are served directly on stage: deterministic and instant.
         return FrameResult.model_validate(cached), "cache"

@@ -68,10 +68,9 @@ def get_case(request_id: str) -> dict | None:
     deadline = None
     if dl:
         due = datetime.fromisoformat(dl["due_date"])
+        # Computed on read, never written here: a write-on-read raced the call's own deadline UPDATE and Delta rejected
+        # it (DELTA_CONCURRENT_APPEND -> HTTP 500). Only terminal states (met/escalated) are stored.
         status = deadlines.status_at(due, now, dl["status"])
-        if status != dl["status"]:
-            db.execute("UPDATE {silver.deadlines} SET status = :s, updated_at = :u WHERE request_id = :r",
-                       {"s": status, "u": now.isoformat(timespec="seconds"), "r": request_id})
         deadline = {**dl, "status": status, "now": now.isoformat(timespec="seconds"),
                     "time_left": deadlines.time_left(due, now)}
     from . import calls as calls_svc  # local import avoids cycle
@@ -175,6 +174,11 @@ def _groups_excluding(property_id: str, now: datetime, exclude_hash: str) -> lis
 
 
 def list_cases() -> list[dict]:
-    return db.q("""SELECT r.request_id, r.created_at, r.sent_at, s.address, s.unit, d.status, d.due_date
+    rows = db.q("""SELECT r.request_id, r.created_at, r.sent_at, s.address, s.unit, d.status, d.due_date, d.sim_offset_days
                    FROM {silver.repair_requests} r JOIN {silver.scans} s ON s.scan_id = r.scan_id
                    LEFT JOIN {silver.deadlines} d ON d.request_id = r.request_id ORDER BY r.created_at DESC""")
+    for r in rows:  # same computed status as get_case
+        if r.get("due_date"):
+            now = _now() + timedelta(days=int(r.get("sim_offset_days") or 0))
+            r["status"] = deadlines.status_at(datetime.fromisoformat(r["due_date"]), now, r["status"])
+    return rows

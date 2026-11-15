@@ -71,6 +71,7 @@ def xray(scan_id: str) -> dict:
         "violations": vio, "history": hist, "verdict": verdict(vio, hist),
         "tour_questions": letters.tour_questions(vio, hist),
         "addendum": letters.lease_addendum([v for v in vio if v.get("certain")] or vio, address, scan["unit"]),
-        "caveat": "Possible issues spotted in marketing photos. Verify in person. Building history is demo (synthetic) data.",
+        "caveat": ("Possible issues spotted by AI in marketing photos. This is not an inspection: only a City of Madison "
+                   "building inspector can determine a code violation. Verify in person. Building history is demo (synthetic) data."),
         "disclaimer": config.DISCLAIMER,
     }

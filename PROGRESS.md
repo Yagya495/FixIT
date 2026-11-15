@@ -52,6 +52,38 @@ env vars exist on this laptop.
 | Silent failures / blocking `alert()` on call, deadline, joint, scan actions | Inline error messages |
 | Windows: evidence paths with backslashes (1 test failed) | POSIX paths |
 
+## Milestone 2: accuracy, honesty, demo readiness (2026-11-14, in progress)
+Done (no P1 features started):
+- **Chapter 27 workflow ready, not run** (no PDF yet). Official source = MGO Ch. 27 on Municode (the City's own "minimum
+  housing ordinance" link). `ai_parse_document` output shape verified on this warehouse with a fake fixture (deleted);
+  section-split SQL verified on fixture rows. `scripts/code_parse.py upload → parse → propose → (human fills
+  eval/code_review.csv with a reviewer) → approve`. **Fixed:** notebook 10 marked every parsed section `verified=1` and
+  wiped the seed rows: now `verified=0`, seeds kept, page headers/footers dropped; resets keep approved mappings
+  (`app/backend/code_sections_verified.json`). UI distinguishes FixIt summary / official text pending review / verified.
+- The "Minimum Housing Standards Checklist" PDF URL now redirects to the BI home page (gone). The current official list
+  is the Common Code Violations page ("some of the common issues").
+- **Vision eval ready:** `scripts/eval_vision.py` (live only, never cache/Demo Mode, strips JPEG EXIF) +
+  `eval/README.md` (what to stage, privacy, decision rules). Mechanics verified on 3 synthetic images (results discarded:
+  not an evaluation). **Needs real/staged photos.**
+- **Fixed: Demo Mode cache never matched browser uploads** (warm hashes the file on disk; the browser re-encodes).
+  The browser now sends the original file's SHA-256 too (test added).
+- **Fixed: Delta write conflict → HTTP 500** on the Databricks backend (reading a case UPDATEd the deadline while the call's
+  own UPDATE ran). Reads no longer write; UPDATE/DELETE retry on Delta concurrency conflicts (test added).
+- **Fixed: double-clicking "Demo line"** sent duplicate lines / hit a closed call ("call not found"). Synchronous guard;
+  20 rapid clicks → exactly 3 lines, no error (browser-verified).
+- **Source labels**: Listing/Scan show "Analyzed live just now by llama-4-maverick…", "Saved result…", or "Demo script…";
+  call shows whether extraction was live; Genie caption; Scan says "No possible issues spotted in N photos" after a live
+  empty result (was "Nothing yet").
+- **Not-official wording**: "Final request" (not "Final notice": the City issues Official Notices); "Follow-up deadline /
+  Promised date passed" + "not a legal deadline"; "DRAFT … not submitted, not an official document"; joint draft says
+  neighbors haven't agreed; evidence packet "NOT an official inspection record"; "only a City inspector can determine a
+  code violation" on Listing/Scan.
+- `docs/DEMO_SCRIPT.md`: 3-minute Databricks-focused script, words to avoid, recovery table, manual checklist for the App.
+- Browser-verified on a deployment-equivalent local build (Databricks backend + live models + Genie + Demo Mode).
+  The deployed App itself needs the user's OAuth "Continue" (not clicked by the agent).
+
+Needs the user: Chapter 27 PDF export · staged photos for eval + stage · manual checklist on the App/phone.
+
 ## Milestone 1 on Databricks: DONE (2026-11-14, approved by the user, profile `fixit` only)
 **Deployed App:** https://fixit-madison-7474647207905142.aws.databricksapps.com (workspace sign-in required)
 

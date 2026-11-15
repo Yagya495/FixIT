@@ -73,6 +73,11 @@ def _section_doc(s: dict) -> list[str]:
     return tokenize(f'{s["title"]} {s["title"]} {s["text"]} {" ".join(hints)}')
 
 
+def _official(s: dict) -> bool:
+    """True when the text came from the official PDF (even if its section id is not yet human-verified)."""
+    return bool(s.get("source_doc")) and not str(s["source_doc"]).startswith("seed")
+
+
 def rank_sections(issue: str, sections: list[dict], k: int = 3) -> list[dict]:
     """Pure BM25 ranking — unit-tested."""
     if not sections:
@@ -86,7 +91,7 @@ def rank_sections(issue: str, sections: list[dict], k: int = 3) -> list[dict]:
         s = sections[i]
         out.append({"section_id": s["section_id"], "title": s["title"], "snippet": (s["text"] or "")[:400],
                     "url": s.get("url") or config.OFFICIAL_LINKS["chapter_27"], "score": round(sc / top, 3),
-                    "verified": bool(s.get("verified"))})
+                    "verified": bool(s.get("verified")), "official_text": _official(s), "page": s.get("page")})
     return out
 
 
@@ -132,7 +137,7 @@ def _vector_search(issue: str, k: int) -> list[dict]:
         out.append({"section_id": section_id, "title": sec.get("title", section_id), "snippet": text[:400],
                     "url": sec.get("url") or config.OFFICIAL_LINKS["chapter_27"], "score": round(float(score), 3),
                     # Parsed text is real ordinance text, but the section id only counts once a human verifies it.
-                    "verified": bool(sec.get("verified"))})
+                    "verified": bool(sec.get("verified")), "official_text": True, "page": page})
         if len(out) == k:
             break
     return out
@@ -176,7 +181,7 @@ def sections_for_type(type_id: str) -> list[dict]:
         if s:
             out.append({"section_id": sid, "title": s["title"], "snippet": (s["text"] or "")[:400],
                         "url": s.get("url") or config.OFFICIAL_LINKS["chapter_27"], "score": 1.0,
-                        "verified": bool(s.get("verified"))})
+                        "verified": bool(s.get("verified")), "official_text": _official(s), "page": s.get("page")})
     if not out:
         # Automatic match, not a human-approved mapping: never present its section number as verified.
         out = [{**h, "verified": False} for h in match_code(f'{v["name"]} {v["plain_explanation"]}')[:2]]
