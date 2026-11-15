@@ -105,7 +105,12 @@ Finish every P0 before starting any P1.
 - **Review workflow:** proposals in `docs/legal/ch27_proposed_mappings.json` → `scripts/ch27_review_sheet.py` checks every
   excerpt verbatim against the parse and the PDF text layer and writes `docs/legal/CH27_REVIEW.md` + `eval/code_review.csv`
   → user decides → cross-check against the current official source → user supplies the reviewer name →
-  `code_parse.py approve` (dry run, then `--apply`). The reviewer field stays blank until the user gives a name.
+  `code_parse.py approve` (dry run, then `--apply`).
+- **Reviewer rule (user, 2026-11-14):** reviewer = **Naisha Chadha**, entered **only** for citations she personally
+  reviewed and explicitly approved after the official-source comparison; every other reviewer field stays blank. Nothing
+  provisional becomes verified without her explicit approval. Approval means the citation and quoted text were checked
+  against the official source; it does **not** mean she is a lawyer or City inspector, or that an AI-detected condition
+  is a confirmed violation (recorded as `review_meaning` in `code_sections_verified.json`).
 - **Review status (2026-11-14):** all decisions **provisional, nothing verified**. Provisionally accepted: plumbing
   §27.05(2)(j); heat §27.04(2)(h) (67°F in habitable rooms, kitchens, bathrooms + occupant exception; no "heating
   season"); surfaces §27.05(2)(g)1.; locks §27.05(2)(h), (h)3., (h)4. (+ (h)6. alternatives, to be confirmed); windows

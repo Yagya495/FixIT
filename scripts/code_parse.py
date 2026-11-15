@@ -26,6 +26,9 @@ sys.path.insert(0, str(ROOT))
 OFFICIAL_URL = ("https://library.municode.com/wi/madison/codes/code_of_ordinances"
                 "?nodeId=COORMAWIVOIICH20--31_CH27MIHOPRMACO")
 VERIFIED_JSON = ROOT / "app" / "backend" / "code_sections_verified.json"
+REVIEW_MEANING = ("Reviewer approval means the ordinance citation and quoted text were checked against the official "
+                  "source. It does not mean the reviewer is a lawyer or a City inspector, or that an AI-detected "
+                  "condition is a confirmed legal violation.")
 
 
 def parse_sql(c: str) -> list[str]:
@@ -208,7 +211,10 @@ def main() -> int:
     prev = json.loads(VERIFIED_JSON.read_text(encoding="utf-8")) if VERIFIED_JSON.exists() else {}
     sections = {s["section_id"]: s for s in prev.get("sections", [])}
     sections.update({s["section_id"]: {**s, "verified": 1} for s in secs})
-    VERIFIED_JSON.write_text(json.dumps({"source": OFFICIAL_URL, "mapping": {**prev.get("mapping", {}), **approved},
+    reviewers = {**prev.get("reviewers", {}),
+                 **{t: next(r for r in rows if r["type_id"] == t)["reviewer"].strip() for t in approved}}
+    VERIFIED_JSON.write_text(json.dumps({"source": OFFICIAL_URL, "review_meaning": REVIEW_MEANING,
+                                         "mapping": {**prev.get("mapping", {}), **approved}, "reviewers": reviewers,
                                          "sections": list(sections.values())}, indent=2), encoding="utf-8")
     print(f"Databricks updated; wrote {VERIFIED_JSON.relative_to(ROOT)} (local backend picks it up on reset).")
     return 0

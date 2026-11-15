@@ -406,8 +406,14 @@ the correct text is in `docs/legal/ch27_parse_corrections.json`. Neither passage
 
 ## How to approve
 
-1. Read each excerpt against the official text on Municode (link above).
-2. In `eval/code_review.csv`, fill `approved_section_ids` (e.g. `27.04(2)(h)`) and `reviewer` for rows you approve.
-   Leave a row blank to keep the placeholder. Leave `CO_DETECTOR_MISSING` blank unless a separate source is verified.
+1. Read each excerpt against the current official text on Municode (link above).
+2. In `eval/code_review.csv`, fill `approved_section_ids` (e.g. `27.04(2)(h)`) and `reviewer` **only** for rows the
+   reviewer personally checked against the official source and explicitly approved. Reviewer: **Naisha Chadha**.
+   Every other reviewer field stays blank. Leave `CO_DETECTOR_MISSING` blank unless a separate source is verified.
+
+   **What a reviewer approval means:** the ordinance citation and quoted text were checked against the official
+   source. It does **not** mean the reviewer is a lawyer or a City inspector, and it does **not** mean that an
+   AI-detected condition is a confirmed legal violation.
+
 3. Run `python scripts/code_parse.py approve --profile fixit --warehouse <id>` (dry run) and check the plan.
    Only then run it with `--apply`. Until then nothing in the app changes.
