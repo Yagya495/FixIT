@@ -575,6 +575,26 @@
       "where": "MGO 34.907 internal references",
       "status": "open (outside Ch. 27)",
       "issue": "Refers to 'sub. (2)(a)', 'sub. (2)(b)' and 'sub. (3)(h)' for alarm requirements that are now numbered (1)(b)1./(1)(b)2. Not interpreted."
+    },
+    {
+      "where": "27.04(2)(d) (p. 6), handrail sentence",
+      "issue": "Chapter 27 says handrails and guardrails are 'as specified in Wis. Admin. Code § SPS 321.04(2) or ch. SPS 362'. In the current SPS 321.04 (read on docs.legis.wisconsin.gov 2026-11-14), sub. (2) is 'Details' (width, riser height, tread depth, headroom); handrails and guards are in sub. (3) 'Handrails and guards' (e.g. (3)(a)1.: 'A flight of stairs with more than 3 risers shall be provided with at least one handrail for the full length of the flight.'). 27.05(2)(i) cites SPS 321.04 without a subsection. Possibly an outdated cross-reference; not interpreted. SPS 321 applies by its own terms to 1-2 family dwellings begun on or after June 1, 1980 (SPS 320.03, 320.04(1)(a), 320.05(1)); whether Chapter 27's incorporation extends it to other buildings is not determined.",
+      "status": "open"
+    },
+    {
+      "where": "27.05(2)(w) (p. 21)",
+      "issue": "Chapter 27 incorporates 'Wis. Admin. Code § SPS 328.02' for smoke alarms. The current SPS 328.02 is 'Scope' (created CR 10-089, eff. 2-1-11); smoke detectors are now SPS 328.03 ('renum. from Comm 28.02 ... eff. 2-1-11'). Probably not updated after the 2011 renumbering; not interpreted.",
+      "status": "open"
+    },
+    {
+      "where": "27.07(2)(d) (p. 30)",
+      "issue": "The pest rule distinguishes 'a single-family dwelling' from 'any residential dwelling other than a single-family dwelling', but 27.03 does not define 'single-family dwelling' (it defines 'Dwelling' and lists 'Single-family detached dwellings' as a type of residential building). How a rented single-family house, or one shared by unrelated tenants, is classified is not determined.",
+      "status": "open"
+    },
+    {
+      "where": "Wis. Stat. 101.149 cross-reference note (outside Ch. 27)",
+      "issue": "The statute page's editorial note says 'See also ss. SPS 321.095 and 366.1010 (2)'. The current SPS 321.095 is 'Automatic fire sprinklers'; CO detectors in the Uniform Dwelling Code are SPS 321.097. Editorial note only; not interpreted.",
+      "status": "open"
     }
   ]
 }
