@@ -17,7 +17,7 @@
     "DAMAGED_SURFACES": "Legal Reviewer",
     "NO_HEAT": "Legal Reviewer"
   },
-  "reviewer_identity": "Public display label only. The reviewer's personal identity is withheld from public copies at the reviewer's request; the original approval record is kept privately by the project owner and in this repository's history. Approvals are unchanged.",
+  "reviewer_identity": "'Legal Reviewer' is a public display label for the project's reviewer role, not a claim of professional or independent legal certification (see review_meaning). The reviewer's personal identity is withheld from public copies at the reviewer's request; the original approval record is kept privately by the project owner and in this repository's history. Approvals are unchanged.",
   "sections": [
     {
       "section_id": "27.04(2)(h)",

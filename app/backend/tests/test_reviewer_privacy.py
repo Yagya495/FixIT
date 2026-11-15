@@ -72,7 +72,9 @@ def _assert_no_names(text: str, where: str):
 def test_public_approvals_file_uses_only_the_role_label():
     raw = json.loads((ROOT / "app" / "backend" / "code_sections_verified.json").read_text(encoding="utf-8"))
     assert set(raw["reviewers"].values()) == {LABEL}
-    assert "withheld" in raw["reviewer_identity"]
+    note = raw["reviewer_identity"]
+    assert "withheld" in note and "display label" in note and "not a claim of professional or independent legal" in note
+    assert "not mean the reviewer is a lawyer" in raw["review_meaning"]
     # Approvals unchanged: exactly the three verified citations
     assert raw["mapping"] == {"LEAK_PLUMBING": ["27.05(2)(j)"], "DAMAGED_SURFACES": ["27.05(2)(g)1."],
                               "NO_HEAT": ["27.04(2)(h)"]}
@@ -86,7 +88,50 @@ def test_private_audit_record_is_never_committed_or_bundled():
     assert ".private" in (ROOT / ".dockerignore").read_text(encoding="utf-8").split()
 
 
-# ---------------------------------------------------------------- every tracked file
+# ---------------------------------------------------------------- history-free checks (always run, e.g. shallow clones)
+# Any "reviewer: X", "reviewed by X", "approved by (the) X" attribution must name only these (the second is ordinance
+# text: "approved by the Building Inspection Division").
+_ATTRIBUTION = re.compile(r"(?i:reviewer|reviewed by|approved by|approver|signed by)\W{0,4}(?:the\s+|project's\s+)?"
+                          r"\**([A-Z][a-z]+(?:[ \t]+[A-Z][a-z]+)+)")
+_ALLOWED_ATTRIBUTIONS = {LABEL, "Building Inspection Division"}
+
+
+def _attributions(text: str) -> set[str]:
+    return {m.group(1) for m in _ATTRIBUTION.finditer(text)} - _ALLOWED_ATTRIBUTIONS
+
+
+def _tracked_text_files():
+    if _git("rev-parse", "--git-dir") is None:
+        pytest.skip("not a git checkout")
+    for f in (_git("ls-files") or "").splitlines():
+        p = ROOT / f
+        if not p.is_file() or p.stat().st_size > 5_000_000:
+            continue
+        b = p.read_bytes()
+        yield f, (_pdf_text(b) if f.lower().endswith(".pdf") else b.decode("utf-8", "ignore"))
+
+
+def test_tracked_files_attribute_reviews_only_to_the_role_label():
+    bad = {f: sorted(a) for f, t in _tracked_text_files() if (a := _attributions(t))}
+    assert not bad, f"review attributed to a personal name: {bad}"
+
+
+def test_review_csv_reviewer_column_holds_only_the_label():
+    import csv
+    rows = list(csv.DictReader((ROOT / "eval" / "code_review.csv").open(encoding="utf-8")))
+    assert {r["reviewer"].strip() for r in rows} <= {"", LABEL}
+    assert sorted(r["type_id"] for r in rows if r["reviewer"].strip()) == ["DAMAGED_SURFACES", "LEAK_PLUMBING", "NO_HEAT"]
+
+
+def test_attribution_check_catches_a_personal_name():
+    fake = "Jane" + " Example"  # built at runtime so this file itself passes the tracked-file scan
+    assert _attributions(f"**Verified** (reviewer: {fake}, 2026-11-14)") == {fake}
+    assert _attributions(f"approved by the reviewer, {fake}, on 2026-11-14") == {fake}
+    assert _attributions(f"Reviewed by {fake}") == {fake}
+    assert _attributions("Reviewer: **Legal Reviewer**. approved by the Building Inspection Division") == set()
+
+
+# ---------------------------------------------------------------- every tracked file (name known)
 def test_no_tracked_file_contains_the_reviewers_name():
     if not NAMES:
         pytest.skip("original reviewer record not available (no git history and no private audit record)")
@@ -116,8 +161,7 @@ def client(tmp_path_factory):
 
 
 def test_public_demo_outputs_do_not_expose_the_reviewer(client, monkeypatch):
-    if not NAMES:
-        pytest.skip("original reviewer record not available")
+    """Always runs: no review attribution to anyone but the label; plus the known names when available."""
     from app.backend import config, main
     monkeypatch.setattr(config, "PUBLIC_DEMO", True)
     monkeypatch.setattr(config, "RATE_LIMIT_POSTS", 0)
@@ -165,6 +209,7 @@ def test_public_demo_outputs_do_not_expose_the_reviewer(client, monkeypatch):
     assert len(seen) > 20
     for where, text in seen:
         _assert_no_names(text, where)
+        assert not _attributions(text), f"review attributed to a personal name in {where}"
     main._POSTS.clear()
 
 

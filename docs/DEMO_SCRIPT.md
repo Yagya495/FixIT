@@ -19,6 +19,9 @@ Presenter (P) drives; Teammate (T) plays the landlord on the call.
 ## The three verified citations (the only ones)
 Reviewed against the official Chapter 27 and approved by the project's Legal Reviewer (2026-11-14). The App shows "Possibly relevant:
 MGO § …", the exact excerpt, and "Whether this condition violates it is for a City of Madison inspector to decide."
+"Legal Reviewer" is the public label for the project's reviewer role. It is **not** a lawyer's review or any
+professional or independent legal certification, so never present it as one; say "a team member checked the citation
+and quoted text against the official ordinance."
 | Issue | Citation |
 |---|---|
 | No heat (`NO_HEAT`) | **MGO §27.04(2)(h)** (67°F + occupant exception) |
