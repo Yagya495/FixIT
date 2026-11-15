@@ -62,6 +62,28 @@ def store(scan_id: str, data: bytes, media_type: str, captured_at: str | None = 
     return row
 
 
+def prepare(scan_id: str, data: bytes, media_type: str, captured_at: str | None = None) -> dict:
+    """The silver.evidence row for a frame, computed locally (no I/O). Same id/path/hash rules as store()."""
+    sha = sha256_bytes(data)
+    now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return {"evidence_id": evidence_id_for(sha, scan_id), "scan_id": scan_id, "volume_path": storage_path(sha, media_type),
+            "sha256": sha, "captured_at": captured_at or now, "uploaded_at": now, "media_type": media_type}
+
+
+def existing(evidence_ids: list[str]) -> dict[str, dict]:
+    """Already-stored evidence rows among these ids, in ONE query."""
+    ids = sorted(set(evidence_ids))
+    if not ids:
+        return {}
+    params = {f"e{i}": e for i, e in enumerate(ids)}
+    rows = db.q(f"SELECT * FROM {{silver.evidence}} WHERE evidence_id IN ({', '.join(':' + k for k in params)})", params)
+    return {r["evidence_id"]: r for r in rows}
+
+
+def write_file(row: dict, data: bytes) -> None:
+    _write(row["volume_path"], data)
+
+
 def get(evidence_id: str) -> dict | None:
     return db.q1("SELECT * FROM {silver.evidence} WHERE evidence_id = :e", {"e": evidence_id})
 

@@ -51,17 +51,27 @@ def overall_source(sources: list[str]) -> str:
 def process_frames(scan_id: str, frames: list[tuple], frame_offset: int = 0, frame_total: int = 0) -> dict:
     """frames: (bytes, media_type, captured_at[, original_file_sha]). Returns per-frame results + deduped violations.
 
-    frame_offset/frame_total place this request within a larger upload sent in batches. Evidence is stored and
-    detections written in frame order; only the model calls run in parallel."""
+    frame_offset/frame_total place this request within a larger upload sent in batches. Detections are written in
+    frame order. The model calls start right away and the Volume uploads run alongside them; database writes are
+    batched (one statement per table per request)."""
     scan = get_scan(scan_id)
     if not scan:
         raise KeyError(scan_id)
     frames = frames[: config.MAX_FRAMES]
     total = max(frame_total, frame_offset + len(frames))
-    stored = []
-    for frame in frames:
-        data, media_type, captured_at = frame[:3]
-        stored.append((frame, evidence.store(scan_id, data, media_type, captured_at)))
+
+    # Which frames are new: one lookup for the whole batch (C), plus repeats within this batch.
+    rows = [evidence.prepare(scan_id, f[0], f[1], f[2]) for f in frames]
+    already = evidence.existing([r["evidence_id"] for r in rows])
+    stored, new_rows, seen = [], [], set()
+    for frame, row in zip(frames, rows):
+        eid = row["evidence_id"]
+        if eid in already or eid in seen:
+            stored.append((frame, (already.get(eid) or row) | {"reused": True}))
+        else:
+            seen.add(eid)
+            new_rows.append((frame, row))
+            stored.append((frame, row))
 
     def analyze(k: int):
         frame, ev = stored[k]
@@ -71,19 +81,25 @@ def process_frames(scan_id: str, frames: list[tuple], frame_offset: int = 0, fra
 
     todo = [k for k, (_, ev) in enumerate(stored) if not ev.get("reused")]
     workers = min(config.VISION_CONCURRENCY, len(todo)) or 1
-    if workers > 1:
-        with ThreadPoolExecutor(max_workers=workers) as pool:
-            results = dict(zip(todo, pool.map(analyze, todo)))
-    else:
-        results = {k: analyze(k) for k in todo}
+    # A: model calls and Volume uploads in parallel (separate pools so uploads never take a model slot).
+    with ThreadPoolExecutor(max_workers=workers) as models, ThreadPoolExecutor(max_workers=4) as uploads:
+        model_jobs = {k: models.submit(analyze, k) for k in todo}
+        upload_jobs = [uploads.submit(evidence.write_file, row, frame[0]) for frame, row in new_rows]
+        for j in upload_jobs:
+            j.result()                                     # a failed upload fails the request, as before
+        # B: all new evidence rows in one statement (written before any detection that references them).
+        db.insert_many("silver.evidence", [row for _, row in new_rows])
+        results = {k: job.result() for k, job in model_jobs.items()}
 
-    per_frame, sources = [], []
+    prior_rows = _detection_rows(scan_id) if any(ev.get("reused") for _, ev in stored) else []
+    per_frame, sources, det_rows = [], [], []
     for k, (frame, ev) in enumerate(stored):
         i = frame_offset + k
         if ev.get("reused"):
             # The same photo was already analyzed in this scan (re-upload, double tap, repeated frame): don't call the
             # model again and don't add detections, so a repeat can't create duplicate or contradictory findings.
-            prior = [r for r in _detection_rows(scan_id) if r["evidence_id"] == ev["evidence_id"]]
+            # Earlier requests' rows plus this request's not-yet-written rows (a repeat within the same batch).
+            prior = [r for r in prior_rows + det_rows if r["evidence_id"] == ev["evidence_id"]]
             per_frame.append({"evidence_id": ev["evidence_id"], "sha256": ev["sha256"], "scene": None,
                               "detections": [{"violation_type": r["violation_type"], "confidence": r["confidence"],
                                               "evidence_note": r["note"], "evidence_id": ev["evidence_id"]} for r in prior],
@@ -102,7 +118,7 @@ def process_frames(scan_id: str, frames: list[tuple], frame_offset: int = 0, fra
                 continue
             dd = vision.apply_threshold(kept)
             dd.update({"evidence_id": ev["evidence_id"], "scene": res.scene})
-            db.insert("silver.detections", {
+            det_rows.append({
                 # Full evidence id (hash prefix + scan suffix) + frame index: the same photo may appear in several
                 # scans without colliding.
                 "detection_id": f"D-{ev['evidence_id'][2:]}-{i}-{j}", "scan_id": scan_id,
@@ -113,7 +129,8 @@ def process_frames(scan_id: str, frames: list[tuple], frame_offset: int = 0, fra
             dets.append(dd)
         per_frame.append({"evidence_id": ev["evidence_id"], "sha256": ev["sha256"], "scene": res.scene,
                           "detections": dets, "screened_out": screened, "source": source, "frame_index": i})
-    violations = rebuild_violations(scan_id)
+    db.insert_many("silver.detections", det_rows)          # B: one statement, frame order preserved
+    violations = rebuild_violations(scan_id, scan)
     counts = {s: sources.count(s) for s in sorted(set(sources))}
     # The UI shows where results came from; name the model only when it actually answered.
     return {"scan_id": scan_id, "frames": per_frame, "violations": violations, "source": overall_source(sources),
@@ -142,15 +159,15 @@ def observations(scan_id: str) -> dict[str, list[dict]]:
     return out
 
 
-def rebuild_violations(scan_id: str) -> list[dict]:
-    scan = get_scan(scan_id)
+def rebuild_violations(scan_id: str, scan: dict | None = None) -> list[dict]:
+    scan = scan or get_scan(scan_id)
     obs_by_type = observations(scan_id)
     dets = [{"violation_type": t, "confidence": o["confidence"], "evidence_id": o["evidence_id"],
              "evidence_note": o["note"], "severity_hint": BY_ID[t]["default_severity"]}
             for t, obs in obs_by_type.items() for o in obs]
     merged = vision.dedup(dets)
     db.execute("DELETE FROM {gold.violations} WHERE scan_id = :s", {"s": scan_id})
-    out = []
+    out, rows = [], []
     for m in merged:
         t = m["violation_type"]
         tax = BY_ID[t]
@@ -160,8 +177,9 @@ def rebuild_violations(scan_id: str) -> list[dict]:
                "violation_type": t, "severity": sev, "confidence": round(m["confidence"], 3),
                "code_section_ids": [s["section_id"] for s in sections], "explanation": tax["plain_explanation"],
                "evidence_ids": [e for e in m["evidence_ids"] if e], "status": "open"}
-        db.insert("gold.violations", row)
+        rows.append(row)
         out.append(_decorate(row, sections, obs_by_type[t]))
+    db.insert_many("gold.violations", rows)                # B: one statement for all findings
     return out
 
 

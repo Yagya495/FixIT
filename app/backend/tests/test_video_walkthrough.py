@@ -217,3 +217,69 @@ def test_rate_limited_model_call_is_retried(monkeypatch):
     with pytest.raises(llm.LLMUnavailable):
         llm.chat([{"role": "user", "content": "x"}], endpoint="e")
     assert len(sent) == llm.RETRIES + 1                                           # bounded: gives up, frame reported "none"
+
+
+# --- Speed changes (2026-11-15): batched writes, one duplicate check, uploads overlap model calls -----------------
+
+def test_one_write_per_table_and_one_duplicate_check_per_batch(client, monkeypatch):
+    from app.backend import db
+    from app.backend.services import evidence
+    single, many, lookups = [], [], []
+    real_insert, real_many, real_existing = db.insert, db.insert_many, evidence.existing
+    monkeypatch.setattr(db, "insert", lambda t, r: (single.append(t), real_insert(t, r))[1])
+    monkeypatch.setattr(db, "insert_many", lambda t, rows: (many.append((t, len(list(rows)))), real_many(t, rows))[1])
+    monkeypatch.setattr(evidence, "existing", lambda ids: (lookups.append(len(ids)), real_existing(ids))[1])
+    sid = new_scan(client, "v-speed")
+    single.clear()
+    upload_batched(client, sid, FRAMES)                                           # 3 batches: 5, 5, 2
+    assert single == []                                                           # no per-row INSERTs left
+    assert lookups == [5, 5, 2]
+    ev = [n for t, n in many if t == "silver.evidence"]
+    det = [n for t, n in many if t == "silver.detections"]
+    assert ev == [5, 5, 2] and sum(det) == len(STAIN) + len(OUTLET)
+    assert [t for t, _ in many].count("gold.violations") == 3                     # one rebuild statement per batch
+
+
+def test_model_calls_start_before_uploads_finish(client, monkeypatch):
+    from app.backend.services import evidence
+    import threading
+    model_started = threading.Event()
+    seen_during_upload = []
+    real_write = evidence.write_file
+
+    def slow_write(row, data):
+        seen_during_upload.append(model_started.wait(timeout=2))                  # a model call began meanwhile
+        real_write(row, data)
+
+    real_live = vision.analyze_frame_live
+    def live(image, mode, media_type="image/jpeg"):
+        model_started.set()
+        return real_live(image, mode, media_type)
+
+    monkeypatch.setattr(evidence, "write_file", slow_write)
+    monkeypatch.setattr(vision, "analyze_frame_live", live)
+    sid = new_scan(client, "v-overlap")
+    r = upload_batched(client, sid, FRAMES[:3])
+    assert r[0]["source"] == "live" and seen_during_upload and all(seen_during_upload)
+
+
+def test_failed_upload_fails_the_request_and_writes_no_rows(client, monkeypatch):
+    from app.backend.services import evidence
+    def broken(row, data):
+        raise OSError("volume unavailable")
+    monkeypatch.setattr(evidence, "write_file", broken)
+    sid = new_scan(client, "v-upfail")
+    with pytest.raises(OSError):
+        client.post(f"/api/scans/{sid}/frames", files=[("files", ("f.png", FRAMES[0], "image/png"))])
+    scan = client.get(f"/api/scans/{sid}").json()
+    assert scan["evidence"] == [] and scan["violations"] == []
+
+
+def test_repeat_within_a_batch_shows_the_original_frames_detections(client):
+    sid = new_scan(client, "v-inbatch")
+    r = client.post(f"/api/scans/{sid}/frames",
+                    files=[("files", (f"f{i}.png", p, "image/png")) for i, p in enumerate([FRAMES[9], FRAMES[9]])]).json()
+    first, rep = r["frames"]
+    assert rep["repeat"] and not first.get("repeat") and len(CALLS) == 1
+    assert [d["violation_type"] for d in rep["detections"]] == [d["violation_type"] for d in first["detections"]] == ["EXPOSED_WIRING"]
+    assert all(d["evidence_id"] == first["evidence_id"] for d in rep["detections"])
