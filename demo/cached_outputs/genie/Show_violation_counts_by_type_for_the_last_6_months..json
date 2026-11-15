@@ -1,7 +1,7 @@
 {
   "question": "Show violation counts by type for the last 6 months.",
-  "text": "Over the past 6 months, the most common violation types reported were PEST_EVIDENCE (375 reports), WATER_DAMAGE_MOLD (323), and DAMAGED_SURFACES (311). Less frequent violations included NO_HEAT (59 reports) and BLOCKED_EGRESS (64). The data shows that pest evidence and water damage/mold issues are the most prevalent concerns in recent reports.",
-  "sql": "SELECT reports.violation_type, COUNT(*) AS violation_count\nFROM fixit.gold.reports\nWHERE reports.reported_at >= date_add(MONTH, -6, CURRENT_DATE)\n  AND reports.violation_type IS NOT NULL\nGROUP BY reports.violation_type\nORDER BY violation_count DESC",
+  "text": "There were 375 reports of pest evidence, 321 reports of water damage or mold, and 311 reports of damaged surfaces in the last 6 months. Other notable violation types include leak plumbing (254) and smoke detector missing (177). The most common violation was pest evidence, while no heat was the least frequent with 56 reports.",
+  "sql": "SELECT reports.violation_type, COUNT(*) AS violation_count\nFROM fixit.gold.reports\nWHERE reports.reported_at >= dateadd(MONTH, -6, CURRENT_DATE)\n  AND reports.violation_type IS NOT NULL\nGROUP BY reports.violation_type\nORDER BY violation_count DESC",
   "rows": [
     {
       "violation_type": "PEST_EVIDENCE",
@@ -9,7 +9,7 @@
     },
     {
       "violation_type": "WATER_DAMAGE_MOLD",
-      "violation_count": "323"
+      "violation_count": "321"
     },
     {
       "violation_type": "DAMAGED_SURFACES",
@@ -17,11 +17,11 @@
     },
     {
       "violation_type": "LEAK_PLUMBING",
-      "violation_count": "251"
+      "violation_count": "254"
     },
     {
       "violation_type": "SMOKE_DETECTOR_MISSING",
-      "violation_count": "176"
+      "violation_count": "177"
     },
     {
       "violation_type": "BROKEN_WINDOW",
@@ -29,15 +29,15 @@
     },
     {
       "violation_type": "BROKEN_LOCK",
-      "violation_count": "138"
+      "violation_count": "139"
     },
     {
       "violation_type": "EXPOSED_WIRING",
-      "violation_count": "113"
+      "violation_count": "115"
     },
     {
       "violation_type": "CO_DETECTOR_MISSING",
-      "violation_count": "66"
+      "violation_count": "65"
     },
     {
       "violation_type": "BLOCKED_EGRESS",
@@ -45,7 +45,7 @@
     },
     {
       "violation_type": "NO_HEAT",
-      "violation_count": "59"
+      "violation_count": "56"
     }
   ],
   "columns": [

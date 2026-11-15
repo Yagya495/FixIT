@@ -116,11 +116,16 @@ Needs the user: staged photos for eval + stage · manual checklist on the App/ph
 - Tests: `app/backend/tests/test_synthetic.py` (19: 14 times incl. midnight, DST, year end, leap day, summer; whole
   dataset identical relative to now; demo story independent of background size; local seed end to end at 21:15).
   16 of them fail on the old generator. Suite: **70 passed**.
-- Not yet applied to Databricks or the App (awaiting approval). A Databricks reload changes background numbers slightly,
-  so the 8 saved Genie answers should be re-captured live after it.
-- Databricks data right now (read-only check, 21:4x): grade D, 11 other open, but **7** open heat and 15 app-written
-  reports at 1234 Demo St from 2 scans via the deployed App at 20:47–20:52 (manual testing). A reset clears these rows;
-  uploaded evidence files in `/Volumes/fixit/raw/evidence/` are kept.
+- **Applied 2026-11-14 ~21:30–22:00 (approved):** pre-reset inventory showed only the user's test rows would be removed
+  (2 scans, 19 evidence rows, 21 detections, 2 repair requests, 15 app-written reports, all at 1234 Demo St; 0
+  non-synthetic owners/properties). Databricks reset with the fixed generator → 6 / D / 11 / 0. 8 Genie answers
+  re-captured live (one needed a longer timeout). Redeployed `fixit-madison` (profile `fixit`), smoke test 11/11 PASS,
+  reset again to clean, then `scripts/genie_verify.py` → 8/8 saved Genie answers match a fresh run of their SQL
+  (one re-captured after the second reset, then the App redeployed with it). Local server restarted + reset: D (0.916),
+  6, 11, 0. Workspace resource snapshot before/after identical. The user's 19 uploaded photo files remain in
+  `/Volumes/fixit/raw/evidence/` (reset never deletes files).
+- Known: Genie's own SQL can use calendar days/years, so a reset at a different time of day can move a saved answer
+  slightly (seen once: one value in row 23 of 43). After any reset run `scripts/genie_verify.py`; re-capture if needed.
 
 ## Milestone 1 on Databricks: DONE (2026-11-14, approved by the user, profile `fixit` only)
 **Deployed App:** https://fixit-madison-7474647207905142.aws.databricksapps.com (workspace sign-in required)

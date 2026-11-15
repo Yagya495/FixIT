@@ -1,20 +1,26 @@
 {
   "question": "Which owners have the most open heat issues this month?",
-  "text": "The owners with the most open heat issues reported this month are Isthmus Edge Properties (demo) with 8 issues and Prairie Rentals (synthetic) with 4 issues. Both owners are the only ones listed in the top results for open heat issues this month.",
-  "sql": "WITH ranked_owners AS (\n  SELECT \n    o.name AS owner_name,\n    COUNT(*) AS open_heat_issues,\n    RANK() OVER (ORDER BY COUNT(*) DESC) AS rank\n  FROM `fixit`.`gold`.`reports` r\n  JOIN `fixit`.`gold`.`properties` p ON r.property_id = p.property_id\n  JOIN `fixit`.`gold`.`owners` o ON p.owner_id = o.owner_id\n  WHERE r.status IN ('open','escalated')\n    AND r.violation_category ILIKE '%HEAT%'\n    AND r.reported_at >= DATEADD(DAY, -30, CURRENT_DATE)\n    AND o.name IS NOT NULL\n  GROUP BY o.name\n)\nSELECT owner_name, open_heat_issues\nFROM ranked_owners\nWHERE rank <= 10\nORDER BY open_heat_issues DESC;",
+  "text": "The owners with the most open heat issues this month are Isthmus Edge Properties (demo) with 9 open issues and Prairie Rentals (synthetic) with 4 open issues. Isthmus Edge Properties (demo) has more than double the number of open heat issues compared to the next highest owner.",
+  "sql": "WITH ranked_owners AS (\n  SELECT \n    o.owner_id,\n    o.name AS owner_name,\n    COUNT(r.report_id) AS open_heat_issues,\n    RANK() OVER (ORDER BY COUNT(r.report_id) DESC) AS rank\n  FROM `fixit`.`gold`.`reports` r\n  JOIN `fixit`.`gold`.`properties` p ON r.property_id = p.property_id\n  JOIN `fixit`.`gold`.`owners` o ON p.owner_id = o.owner_id\n  WHERE r.status IN ('open','escalated')\n    AND r.violation_category = 'HEAT'\n    AND r.reported_at >= DATEADD(DAY, -30, CURRENT_DATE)\n    AND o.name IS NOT NULL\n  GROUP BY o.owner_id, o.name\n)\nSELECT owner_id, owner_name, open_heat_issues, rank\nFROM ranked_owners\nORDER BY open_heat_issues DESC;",
   "rows": [
     {
+      "owner_id": "O-DEMO",
       "owner_name": "Isthmus Edge Properties (demo)",
-      "open_heat_issues": "8"
+      "open_heat_issues": "9",
+      "rank": "1"
     },
     {
+      "owner_id": "O-0009",
       "owner_name": "Prairie Rentals (synthetic)",
-      "open_heat_issues": "4"
+      "open_heat_issues": "4",
+      "rank": "2"
     }
   ],
   "columns": [
+    "owner_id",
     "owner_name",
-    "open_heat_issues"
+    "open_heat_issues",
+    "rank"
   ],
   "source": "genie"
 }

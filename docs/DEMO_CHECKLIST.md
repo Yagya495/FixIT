@@ -54,5 +54,6 @@ deployed Databricks App before judging (see "Day-of" below).
 
 ## Day-of (Databricks)
 - [ ] Redeploy the App within 24 h of judging (Apps auto-stop ~24 h after deploy).
+- [ ] After any Databricks reset: `python scripts/genie_verify.py` (8/8 must match; re-capture with `genie.warm()` if not).
 - [ ] Run the checklist above against the App URL, once with `DEMO_MODE=true`, once with `false` (expect real model
       output on uncached photos and the Genie caption to say "live").

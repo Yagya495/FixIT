@@ -1,6 +1,6 @@
 {
   "question": "How many emergency issues are open right now?",
-  "text": "There are 66 open emergency issues right now, based on the current data. This count includes issues with severity marked as emergency and status as either open or escalated.",
+  "text": "There are 66 open emergency issues at this time. This count includes all issues with severity marked as emergency and status as either open or escalated.",
   "sql": "SELECT COUNT(*) AS open_emergency_issues\nFROM `fixit`.`gold`.`reports`\nWHERE `severity` = 'emergency'\n  AND `status` IN ('open', 'escalated')\n  AND `severity` IS NOT NULL\n  AND `status` IS NOT NULL;",
   "rows": [
     {

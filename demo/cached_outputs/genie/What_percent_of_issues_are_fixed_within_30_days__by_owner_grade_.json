@@ -1,27 +1,27 @@
 {
   "question": "What percent of issues are fixed within 30 days, by owner grade?",
-  "text": "The percentage of issues fixed within 30 days varies by owner grade. Owners with a grade of A have the highest rate at 96.8%, while those with a grade of F have the lowest at 51.9%. There is a clear trend where higher grades are associated with faster issue resolution.",
-  "sql": "SELECT ls.`grade`, 100 * TRY_DIVIDE(\n  COUNT(CASE WHEN r.`fixed_at` IS NOT NULL AND DATEDIFF(r.`fixed_at`, r.`reported_at`) <= 30 THEN 1 END),\n  COUNT(r.`report_id`)\n) AS pct_fixed_within_30d\nFROM `fixit`.`gold`.`reports` r\nJOIN `fixit`.`gold`.`properties` p ON r.`property_id` = p.`property_id`\nJOIN `fixit`.`gold`.`landlord_scores` ls ON p.`owner_id` = ls.`owner_id`\nWHERE r.`fixed_at` IS NOT NULL AND ls.`grade` IS NOT NULL\nGROUP BY ls.`grade`\nORDER BY ls.`grade`",
+  "text": "The percentage of issues fixed within 30 days varies by owner grade. Owners with a grade A have the highest rate at 94.1%, while those with a grade F have the lowest at 42.2%. The rates for other grades are:\n- B: 86.8%\n- C: 75.8%\n- D: 51.3%\n- F: 42.2%",
+  "sql": "SELECT ls.grade, \n  try_divide(100.0 * SUM(CASE WHEN r.fixed_at IS NOT NULL AND DATEDIFF(r.fixed_at, r.reported_at) <= 30 THEN 1 ELSE 0 END),COUNT(r.report_id)) AS pct_fixed_within_30d\nFROM `fixit`.`gold`.`reports` r\nJOIN `fixit`.`gold`.`properties` p ON r.property_id = p.property_id\nJOIN `fixit`.`gold`.`landlord_scores` ls ON p.owner_id = ls.owner_id\nWHERE ls.grade IS NOT NULL\n  AND r.reported_at IS NOT NULL\nGROUP BY ls.grade\nORDER BY ls.grade",
   "rows": [
     {
       "grade": "A",
-      "pct_fixed_within_30d": "96.82539682539682"
+      "pct_fixed_within_30d": "94.06779661016949"
     },
     {
       "grade": "B",
-      "pct_fixed_within_30d": "90.93196554727572"
+      "pct_fixed_within_30d": "86.77746999076639"
     },
     {
       "grade": "C",
-      "pct_fixed_within_30d": "82.75862068965517"
+      "pct_fixed_within_30d": "75.75757575757576"
     },
     {
       "grade": "D",
-      "pct_fixed_within_30d": "61.904761904761905"
+      "pct_fixed_within_30d": "51.31578947368421"
     },
     {
       "grade": "F",
-      "pct_fixed_within_30d": "51.88834154351396"
+      "pct_fixed_within_30d": "42.21311475409836"
     }
   ],
   "columns": [

@@ -1,136 +1,188 @@
 {
   "question": "Which buildings near campus have the most open issues?",
-  "text": "Buildings near campus with the most open issues include:\n- 681 N HENRY ST with 8 open issues\n- 2432 LANGDON ST with 6 open issues\n- 1234 DEMO ST with 6 open issues\n- 1207 VAN BUREN ST with 6 open issues\n- 763 BROOKS ST with 5 open issues",
-  "sql": "WITH campus_buildings AS (\n  SELECT \n    p.address_norm,\n    COUNT(r.report_id) AS open_issues\n  FROM `fixit`.`gold`.`properties` p\n  JOIN `fixit`.`gold`.`reports` r ON p.property_id = r.property_id\n  WHERE p.neighborhood IN ('Langdon', 'Mifflin', 'Regent', 'Greenbush')\n    AND r.status IN ('open','escalated')\n    AND p.address_norm IS NOT NULL\n  GROUP BY p.address_norm\n)\nSELECT address_norm, open_issues, RANK() OVER (ORDER BY open_issues DESC) AS rank\nFROM campus_buildings\nWHERE open_issues IS NOT NULL\nORDER BY rank;",
+  "text": "Buildings near campus with the most open issues include:\n- 681 N HENRY ST in Langdon with 8 open issues\n- 1207 VAN BUREN ST in Regent with 7 open issues\n- 1234 DEMO ST in Langdon with 6 open issues\n- 2432 LANGDON ST in Langdon with 6 open issues\n- 784 N BASSETT ST in Mifflin with 5 open issues",
+  "sql": "WITH campus_buildings AS (\n  SELECT properties.property_id, properties.address_norm, properties.neighborhood\n  FROM `fixit`.`gold`.`properties` properties\n  WHERE properties.neighborhood IN ('Langdon', 'Mifflin', 'Regent', 'Greenbush')\n    AND properties.address_norm IS NOT NULL\n    AND properties.neighborhood IS NOT NULL\n)\nSELECT campus_buildings.property_id, campus_buildings.address_norm, campus_buildings.neighborhood, COUNT(reports.report_id) AS open_issues,\n       RANK() OVER (ORDER BY COUNT(reports.report_id) DESC) AS rank\nFROM campus_buildings\nJOIN `fixit`.`gold`.`reports` reports ON campus_buildings.property_id = reports.property_id\nWHERE reports.status IN ('open','escalated')\nGROUP BY campus_buildings.property_id, campus_buildings.address_norm, campus_buildings.neighborhood\nHAVING COUNT(reports.report_id) IS NOT NULL\nORDER BY open_issues DESC",
   "rows": [
     {
+      "property_id": "P-01316",
       "address_norm": "681 N HENRY ST",
+      "neighborhood": "Langdon",
       "open_issues": "8",
       "rank": "1"
     },
     {
-      "address_norm": "2432 LANGDON ST",
-      "open_issues": "6",
-      "rank": "2"
-    },
-    {
-      "address_norm": "1234 DEMO ST",
-      "open_issues": "6",
-      "rank": "2"
-    },
-    {
+      "property_id": "P-01366",
       "address_norm": "1207 VAN BUREN ST",
-      "open_issues": "6",
+      "neighborhood": "Regent",
+      "open_issues": "7",
       "rank": "2"
     },
     {
-      "address_norm": "763 BROOKS ST",
-      "open_issues": "5",
-      "rank": "5"
+      "property_id": "P-DEMO-1234",
+      "address_norm": "1234 DEMO ST",
+      "neighborhood": "Langdon",
+      "open_issues": "6",
+      "rank": "3"
     },
     {
+      "property_id": "P-01217",
+      "address_norm": "2432 LANGDON ST",
+      "neighborhood": "Langdon",
+      "open_issues": "6",
+      "rank": "3"
+    },
+    {
+      "property_id": "P-00271",
       "address_norm": "784 N BASSETT ST",
+      "neighborhood": "Mifflin",
       "open_issues": "5",
       "rank": "5"
     },
     {
+      "property_id": "P-00495",
       "address_norm": "1613 N HENRY ST",
+      "neighborhood": "Langdon",
       "open_issues": "5",
       "rank": "5"
     },
     {
+      "property_id": "P-00455",
       "address_norm": "2190 N BROOM ST",
+      "neighborhood": "Mifflin",
       "open_issues": "5",
       "rank": "5"
     },
     {
+      "property_id": "P-01465",
+      "address_norm": "763 BROOKS ST",
+      "neighborhood": "Greenbush",
+      "open_issues": "5",
+      "rank": "5"
+    },
+    {
+      "property_id": "P-01732",
       "address_norm": "1813 ORCHARD ST",
+      "neighborhood": "Regent",
       "open_issues": "5",
       "rank": "5"
     },
     {
-      "address_norm": "1617 W MIFFLIN ST",
-      "open_issues": "4",
-      "rank": "10"
-    },
-    {
+      "property_id": "P-DEMO-A",
       "address_norm": "415 W MIFFLIN ST",
+      "neighborhood": "Mifflin",
       "open_issues": "4",
       "rank": "10"
     },
     {
+      "property_id": "P-DEMO-B",
       "address_norm": "1020 REGENT ST",
+      "neighborhood": "Regent",
       "open_issues": "4",
       "rank": "10"
     },
     {
+      "property_id": "P-01273",
+      "address_norm": "1617 W MIFFLIN ST",
+      "neighborhood": "Mifflin",
+      "open_issues": "4",
+      "rank": "10"
+    },
+    {
+      "property_id": "P-00840",
       "address_norm": "1961 ST JAMES CT",
+      "neighborhood": "Greenbush",
       "open_issues": "4",
       "rank": "10"
     },
     {
-      "address_norm": "974 N BASSETT ST",
-      "open_issues": "3",
-      "rank": "14"
-    },
-    {
-      "address_norm": "1078 N HENRY ST",
-      "open_issues": "3",
-      "rank": "14"
-    },
-    {
-      "address_norm": "658 N BASSETT ST",
-      "open_issues": "3",
-      "rank": "14"
-    },
-    {
-      "address_norm": "222 N BASSETT ST",
-      "open_issues": "3",
-      "rank": "14"
-    },
-    {
-      "address_norm": "2065 VAN BUREN ST",
-      "open_issues": "3",
-      "rank": "14"
-    },
-    {
-      "address_norm": "1085 N HENRY ST",
-      "open_issues": "3",
-      "rank": "14"
-    },
-    {
-      "address_norm": "165 WISCONSIN AVE",
-      "open_issues": "3",
-      "rank": "14"
-    },
-    {
-      "address_norm": "305 MILTON ST",
-      "open_issues": "3",
-      "rank": "14"
-    },
-    {
-      "address_norm": "601 WISCONSIN AVE",
-      "open_issues": "3",
-      "rank": "14"
-    },
-    {
+      "property_id": "P-00387",
       "address_norm": "938 W MIFFLIN ST",
+      "neighborhood": "Mifflin",
       "open_issues": "3",
       "rank": "14"
     },
     {
-      "address_norm": "2492 N CARROLL ST",
+      "property_id": "P-01914",
+      "address_norm": "165 WISCONSIN AVE",
+      "neighborhood": "Langdon",
       "open_issues": "3",
       "rank": "14"
     },
     {
+      "property_id": "P-DEMO-C",
+      "address_norm": "222 N BASSETT ST",
+      "neighborhood": "Mifflin",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "property_id": "P-01058",
+      "address_norm": "305 MILTON ST",
+      "neighborhood": "Greenbush",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "property_id": "P-01241",
       "address_norm": "533 LANGDON ST",
+      "neighborhood": "Langdon",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "property_id": "P-00936",
+      "address_norm": "601 WISCONSIN AVE",
+      "neighborhood": "Langdon",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "property_id": "P-01519",
+      "address_norm": "2492 N CARROLL ST",
+      "neighborhood": "Langdon",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "property_id": "P-01566",
+      "address_norm": "1738 N BROOM ST",
+      "neighborhood": "Mifflin",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "property_id": "P-00025",
+      "address_norm": "658 N BASSETT ST",
+      "neighborhood": "Mifflin",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "property_id": "P-00431",
+      "address_norm": "1078 N HENRY ST",
+      "neighborhood": "Langdon",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "property_id": "P-00602",
+      "address_norm": "2065 VAN BUREN ST",
+      "neighborhood": "Regent",
+      "open_issues": "3",
+      "rank": "14"
+    },
+    {
+      "property_id": "P-01609",
+      "address_norm": "1085 N HENRY ST",
+      "neighborhood": "Langdon",
       "open_issues": "3",
       "rank": "14"
     }
   ],
   "columns": [
+    "property_id",
     "address_norm",
+    "neighborhood",
     "open_issues",
     "rank"
   ],
