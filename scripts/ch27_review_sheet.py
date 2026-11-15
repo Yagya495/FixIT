@@ -120,6 +120,9 @@ def main() -> int:
         + (" and in the PDF's own text layer, on the page shown." if pages is not None else "."),
         "- **Kinds:** *direct* = Chapter 27 itself states the requirement. *reference* = Chapter 27 only says to follow",
         "  another law or code, whose text FixIt has not reviewed.",
+        "- **Evidence levels:** *ordinance text (independently confirmed)* = read on the live official Municode page;",
+        "  *City guidance* = City of Madison web pages (helpful, not ordinance text); *interpretation* = FixIt's or the",
+        "  reviewer's reading of how a provision applies. Live check details: `docs/legal/ch27_live_check.md`.",
         "",
         "## Summary",
         "",
@@ -154,6 +157,10 @@ def main() -> int:
             md += [f"**Considered, NOT mapped: §{nm['section_id']}** (p. {nm['page']}). {nm['reason']}", "",
                    f"> {norm(nm['excerpt'])}", ""]
         md += [f"**Why it matches:** {p['why']}", "", f"**Uncertainty / missing source:** {p['uncertainty']}", ""]
+        if p.get("related"):
+            md += ["**Related sources, by evidence level:**", ""]
+            md += [f"- *{r['level']}*: {r['source']}. {r['note']}" for r in p["related"]]
+            md += [""]
         if p.get("decision"):
             md += [f"**Decision so far:** {p['decision']}", ""]
         md += ["**Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.", ""]

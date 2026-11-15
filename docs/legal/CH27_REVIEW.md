@@ -11,6 +11,9 @@
 - **Excerpt check:** every excerpt below was machine-checked to appear word for word in the Databricks parse and in the PDF's own text layer, on the page shown.
 - **Kinds:** *direct* = Chapter 27 itself states the requirement. *reference* = Chapter 27 only says to follow
   another law or code, whose text FixIt has not reviewed.
+- **Evidence levels:** *ordinance text (independently confirmed)* = read on the live official Municode page;
+  *City guidance* = City of Madison web pages (helpful, not ordinance text); *interpretation* = FixIt's or the
+  reviewer's reading of how a provision applies. Live check details: `docs/legal/ch27_live_check.md`.
 
 ## Summary
 
@@ -48,6 +51,11 @@
 
 **Uncertainty / missing source:** Chapter 27 does not itself say where alarms go, how many, or what counts as 'maintained'. Those rules are in MGO 34.907 and the SPS codes, which FixIt has not obtained or reviewed. Treating a covered or disabled alarm as 'not maintained' is an interpretation for an inspector.
 
+**Related sources, by evidence level:**
+
+- *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '43. 34.907 a. Smoke alarms not installed where required in: i. Inside every bedroom and sleeping area ii. Within 6 feet of each door leading to a bedroom or sleeping area … iii. Each floor of the building'. MGO 34.907's own text is still unread.
+- *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Hardwired or tamperproof; every bedroom or sleeping area, within six feet of bedroom entry doors, each floor incl. basements.
+
 **Decision so far:** User: keep pending additional legal-source verification (smoke alarms, CO detectors, mold).
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
@@ -62,6 +70,11 @@
 **Why it matches:** No match. The terms 'carbon', 'monoxide' and 'CO alarm' appear nowhere in Chapter 27 (checked in both the Databricks parse and the PDF text).
 
 **Uncertainty / missing source:** The current placeholder maps this type to CH27-SMOKE, whose summary says CO alarms are required. That is NOT supported by Chapter 27, and 27.05(2)(w) covers smoke alarms only. Possible sources to research (not verified by FixIt): MGO Chapter 34 (Fire Prevention Code), Wisconsin Statutes, Wis. Admin. Code SPS. Recommendation: keep this type unmapped to Chapter 27 and show 'legal source not yet verified'.
+
+**Related sources, by evidence level:**
+
+- *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '41. 29.19 a. Carbon Monoxide Detectors not Installed Where Required' (basement; each floor level; outside each separate sleeping area; sleeping rooms with a fuel-burning appliance). So Madison has a CO ordinance, MGO 29.19, outside Chapter 27. Its text is still unread.
+- *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). 1-2 unit dwellings: every floor; 3+ units: within 15 feet of bedroom doors in units with fuel-burning appliances.
 
 **Decision so far:** User: keep pending additional legal-source verification (smoke alarms, CO detectors, mold).
 
@@ -85,6 +98,12 @@
 **Why it matches:** 27.04(2)(g) directly requires outlets and fixtures to be properly installed and kept in good and safe working condition; (g)3. directly requires removing exposed abandoned wiring.
 
 **Uncertainty / missing source:** A missing outlet or switch cover plate is not named. Calling it 'not properly installed / not in safe working condition' is an interpretation. 'Exposed abandoned wiring' is narrower than exposed live wiring. Installation details are in the Wisconsin Electric Code / NEC (not reviewed).
+
+**Related sources, by evidence level:**
+
+- *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '7. 27.04(2)(g) … a. Electrical service and wiring … vi. Exposed wires, damaged or bare, presenting shock hazard' files exposed wires under 27.04(2)(g) for abatement. The schedule does not mention cover plates.
+- *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Lists 'Missing or damaged cover plates' under Electrical, without citing a section. Recorded as City guidance; it does NOT establish that Chapter 27 expressly requires cover plates.
+- *interpretation*: FixIt. Mapping a missing cover plate to 27.04(2)(g) ('properly installed … good and safe working condition') remains an interpretation; the specific electrical-code requirement is still unidentified.
 
 **Decision so far:** PROVISIONAL: user accepted 27.04(2)(g) as a general safety and maintenance mapping (2026-11-14). (g)3. not mapped automatically. Specific electrical-code requirements (e.g. cover plates) must be identified separately before asserting they are expressly required. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
@@ -114,6 +133,12 @@
 **Why it matches:** Water stains on walls or ceilings are damage to interior surfaces (good repair) and may indicate the building is not watertight.
 
 **Uncertainty / missing source:** Chapter 27 never mentions mold (0 hits for 'mold' or 'mildew'). It cannot support any statement about mold or its health effects. The placeholder CH27-MOISTURE ('conditions that support mold growth') is not supported by the text. A stain alone does not show an active leak or which surface failed.
+
+**Related sources, by evidence level:**
+
+- *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '12. 27.05(2)(g)1.' lists 'vii. Mold on walls, ceilings and/or floors causing unsafe condition…', 'viii. … causing documented health issues', 'ix. … not causing documented health issues' with abatement percentages; row 16 (27.05(2)(g)4.) covers mold in cabinets; row 44 covers basement 'damp and mold or mildew'.
+- *interpretation*: FixIt. This is the City's classification for RENT ABATEMENT (Chapter 32, available only after the 32.04 process, e.g. an inspection order). Chapter 27's own text still does not mention mold, so it is not a mold-specific Chapter 27 rule. Mold stays pending.
+- *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Lists 'water damage' on interior surfaces; links a separate 'Mold' page (that URL returned 404 when fetched).
 
 **Decision so far:** PROVISIONAL: user accepted 27.05(2)(g)1. and (g)2. as potentially relevant general maintenance provisions (2026-11-14). A water stain alone does not prove a leak, a code violation, or mold. Wording distinguishes visible water damage from suspected mold; mold-specific requirements stay unverified (pending additional legal-source verification). Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
@@ -148,6 +173,10 @@
 **Why it matches:** 27.07(2)(d) places extermination on the owner in any dwelling other than a single-family dwelling; 27.03 defines infestation.
 
 **Uncertainty / missing source:** In a single-family dwelling the occupant is responsible, with exceptions (owner failed to clean before occupancy, or owner out of compliance with 27.05(2)(g)2.). 'Sustained presence' means one photo of droppings may not show an infestation. Building type must be known.
+
+**Related sources, by evidence level:**
+
+- *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '38. 27.07(2)(d) a. Extermination of pests i. Severe infestation, whether occasional or chronic ii. Non-severe but chronic' confirms the number.
 
 **Decision so far:** PROVISIONAL: user accepted 27.07(2)(d) with the 27.03 definition of infestation (2026-11-14). Explain single-family vs other dwellings and the stated exceptions; a photo of possible droppings does not establish a sustained infestation; no claim that rentals must be entirely pest-free or that professional extermination is legally required. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
@@ -215,6 +244,10 @@
 
 **Uncertainty / missing source:** Paragraphs 1.-6. apply to rented dwelling units 'Except as provided in Paragraph 9.' (bed and breakfasts). Window rules depend on the story and accessibility. The parse of paragraph 7. (lodging rooms / shared entrances) came back with lines out of order, so it is not quoted; check it on Municode if needed.
 
+**Related sources, by evidence level:**
+
+- *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Keyed deadbolt with at least a one-inch throw and 2.5-inch strike-plate screws; vent locks 1-5 inches; consistent with 27.05(2)(h).
+
 **Decision so far:** PROVISIONAL: user accepted 27.05(2)(h), (h)3. and (h)4. (2026-11-14), subject to verifying the exact requirements and applicability. Include the rented-unit condition, approved alternative locking devices (quoted from (h)6., a supporting citation for the exception) and the window floor/access distinction. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
@@ -257,6 +290,11 @@
 
 **Uncertainty / missing source:** 'Cracked glass' is not named explicitly; it falls under 'proper repair' / 'weathertight' by interpretation. The screen requirement is seasonal (by June 1 until storm windows go in), so a missing screen in winter may not be a violation.
 
+**Related sources, by evidence level:**
+
+- *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '6. 27.04(2)(f) [27.07(2)(c)] a. Screens' confirms the screen mapping for abatement.
+- *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Storm windows 'November 15 to April 30', screens 'June 1 to October 15', and 'No broken or cracked glass'. These differ in framing from Chapter 27 (screens by June 1 until storm windows go in; storm windows installed Oct 15 - Nov 15) and Chapter 27 does not name cracked glass. FixIt follows the ordinance text.
+
 **Decision so far:** PROVISIONAL: user accepted 27.05(2)(h) for general window condition and repair, and 27.04(2)(f) / 27.07(2)(c) only for the screen and storm-window requirements with their seasonal dates (2026-11-14). Do not claim Chapter 27 explicitly names cracked glazing. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
@@ -274,6 +312,13 @@
 **Why it matches:** Directly requires plumbing fixtures and pipes to be free from leaks and in good working condition.
 
 **Uncertainty / missing source:** Low. Whether a given drip is a 'leak' is still an inspector's call; FixIt cannot see inside walls.
+
+**Related sources, by evidence level:**
+
+- *ordinance text (independently confirmed)*: Live Municode, Chapter 27, version Sep 1, 2026 (checked 2026-11-14). '(j) Every plumbing fixture and water and waste pipe…' sits under 27.05(2), in order after (f)-(i); one sentence, no exceptions.
+- *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '30. 27.05(2)(j) [27.04(2)(a)] [27.04(2)(b)] a. Leaking Water Supply or Drain Piping…' confirms the subsection number and the plumbing scope. Applies within the rent-abatement process only.
+- *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Lists 'Fixtures improperly installed or leaking' and 'Plugged or slow drains' under Plumbing.
+- *interpretation*: User decision. Citation limited to plumbing fixtures and water/waste pipes; not roof leaks or unexplained stains.
 
 **Decision so far:** PROVISIONAL: user accepted 27.05(2)(j) as the primary mapping (2026-11-14). 27.04(2)(a) not added. Applies only to plumbing fixtures and water/waste pipes, not roof leaks or unexplained water stains. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
@@ -300,6 +345,13 @@
 **Why it matches:** Directly addresses cracking and peeling paint; the same paragraph requires interior floors, walls and ceilings to be in good repair.
 
 **Uncertainty / missing source:** 'Serious' cracking is a judgment call. Nothing here addresses lead paint; do not imply a lead hazard from this section.
+
+**Related sources, by evidence level:**
+
+- *ordinance text (independently confirmed)*: Live Municode, Chapter 27, version Sep 1, 2026 (checked 2026-11-14). '(g) 1.' under 27.05(2) contains both quoted sentences; next paragraph is '2. Every foundation…'.
+- *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '12. 27.05(2)(g)1. … a. Interior floor, wall, or ceiling … ii. Is damaged or in such disrepair … (including but not limited to holes in floors, walls, ceilings)' confirms the number and that the City's abatement schedule files holes under (g)1.
+- *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Lists 'Holes, water damage, or peeling paint on walls, ceilings…' and damaged floors.
+- *interpretation*: FixIt. 'Serious cracking' / 'peeling paint' are named in the text; holes and flooring fall under 'good repair' (interpretation, consistent with the RA schedule).
 
 **Decision so far:** PROVISIONAL: user accepted 27.05(2)(g)1. for interior surfaces (2026-11-14). Keep 'serious cracking' / 'peeling paint' (direct) distinct from general 'good repair'. Damaged stairs removed from this category (stair safety handled separately under 27.05(2)(i)). Lead paint labeled general safety information, not a Chapter 27 requirement. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
@@ -338,6 +390,11 @@
 
 **Uncertainty / missing source:** The handrail sentence sits in a passage about exterior stairways and exit platforms, and the actual handrail specs are in SPS (not reviewed). Whether furniture temporarily blocking a door makes an exit 'obstructed' is an inspector's call. Exception 27.06(4) not reviewed.
 
+**Related sources, by evidence level:**
+
+- *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '4. 27.04(2)(d) [27.05(2)(i)] [27.05(2)(h)] a. Required exit … iii. Blocked by accumulation of stored items … iv. … movable furniture obstructing exit path'; row '28. 27.05(2)(i)' covers stairs and handrails/guardrails. Neither mentions 27.06(4): the cross-reference stays unresolved.
+- *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). 'Missing handrail on stairs with more than three steps'; guardrails for areas higher than 24 inches (no source cited).
+
 **Decision so far:** ON HOLD (user, 2026-11-14): final approval waits for review of the 27.06(4) cross-reference discrepancy and the relevant Wisconsin SPS requirements (SPS 321.04, SPS 362). Category renamed 'Blocked exit / unsafe stairs / missing handrail', with the three conditions kept distinct; a photo of stairs must not trigger a blocked-exit or missing-handrail finding by itself.
 
 **Verified:** No. Nothing is verified until a named reviewer approves it after the live-source check.
@@ -368,6 +425,12 @@
 **Why it matches:** 27.04(2)(h) directly sets the 67°F minimum in habitable rooms, kitchens and bathrooms; 27.05(2)(m) prohibits shutting off required services except for repairs or approved emergencies.
 
 **Uncertainty / missing source:** The occupant may keep a lower temperature if it doesn't affect other units. Chapter 27 sets no repair response time: FixIt's 24h/48h/7-day follow-up windows are FixIt defaults, not from this ordinance. The history note says 'Ord. 9326, 11-13-76' here but '11-13-87' elsewhere (an inconsistency in the source, quoted as-is).
+
+**Related sources, by evidence level:**
+
+- *ordinance text (independently confirmed)*: Live Municode, Chapter 27, version Sep 1, 2026 (checked 2026-11-14). '(h) Heating.' sits under 27.04(2); contains the 67°F sentence, the occupant lower-temperature exception, the Chapter 30 reference and the history note '(Sec. 27.04(2)(h) Am. by Ord. 9326, 11-13-76)'; no mention of a season.
+- *ordinance text (independently confirmed)*: MGO 32.04(4)(d) 'Schedule of Rent Impairing Violations' (rent abatement), live Municode, version Sep 1, 2026. Row '9. 27.04(2)(h) a. Heat i. No heat or consistently below 55°… ii. Inadequate (55-66°)…' confirms the subsection number. Abatement percentages, not the Chapter 27 rule itself.
+- *City guidance (not ordinance text)*: City of Madison 'Common Code Violations' web page (no ordinance sections cited, undated). Says heat 'must keep at least 67°F at all times'. Omits the occupant exception; FixIt follows the ordinance text.
 
 **Decision so far:** PROVISIONAL: user accepted 27.04(2)(h) as the primary mapping (2026-11-14), including the 67°F minimum, the rooms covered (habitable rooms, kitchens and bathrooms) and the occupant exception. 27.05(2)(m) not added. Remove the unsupported 'heating season' limit; FixIt follow-up deadlines are not legal requirements. Recorded as a PROVISIONAL review decision, not a completed legal verification: needs the cross-check of exact wording, exceptions, dates and subsection numbers against the current official source, and a reviewer name supplied by the user.
 
