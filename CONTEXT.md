@@ -182,7 +182,28 @@ Finish every P0 before starting any P1.
   *Scope* (smoke = 328.03 since 2011); "single-family dwelling" (§27.07(2)(d)) is undefined in §27.03; SPS 321
   applies to 1-2 family dwellings begun on/after June 1, 1980; City BI says it cannot accept photos as proof of pests.
   Wording for unverified categories corrected on `ch27-review` (commit 87df616, not deployed).
+- **Round 2 (user decisions, 2026-11-14, later; all local, inactive, not deployed):**
+  - The five READY mappings stay provisional. One consolidated checklist: `docs/legal/HUMAN_REVIEW_CHECKLIST.md`
+    (excerpts, links, limitations, proposed wording, blank boxes, no reviewer name).
+  - Exits stay on hold. §27.05(2)(i) is now a separate **conditional** citation (`STAIRS_UNSAFE`): visibly unsafe stairs
+    only, never a blocked exit or a handrail alone.
+  - Water: §27.05(2)(g)1.'s "waterproof and hard surface" sentence (`WET_AREA_SURFACE`) and §27.05(2)(k)
+    (`BATHROOM_FLOOR`) added as conditional proposals.
+  - Conditional entries live in a separate `conditional` list in `ch27_proposed_mappings.json`; `code_parse.approve`
+    can't approve them through a category. Logic: `services/conditional_citations.py` (not wired in; `active()` needs an
+    explicit approval).
+  - Smoke/CO: "Possibly relevant state law" design (`docs/legal/STATE_LAW_DESIGN.md`, `services/state_law.py`,
+    hard-disabled). Statutes only; never verified, governing or violated; no deadline.
+  - City inquiry: `docs/legal/CITY_INQUIRY_DRAFT.md`, **draft, not sent**.
 - Default deadline windows (7 days routine / 48h urgent / 24h emergency) are **FixIt defaults, not legal deadlines**.
+- **Photo detection rule (user decision, 2026-11-14):** a photo without a visible alarm never produces a smoke/CO finding,
+  and FixIt never infers from a photo whether an alarm works. Alarm observations carry a basis:
+  - `visible_alarm_condition` (covered, damaged or hanging);
+  - `verify_in_person` (empty mount or battery compartment; never "certain", never filed as a building report);
+  - `tenant_report` (the tenant's own report; never screened).
+  Code: `vision.screen_detection` / `classify_alarm_note`; stored notes are re-screened on read (no schema change).
+  Findings cite only the photos that showed them (`observations`). Repeat uploads in a scan are idempotent, and building
+  reports are de-duplicated per unit and type.
 
 ## 6. Safety / privacy
 - Synthetic people only, `is_synthetic=true`, and a "Demo data" badge in the UI. Unit numbers are hashed in `reports`; joint complaints
@@ -236,7 +257,10 @@ scripts/  dbx_setup · app_smoke · genie_verify · code_parse · ch27_review_sh
     corrected wording, explicit synthetic-data labels, the smoke/CO prototype (deadline disabled), the responsive fixes,
     and the 3 verified citations. 89 tests passed at the deployed commit `aeb7598`.
   - Local-only commits after the deployment (not deployed, not merged): `87df616` (wording for unverified categories
-    + tests, now 94 passing), `eb99af3` (review-sheet discrepancies), plus the FINAL_LEGAL_REVIEW docs commit.
+    + tests), `eb99af3` (review-sheet discrepancies), `034747c` (FINAL_LEGAL_REVIEW), `0e5eead` + `d6d2fcc` (photo
+    detection: no absence findings, per-photo evidence, no duplicates), `1351d0c` (conditional citations + state-law
+    prototype, inactive), plus the round-2 docs commit (checklist, state-law design, City inquiry draft). Backend tests:
+    133 passed.
   - `main` is the previous deployment.
 - **Rollback point:** git tag `deploy-pre-ch27-2026-11-14` (commit cef6822, deployment `01f1e0a5dc26…`). Delta versions
   before the change: `silver.code_sections` v11, `ref.violation_types` v7 (`RESTORE TABLE … TO VERSION AS OF`); then
@@ -247,10 +271,10 @@ scripts/  dbx_setup · app_smoke · genie_verify · code_parse · ch27_review_sh
 - Quick start: `make setup && make build && make api` → http://localhost:8000 (Windows commands in README).
 
 ## 11. Inputs still needed from the human
-- Ch. 27: personal review and approval (or not) of the READY rows in `docs/legal/FINAL_LEGAL_REVIEW.md` (locks,
-  windows, pests, electrical, water damage); City Building Inspection clarification of §27.06(4), the "SPS 321.04(2)" and
-  "SPS 328.02" references, and "single-family dwelling"; whether state statutes may be shown as possibly relevant
-  sources for smoke/CO; whether to narrow the smoke/CO "absence" vision cues.
+- Ch. 27: fill in `docs/legal/HUMAN_REVIEW_CHECKLIST.md` (Part A: five provisional mappings; Part B: three conditional
+  citations; Part C: state law for smoke/CO). Whether to send `docs/legal/CITY_INQUIRY_DRAFT.md` (§27.06(4),
+  "SPS 321.04(2)", "SPS 328.02", "single-family dwelling", CO).
+- Authorize (separately) deploying the local `ch27-review` commits; no citation changes ride along.
 - Smoke/CO: verify the sources and written-notice requirements before the (disabled) legal deadline can be enabled.
 - Decide whether to merge `ch27-review` into `main`, and whether to update the local fallback.
 - Manual checklist on the App + phone (`docs/DEMO_SCRIPT.md`); staged photos for `scripts/eval_vision.py` and the stage cache.

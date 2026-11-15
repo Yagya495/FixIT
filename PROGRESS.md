@@ -232,11 +232,28 @@ over FixIt tables, App deployment, service-principal permissions.
 - Tests: 89 before → **94 passed** after (5 new: wording, exactly three approvals, blank reviewer fields, tour question,
   public-building note). Frontend type-check clean.
 - Not changed (needs a decision): vision cues that treat an alarm's absence from a photo as a possible issue.
+  **Done in round 2 below.**
+
+## Round 2: user decisions applied locally (2026-11-14, later; nothing deployed, nothing approved)
+- **Photo detection (priority; `0e5eead`, `d6d2fcc`):**
+  - No smoke/CO finding from absence: the prompt, the cues and `vision.screen_detection` all enforce it.
+  - Basis on each observation: visible condition / verify in person / tenant report.
+  - New tenant buttons "Report smoke/CO alarm missing / not working".
+  - Per-photo evidence (`observations`); repeat uploads add nothing and make no model call; building reports
+    de-duplicated per unit and type; legacy absence rows excluded on read.
+  - Demo cache's "no smoke detector in frame" replaced by a visible empty base plate.
+  - 22 tests (`test_detection.py`, synthetic clean-room and alarm images).
+- **Legal prep (inactive; `1351d0c` + docs):**
+  - §27.05(2)(i) moved out of exits into a separate conditional proposal (unsafe stairs only).
+  - (g)1. "waterproof" sentence and (k) bathroom floors added as conditional proposals.
+  - `conditional_citations.py`; `state_law.py` (disabled; 4 statute excerpts verified verbatim).
+  - `HUMAN_REVIEW_CHECKLIST.md`, `STATE_LAW_DESIGN.md`, `CITY_INQUIRY_DRAFT.md` (not sent).
+- Tests: 94 → 116 (detection) → **133 passed** (legal prep). Frontend `tsc -b` clean.
+- Not verified: the UI changes in a real browser; live model accuracy on real photos.
 
 ## Next (priorities set by the user, 2026-11-14)
 1. **Complete the Chapter 27 citation review**: plumbing, heat and surfaces are verified and deployed. Next: the
-   remaining provisional citations (`docs/legal/CH27_REVIEW.md`); exits wait on Building Inspection's §27.06(4)
-   clarification.
+   reviewer fills `docs/legal/HUMAN_REVIEW_CHECKLIST.md`; exits wait on Building Inspection (draft inquiry ready, not sent).
 2. **Improve real-photo analysis reliability**: staged/real photos → `scripts/eval_vision.py`; warm the stage cache.
 3. **Finish frontend and mobile testing**: open the App URL (OAuth Continue), walk `docs/DEMO_SCRIPT.md` on laptop + phone.
 4. **Prepare the three-minute demo**: dry run ×3, Demo Mode on and off. Redeploy on judging day (Apps auto-stop ~24 h).

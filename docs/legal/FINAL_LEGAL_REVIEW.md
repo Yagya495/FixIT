@@ -1,6 +1,6 @@
 # FixIt Madison: consolidated legal review of the remaining categories (PREPARATION, NOT APPROVAL)
 
-> **Status: prepared for human review on 2026-11-14. Nothing in this document is approved or verified by the
+> **Status: prepared for human review on 2026-11-14; round 2 (user decisions) added the same day, see the end. Nothing in this document is approved or verified by the
 > reviewer.** No citation was activated, no reviewer field was filled, and `code_parse.py approve --apply` was not
 > run. Only three citations are verified and live: plumbing §27.05(2)(j), heat §27.04(2)(h) and interior surfaces
 > §27.05(2)(g)1. (approved by the named reviewer; unchanged by this review). FixIt is not a lawyer and this is not
@@ -163,7 +163,7 @@ category mapping.
 - (g)1.: "Every interior floor, wall and ceiling including door and window assemblies shall be kept clean and in good repair, and shall be capable of affording privacy."
 - (g)2.: "Every foundation, exterior wall, and floor and roof shall be reasonably weathertight, watertight and rodentproof and shall be kept in proper repair and shall be capable of affording privacy."
 
-**Possibly relevant, not proposed (for the reviewer):** (g)1. also says "A waterproof and hard surface shall be provided in
+**Round 2: now prepared as CONDITIONAL proposals (not approved; see Part B of `HUMAN_REVIEW_CHECKLIST.md`):** (g)1. also says "A waterproof and hard surface shall be provided in
 spaces subject to moisture." §27.05(2)(k): "Every water closet compartment floor surface and bathroom floor surface shall
 be properly constructed and maintained so as to be reasonably impervious to water …". Adding either would need a new
 proposal entry and excerpt check.
@@ -205,7 +205,7 @@ access to at least two unobstructed means of egress, with an exception FixIt has
 stairs: stairs must be safe to use and kept in proper repair. Missing handrail: Chapter 27 refers to Wisconsin's building
 codes (SPS) for handrails; FixIt has not verified which of them applies to this building."
 
-**Possible split for the reviewer:** §27.05(2)(i) (unsafe stairs) is clear on its face and could be reviewed alone; the
+**Round 2:** the category stays on hold; §27.05(2)(i) is now a separate conditional proposal (visibly unsafe stairs only). **Original note:** §27.05(2)(i) (unsafe stairs) is clear on its face and could be reviewed alone; the
 egress and handrail parts wait on items 1-3.
 
 ## 7. Smoke alarms (`SMOKE_DETECTOR_MISSING`): NEEDS CLARIFICATION
@@ -300,15 +300,50 @@ any suspected mold assessed", which read like a requirement).
 
 ---
 
-## Detection behavior: findings (no change made; your decision)
+## Round 2 (user decisions, 2026-11-14, later): what was done
 
-- The vision prompt still lists "no detector in bedroom or hallway" (smoke) and "no carbon monoxide alarm near bedrooms
-  in a unit with fuel-burning appliances" (CO) as visual cues. A single photo can't show that an alarm is missing from the
-  unit, or whether the unit has fuel-burning appliances. One cached demo output says "Bedroom ceiling visible with no smoke
-  detector in frame". **Proposal:** limit cues to visibly covered, removed or hanging alarms. Not changed, because it
-  alters live detection (priority 2) and the demo.
-- Pests: the City doesn't accept photos as proof. FixIt now says so; the evidence packet is still useful for the tenant's
-  own records and the landlord letter.
+All of this is local on `ch27-review`, inactive where it touches legal sources, and not deployed.
+
+| Decision | Done | Where |
+|---|---|---|
+| 1. Five READY mappings stay provisional; one consolidated checklist | Checklist with exact excerpts, links, limitations, proposed wording and blank decision boxes. No reviewer name, nothing approved. | `HUMAN_REVIEW_CHECKLIST.md` |
+| 2. Exits stay on hold; §27.05(2)(i) separate, unsafe stairs only | §27.05(2)(i) moved out of the category `items` into a separate `conditional` entry (`STAIRS_UNSAFE`). It matches only photo notes with a stair term and a damage term, never a blocked exit or a handrail alone. `code_parse.approve` cannot approve it through the category. | `ch27_proposed_mappings.json`, `CH27_REVIEW.md`, `services/conditional_citations.py` |
+| 3. Water: (g)1. waterproof sentence and (k) as conditional proposals | `WET_AREA_SURFACE` (shower, tub, sink, laundry) and `BATHROOM_FLOOR` (bathroom or toilet floor). Excerpts verified against the PDF. Inactive. | same |
+| 4. Smoke/CO: "Possibly relevant state law" design | 4 statute excerpts verified word for word against docs.legis. Labels: not verified, no governing rule, not violated, no deadline. Hard-disabled (`STATE_LAW_DISPLAY_ENABLED = False`). The five-day deadline is still disabled. | `STATE_LAW_DESIGN.md`, `services/state_law.py` |
+| 5. Photo detection (priority) | See next section | commits `0e5eead`, `d6d2fcc` |
+| 6. City inquiry | Short factual draft, placeholders only. **NOT SENT.** | `CITY_INQUIRY_DRAFT.md` |
+
+## Photo detection: changes (decision 5)
+
+Previously the prompt listed "no detector in bedroom or hallway" as a cue, and a cached demo output said "no smoke
+detector in frame". Now:
+
+- **A photo without a visible alarm never produces a smoke/CO finding.**
+  - The prompt and the taxonomy cues allow only a visible problem (`alarm_observation`: covered or obstructed, damaged or
+    hanging, removed mount visible).
+  - `vision.screen_detection` drops every other alarm detection, and every alarm detection whose note describes absence
+    ("no detector", "not visible", "missing").
+  - Dropped items are kept per frame as `screened_out` with the reason "A photo can't show that an alarm is missing or
+    whether it works."
+- **Three bases, kept distinct on each observation:**
+  - `visible_alarm_condition` (covered, damaged or hanging; "Seen in photo");
+  - `verify_in_person` (an empty mount or a battery compartment; "Possible issue — verify in person", never "certain",
+    and never filed as a building report);
+  - `tenant_report` (new "Report smoke/CO alarm missing / not working" buttons; never screened; cites no photo; the letter
+    says "Reported by the tenant.").
+- **FixIt never infers that an alarm works or doesn't work from a photo.** The UI says so on every smoke/CO card.
+- **Evidence association:** each finding lists its observations with their own photo, so a finding cites only the photos
+  that showed it (`observations`). Packet "Flags" are listed per photo.
+- **Duplicates:**
+  - A repeat upload of the same photo in a scan adds nothing and makes no model call.
+  - Stored rows are de-duplicated.
+  - A second case for the same unit doesn't re-file building reports for types already open.
+- **Legacy rows:** findings stored before the change whose notes describe absence are excluded on read (no schema change,
+  no migration).
+- **Tests:** `tests/test_detection.py` has 22 tests: synthetic clean-room, covered-alarm, empty-mount, water-stain and
+  open-outlet images with a stubbed model; tenant reports preserved; per-photo association; repeat scans; legacy rows.
+  Live model accuracy on real photos is **not** measured (needs real or staged photos; `scripts/eval_vision.py` now scores
+  the screened output).
 
 ## What was changed on `ch27-review` (local, not deployed)
 
@@ -316,22 +351,24 @@ any suspected mold assessed", which read like a requirement).
 |---|---|
 | `87df616` | Wording in `taxonomy.py` (smoke, CO, electrical, water/mold, pests, locks, exits); tour question in `letters.py`; alarm prototype surfaces 101.01(12) without evaluating it; Scan progress "Looking for possible issues…"; 5 new tests |
 | `eb99af3` | Four new source discrepancies recorded in `ch27_proposed_mappings.json` → `CH27_REVIEW.md` (additions only) |
+| `034747c` | This report; CONTEXT/PROGRESS |
+| `0e5eead` | Photo detection: alarm screening, tenant alarm reports, per-photo evidence, repeat-scan and report de-duplication, legacy exclusion, 22 tests |
+| `d6d2fcc` | Eval script scores screened detections |
+| `1351d0c` | Conditional citations and state-law prototype (both inactive), review-sheet support, tests |
+| (this commit) | Checklist, state-law design, City inquiry draft, round-2 docs |
 
 Not touched: the three approved categories and their seed rows; `code_sections_verified.json`; reviewer fields in
-`eval/code_review.csv`; `LEGAL_DEADLINE_DISPLAY_ENABLED`; Databricks; the deployment.
+`eval/code_review.csv`; `LEGAL_DEADLINE_DISPLAY_ENABLED`; Databricks; the deployment. `code_parse.py approve --apply`
+was not run.
 
-## Decisions for the reviewer
+## Remaining decisions for the reviewer
 
-1. **Approve or not, citation by citation** (READY rows): locks §27.05(2)(h)/(h)3./(h)4. (+(h)6. supporting); windows
-   §27.05(2)(h)/§27.04(2)(f)/§27.07(2)(c); pests §27.07(2)(d)+§27.03; electrical §27.04(2)(g); water damage
-   §27.05(2)(g)1./(g)2. Approval would mean filling `approved_section_ids` and the reviewer name in `eval/code_review.csv` for
-   those rows only, then `code_parse.py approve` (dry run first), then `--apply` and a redeploy, each step separately
-   authorized.
-2. Exits: approve §27.05(2)(i) alone for unsafe stairs, or keep the whole category on hold.
-3. Water damage: whether to propose §27.05(2)(g)1.'s "waterproof … spaces subject to moisture" sentence and/or §27.05(2)(k).
-4. Smoke/CO: whether FixIt may show **state statutes** (not only MGO) as "possibly relevant" sources, which would need a
-   small design change; and whether to keep the five-day deadline disabled (recommended until the governing source can be
-   established for a given building).
-5. Vision cues for smoke/CO absence (see "Detection behavior").
-6. Whether to ask City Building Inspection (608-266-4551) about: the §27.06(4) reference, the "SPS 321.04(2)" and
-   "SPS 328.02" references, and the meaning of "single-family dwelling" in §27.07(2)(d).
+1. Part A of `HUMAN_REVIEW_CHECKLIST.md`: approve or not, citation by citation (locks, windows, pests, electrical, water
+   damage).
+2. Part B: the three conditional citations (stairs §27.05(2)(i); wet-area (g)1.; bathroom floors (k)). Activating them
+   also needs a small reviewed code change (an approval record and a call to `conditional_citations.active`).
+3. Part C: whether to show the four statutes as "Possibly relevant state law" (activation steps in `STATE_LAW_DESIGN.md`).
+4. Whether to send `CITY_INQUIRY_DRAFT.md`, and from whom.
+5. Still unresolved, whatever the decisions: the §27.06(4) and SPS 321.04(2) references (exits); §27.05(2)(w)'s
+   "SPS 328.02"; the undefined "single-family dwelling" (pests); MGO 34.907 not re-read this session; no Madison CO
+   provision; no mold-specific source; no cover-plate source; the governing smoke/CO rule (and with it the five-day deadline).
