@@ -70,6 +70,11 @@ export function Progress({ steps, done, intervalMs = 900 }: { steps: string[]; d
 
 export function ViolationCard({ v, open: initOpen = false }: { v: Violation; open?: boolean }) {
   const [open, setOpen] = useState(initOpen);
+  const [allObs, setAllObs] = useState(false);
+  // A video can show the same problem in many consecutive frames: one finding, every frame kept, first few shown.
+  const OBS_SHOWN = 4;
+  const obs = v.observations ?? [];
+  const shownObs = allObs ? obs : obs.slice(0, OBS_SHOWN);
   return (
     <div className={`card overflow-hidden ${v.certain ? "" : "border-dashed"}`}>
       <button onClick={() => setOpen(!open)} className="w-full text-left p-4 flex gap-3 items-start">
@@ -95,9 +100,10 @@ export function ViolationCard({ v, open: initOpen = false }: { v: Violation; ope
       </button>
       {open && (
         <div className="px-4 pb-4 space-y-3 border-t border-neutral-100 pt-3">
-          {v.observations?.length ? (
+          {obs.length ? (
             <ul className="space-y-2">
-              {v.observations.map((o, k) => (
+              {obs.length > 1 && <li className="text-xs text-neutral-500">Seen or reported {obs.length} times in this scan:</li>}
+              {shownObs.map((o, k) => (
                 <li key={k} className="flex gap-2 items-start text-sm">
                   {o.evidence_id ? <img src={imgUrl(o.evidence_id)} alt="" className="w-10 h-10 rounded object-cover shrink-0 bg-neutral-100" />
                     : <div className="w-10 h-10 rounded bg-neutral-100 shrink-0" />}
@@ -107,6 +113,10 @@ export function ViolationCard({ v, open: initOpen = false }: { v: Violation; ope
                   </div>
                 </li>
               ))}
+              {obs.length > OBS_SHOWN && (
+                <li><button className="text-sm text-badger font-semibold" onClick={() => setAllObs(!allObs)}>
+                  {allObs ? "Show fewer" : `Show ${obs.length - OBS_SHOWN} more`}</button></li>
+              )}
             </ul>
           ) : v.notes?.length > 0 && <p className="text-sm italic text-neutral-600">“{v.notes[0]}”</p>}
           {v.category === "SMOKE_CO" && (
@@ -153,6 +163,7 @@ export function AiSource({ source, model }: { source?: string; model?: string | 
     live: `Analyzed live just now by ${model ? model.replace(/^databricks-/, "") : "the vision model"} on Databricks Model Serving.`,
     cache: "Saved result from an earlier live analysis of this exact photo (Demo Mode).",
     fallback: "Demo script: scripted example detections, shown because the live model wasn't used (Demo Mode).",
+    partial: `Partly analyzed live by ${model ? model.replace(/^databricks-/, "") : "the vision model"}: some frames weren't analyzed because the model didn't respond.`,
   };
   if (!source || !text[source]) return null;
   return (
