@@ -90,7 +90,8 @@ function Result({ res, onReset }: { res: any; onReset: () => void }) {
       )}
 
       <div className="grid md:grid-cols-3 gap-4">
-        <div className="md:col-span-2 space-y-3">
+        {/* min-w-0: a grid item otherwise grows to its widest child (the scrolling photo strip) and overflows phones */}
+        <div className="md:col-span-2 space-y-3 min-w-0">
           <h2 className="h2">Found in their own listing photos</h2>
           {flagged.length > 0 && (
             <div className="flex gap-3 overflow-x-auto pb-2">
@@ -105,7 +106,7 @@ function Result({ res, onReset }: { res: any; onReset: () => void }) {
           {res.violations.length === 0 && <p className="text-neutral-600">No possible issues spotted in these photos.</p>}
           {res.violations.map((x: Violation) => <ViolationCard key={x.violation_id} v={x} />)}
         </div>
-        <div className="space-y-3">
+        <div className="space-y-3 min-w-0">
           <h2 className="h2 flex items-center gap-2">Building history <DemoBadge /></h2>
           <SyntheticNote>Simulated complaint history and a fictional landlord grade from FixIt's synthetic demo dataset, not real City of Madison records.</SyntheticNote>
           {h ? (

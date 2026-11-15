@@ -3,6 +3,13 @@ import { Link, useParams } from "react-router-dom";
 import { AlertOctagon, Bot, Clock, FastForward, FileDown, Mic, Phone, PhoneOff, Send, ShieldCheck, Users, Volume2, VolumeX } from "lucide-react";
 import { get, imgUrl, post } from "../api";
 import { CopyButton, DemoBadge, Disclaimer, ErrorBox, SeverityChip, Spinner, ViolationCard } from "../components/ui";
+import { AlarmRules } from "../components/AlarmRules";
+
+// Smoke/CO source prototype is shown only for cases that include an alarm issue.
+const alarmTypes = (c: any): ("smoke" | "co")[] => {
+  const t = new Set((c.violations ?? []).map((v: any) => v.violation_type));
+  return [...(t.has("SMOKE_DETECTOR_MISSING") ? ["smoke" as const] : []), ...(t.has("CO_DETECTOR_MISSING") ? ["co" as const] : [])];
+};
 
 const TONES = ["friendly", "formal", "final"] as const;
 // "Final request", not "Final notice": the City issues Official Notices; a tenant letter must not sound like one.
@@ -46,6 +53,7 @@ export default function Case() {
             <h2 className="h2">Issues</h2>
             {c.violations.map((v: any) => <ViolationCard key={v.violation_id} v={v} />)}
           </section>
+          {alarmTypes(c).length > 0 && <AlarmRules types={alarmTypes(c)} />}
           <Evidence c={c} />
         </div>
         <div className="space-y-6">
@@ -73,7 +81,7 @@ function Collective({ c }: { c: any }) {
   }
   return (
     <section className="rounded-2xl bg-ink text-white p-5 space-y-3">
-      <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-red-300"><Users className="w-4 h-4" /> You're not alone <DemoBadge label="Simulated neighbor reports" /></div>
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-bold uppercase tracking-wide text-red-300"><span className="flex items-center gap-2"><Users className="w-4 h-4" /> You're not alone</span> <DemoBadge label="Simulated neighbor reports" /></div>
       {col.headline && <div className="text-2xl md:text-3xl font-extrabold">{col.headline}</div>}
       {col.owner_line && <div className="text-lg text-neutral-300">{col.owner_line}</div>}
       <div className="flex flex-wrap gap-2">

@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from . import config, db, seed
-from .services import (calls, cases, code_match, collective, demo_cache, evidence, genie, landlords, listing,
+from .services import (alarm_rules, calls, cases, code_match, collective, demo_cache, evidence, genie, landlords, listing,
                        pdfs, properties, scans)
 from .services.taxonomy import BY_ID, EMERGENCY_GUIDANCE, VIOLATION_TYPES
 
@@ -336,6 +336,18 @@ class Question(BaseModel):
 @app.post("/api/genie/ask")
 def genie_ask(body: Question):
     return genie.ask(body.question)
+
+
+# ---------------------------------------------------------------- smoke / CO source applicability (prototype)
+class AlarmRulesRequest(BaseModel):
+    profile: dict = {}
+    alarm_types: list[str] = ["smoke", "co"]
+
+
+@app.post("/api/alarm-rules")
+def alarm_rules_eval(body: AlarmRulesRequest):
+    """Nonpersistent: reads only the tenant-entered profile (no property id, no DB access, nothing stored)."""
+    return alarm_rules.evaluate(body.profile, [t for t in body.alarm_types if t in ("smoke", "co")])
 
 
 # ---------------------------------------------------------------- demo

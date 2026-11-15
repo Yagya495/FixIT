@@ -156,7 +156,12 @@ Finish every P0 before starting any P1.
   separate; document overlaps; **do not choose a governing rule without sufficient evidence**. A 5-day written-notice
   deadline may be shown only when the applicable source and its conditions are established, always separate from
   FixIt's reminders. Building facts (units, construction year, garage/fireplace/fuel-burning appliances/heating) come
-  only from the user or explicit data, never inferred from photos or synthetic records. Design: pending user review.
+  only from the user or explicit data, never inferred from photos or synthetic records.
+  **Prototype on `ch27-review` (not deployed, nonpersistent):** `services/alarm_rules.py` + `POST /api/alarm-rules` +
+  an optional card on the Case page (smoke/CO cases only). Statuses: "stated conditions appear met (not legally
+  verified)", "may apply", "outside stated scope", "not evaluated"; never "applies"; never a governing rule. The 5-day
+  deadline display is hard-disabled (`LEGAL_DEADLINE_DISPLAY_ENABLED = False`). No DB schema change. Construction
+  periods: before June 1, 1980 / June 1, 1980–2008 / 2009 or later / unknown. Tests: `test_alarm_rules.py`.
 - Mold: no mold-specific requirement found; general repair duty in Wis. Stat. §704.07(2)(a).
 - Default deadline windows (7 days routine / 48h urgent / 24h emergency) are **FixIt defaults, not legal deadlines**.
 

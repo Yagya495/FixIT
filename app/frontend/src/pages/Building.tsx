@@ -19,8 +19,8 @@ export default function Building() {
         <h1 className="h1">{b.address_norm}</h1>
         <SyntheticNote>Synthetic building with a simulated complaint history and a fictional owner grade (demo data, not City records).</SyntheticNote>
       </div>
-      <div className="grid md:grid-cols-3 gap-4">
-        <Link to={`/owners/${b.owner.owner_id}`} className="card p-4 flex items-center gap-3 hover:border-badger">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <Link to={`/owners/${b.owner.owner_id}`} className="card p-4 flex items-center gap-3 hover:border-badger col-span-2 md:col-span-1">
           <GradeBadge g={b.owner.grade} /><div><div className="font-bold">{b.owner.name}</div><div className="text-sm text-neutral-500">Owner report card →</div></div>
         </Link>
         <Stat label="Open issues" value={b.open_issues} />
